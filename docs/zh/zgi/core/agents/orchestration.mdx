@@ -1,0 +1,75 @@
+---
+id: agent-orchestration-zh
+title: Agent 编排平台
+description: 使用可视化界面设计和管理复杂的多 Agent 工作流
+product: zgi
+module: core/agents
+tags: [agent, orchestration, workflow, visual]
+version: v1.0
+lang: zh
+order: 20
+updated_at: 2025-01-15
+---
+
+# Agent 编排平台
+
+ZGI 提供企业级的 Agent 编排系统，让您通过直观的可视化界面设计、部署和管理复杂的多 Agent 工作流。
+
+## 核心功能
+
+### 可视化工作流设计器
+
+拖拽式界面，无需编写复杂代码即可构建 Agent 工作流：
+
+```typescript
+import { WorkflowBuilder } from '@zgi/orchestration';
+
+const workflow = new WorkflowBuilder()
+  .addAgent('researcher', {
+    type: 'research',
+    model: 'gpt-4',
+    tools: ['web_search', 'document_reader']
+  })
+  .addAgent('writer', {
+    type: 'content',
+    model: 'gpt-4',
+    tools: ['markdown_generator']
+  })
+  .connect('researcher', 'writer', {
+    condition: 'research_complete'
+  })
+  .build();
+```
+
+### 预构建 Agent 模板
+
+快速启动常见使用场景：
+
+- **客户服务 Agent** - 自动回答客户问题
+- **数据分析 Agent** - 分析数据并生成报告
+- **内容创作 Agent** - 生成文章、代码、设计
+- **研究助手 Agent** - 搜索和总结信息
+
+### Agent 间协作
+
+Agent 之间可以共享上下文和记忆：
+
+```typescript
+workflow.configureMemory({
+  type: 'shared',
+  persistence: 'redis',
+  ttl: 3600
+});
+
+// Agent A 存储信息
+await agentA.memory.set('research_data', data);
+
+// Agent B 读取信息
+const data = await agentB.memory.get('research_data');
+```
+
+## 下一步
+
+- [Agent 配置详解](./configuration)
+- [工具开发指南](./tools)
+- [性能优化](./performance)
