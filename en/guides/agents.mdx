@@ -1,0 +1,60 @@
+---
+title: 'Agent Development Guide'
+description: 'Learn how to create and manage AI Agents'
+---
+
+# Agent Development Guide
+
+Learn how to build powerful AI Agents with ZGI.
+
+## What is an Agent?
+
+An Agent is an autonomous AI entity that can:
+- Understand and execute tasks
+- Call tools and APIs
+- Maintain conversation context
+- Make intelligent decisions
+
+## Creating an Agent
+
+```typescript
+import { Agent } from '@zgi/core';
+
+const agent = new Agent({
+  name: 'my-agent',
+  model: 'gpt-4',
+  systemPrompt: 'You are a professional assistant',
+  temperature: 0.7,
+  maxTokens: 2000
+});
+```
+
+## Adding Tools
+
+```typescript
+agent.registerTool({
+  name: 'search',
+  description: 'Search the internet',
+  parameters: {
+    query: { type: 'string', required: true }
+  },
+  handler: async (params) => {
+    return searchResults;
+  }
+});
+```
+
+## Executing Tasks
+
+```typescript
+const result = await agent.execute({
+  task: 'Find the latest AI news'
+});
+
+console.log(result.output);
+```
+
+## Next Steps
+
+- [Tool Development](./tools)
+- [Agent Orchestration](./orchestration)

@@ -1,0 +1,136 @@
+---
+title: '工具开发指南'
+description: '学习如何为 Agent 创建自定义工具'
+---
+
+# 工具开发指南
+
+工具是 Agent 与外部世界交互的桥梁。本指南将教你如何创建自定义工具。
+
+## 什么是工具？
+
+工具是 Agent 可以调用的函数，用于执行特定任务，如：
+- 搜索互联网
+- 读取文件
+- 调用 API
+- 执行计算
+
+## 创建工具
+
+### 基础示例
+
+```typescript
+import { Tool } from '@zgi/core';
+
+const searchTool = new Tool({
+  name: 'web_search',
+  description: '搜索互联网获取信息',
+  parameters: {
+    query: {
+      type: 'string',
+      description: '搜索关键词',
+      required: true
+    },
+    limit: {
+      type: 'number',
+      description: '返回结果数量',
+      default: 10
+    }
+  },
+  handler: async (params) => {
+    const { query, limit } = params;
+    // 实现搜索逻辑
+    const results = await fetch(`https://api.search.com?q=${query}&limit=${limit}`);
+    return results.json();
+  }
+});
+```
+
+### 注册到 Agent
+
+```typescript
+agent.registerTool(searchTool);
+
+// 或在创建时注册
+const agent = new Agent({
+  name: 'assistant',
+  tools: [searchTool]
+});
+```
+
+## 工具参数
+
+### 参数类型
+
+| 类型 | 说明 | 示例 |
+|------|------|------|
+| `string` | 字符串 | "hello" |
+| `number` | 数字 | 42 |
+| `boolean` | 布尔值 | true |
+| `object` | 对象 | { key: "value" } |
+| `array` | 数组 | [1, 2, 3] |
+
+### 参数验证
+
+```typescript
+parameters: {
+  email: {
+    type: 'string',
+    pattern: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
+    required: true
+  },
+  age: {
+    type: 'number',
+    minimum: 0,
+    maximum: 150
+  }
+}
+```
+
+## 最佳实践
+
+### 1. 清晰的描述
+
+```typescript
+{
+  name: 'send_email',
+  description: '发送电子邮件。需要收件人地址、主题和正文内容。',
+  // ...
+}
+```
+
+### 2. 错误处理
+
+```typescript
+handler: async (params) => {
+  try {
+    const result = await doSomething(params);
+    return { success: true, data: result };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error.message 
+    };
+  }
+}
+```
+
+### 3. 超时控制
+
+```typescript
+handler: async (params) => {
+  const timeout = 5000; // 5秒
+  const result = await Promise.race([
+    doSomething(params),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), timeout)
+    )
+  ]);
+  return result;
+}
+```
+
+## 下一步
+
+- [Agent 编排](./orchestration)
+- [API 参考](../api-reference/tool)
