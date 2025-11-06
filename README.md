@@ -5,16 +5,23 @@ Official documentation for ZGI Platform - Enterprise AI Development Platform.
 ## 📚 Documentation Structure
 
 ```
-docs/
-├── zh/          # 中文文档
-│   └── zgi/
-│       └── core/
-│           └── agents/
-└── en/          # English Documentation
-    └── zgi/
-        └── core/
-            └── agents/
+├── zh-hans/              # 简体中文
+│   ├── introduction.mdx
+│   ├── quickstart.mdx
+│   ├── guides/
+│   │   ├── agents.mdx
+│   │   ├── tools.mdx
+│   │   └── orchestration.mdx
+│   └── api-reference/
+├── en/                   # English
+│   ├── introduction.mdx
+│   ├── quickstart.mdx
+│   ├── guides/
+│   └── api-reference/
+└── ja-jp/                # 日本語 (Coming soon)
 ```
+
+**扁平化设计** - 参考 Dify 文档结构，去除不必要的嵌套层级
 
 ## 🤝 Contributing
 

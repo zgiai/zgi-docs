@@ -1,0 +1,60 @@
+---
+title: '快速开始'
+description: '5 分钟创建你的第一个 AI Agent'
+---
+
+# 快速开始
+
+本指南将帮助你在 5 分钟内创建并运行你的第一个 ZGI Agent。
+
+## 前置要求
+
+- Node.js 18+ 
+- npm 或 pnpm
+
+## 安装
+
+```bash
+npm install -g @zgi/cli
+```
+
+## 创建项目
+
+```bash
+zgi init my-first-agent
+cd my-first-agent
+```
+
+## 创建 Agent
+
+创建文件 `agent.ts`:
+
+```typescript
+import { Agent } from '@zgi/core';
+
+const agent = new Agent({
+  name: 'assistant',
+  model: 'gpt-4',
+  systemPrompt: '你是一个有帮助的AI助手',
+  tools: []
+});
+
+// 执行任务
+const result = await agent.execute({
+  task: '介绍一下你自己'
+});
+
+console.log(result);
+```
+
+## 运行
+
+```bash
+npm run dev
+```
+
+## 下一步
+
+- [核心概念](./guides/concepts)
+- [Agent 开发](./guides/agents)
+- [工具集成](./guides/tools)

@@ -1,0 +1,117 @@
+---
+title: 'Agent 开发指南'
+description: '学习如何创建和管理 AI Agents'
+---
+
+# Agent 开发指南
+
+Agent 是 ZGI 平台的核心组件，本指南将教你如何创建、配置和管理 Agents。
+
+## 什么是 Agent？
+
+Agent 是一个自主的 AI 实体，能够：
+- 理解和执行任务
+- 调用工具和 API
+- 维护对话上下文
+- 做出智能决策
+
+## 创建 Agent
+
+### 基础配置
+
+```typescript
+import { Agent } from '@zgi/core';
+
+const agent = new Agent({
+  name: 'my-agent',
+  model: 'gpt-4',
+  systemPrompt: '你是一个专业的助手',
+  temperature: 0.7,
+  maxTokens: 2000
+});
+```
+
+### 添加工具
+
+```typescript
+agent.registerTool({
+  name: 'search',
+  description: '搜索互联网信息',
+  parameters: {
+    query: { type: 'string', required: true }
+  },
+  handler: async (params) => {
+    // 实现搜索逻辑
+    return results;
+  }
+});
+```
+
+### 执行任务
+
+```typescript
+const result = await agent.execute({
+  task: '帮我查找最新的 AI 新闻'
+});
+
+console.log(result.output);
+```
+
+## Agent 配置选项
+
+| 选项 | 类型 | 说明 |
+|------|------|------|
+| `name` | string | Agent 名称 |
+| `model` | string | 使用的 LLM 模型 |
+| `systemPrompt` | string | 系统提示词 |
+| `temperature` | number | 温度参数 (0-1) |
+| `maxTokens` | number | 最大 token 数 |
+| `tools` | Tool[] | 可用工具列表 |
+
+## 最佳实践
+
+### 1. 清晰的系统提示
+
+```typescript
+const systemPrompt = `
+你是一个专业的客服代表。
+
+职责：
+- 友好地回答客户问题
+- 提供准确的产品信息
+- 及时解决客户问题
+
+限制：
+- 不要提供未经验证的信息
+- 保持专业和礼貌
+`;
+```
+
+### 2. 错误处理
+
+```typescript
+try {
+  const result = await agent.execute(task);
+} catch (error) {
+  console.error('Agent 执行失败:', error);
+  // 实现降级逻辑
+}
+```
+
+### 3. 性能监控
+
+```typescript
+agent.on('start', () => {
+  console.log('Agent 开始执行');
+});
+
+agent.on('complete', (result) => {
+  console.log(`执行完成，耗时: ${result.duration}ms`);
+});
+```
+
+## 下一步
+
+- [工具开发](./tools)
+- [Agent 编排](./orchestration)
+- [API 参考](../api-reference/agent)
