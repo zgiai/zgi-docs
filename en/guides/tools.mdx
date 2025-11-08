@@ -1,0 +1,227 @@
+---
+title: 'Tool Development Guide'
+description: 'Learn how to create and manage tools for agents'
+---
+
+# Tool Development Guide
+
+Learn how to build powerful tools that extend your agents' capabilities.
+
+## What is a Tool?
+
+A Tool is a reusable component that agents can invoke to perform specific actions. Tools bridge the gap between agents and external systems, APIs, and services.
+
+### Tool Features
+
+**Core Capabilities:**
+- **Function Wrapping** - Wrap any function or API as a tool
+- **Parameter Definition** - Define input parameters with validation
+- **Type Safety** - Full TypeScript support with type checking
+- **Documentation** - Auto-generated documentation from tool definitions
+- **Error Handling** - Comprehensive error handling and recovery
+
+**Advanced Features:**
+- **Async Support** - Full support for asynchronous operations
+- **Caching** - Optional result caching for performance
+- **Rate Limiting** - Built-in rate limiting per tool
+- **Versioning** - Support multiple tool versions
+- **Monitoring** - Track tool usage and performance metrics
+
+## Creating a Tool
+
+```typescript
+import { Tool } from '@zgi/core';
+
+const searchTool = new Tool({
+  name: 'web_search',
+  description: 'Search the web for information',
+  parameters: {
+    query: {
+      type: 'string',
+      description: 'Search query',
+      required: true
+    },
+    limit: {
+      type: 'number',
+      description: 'Maximum results',
+      default: 10
+    }
+  },
+  handler: async (params) => {
+    const { query, limit } = params;
+    // Implementation here
+    return results;
+  }
+});
+```
+
+### Tool Configuration Features
+
+**Parameter Definition:**
+- **Type Validation** - Support for string, number, boolean, array, object types
+- **Required Fields** - Mark parameters as required or optional
+- **Default Values** - Set default values for optional parameters
+- **Constraints** - Add min/max values, regex patterns, enum values
+- **Descriptions** - Detailed descriptions for each parameter
+
+**Handler Configuration:**
+- **Timeout Settings** - Set maximum execution time
+- **Retry Logic** - Configure automatic retries with backoff
+- **Error Handling** - Custom error handling strategies
+- **Logging** - Detailed execution logging
+- **Metrics** - Track execution metrics
+
+**Security Features:**
+- **Input Validation** - Validate all inputs before execution
+- **Rate Limiting** - Prevent abuse with rate limiting
+- **Access Control** - Control who can use the tool
+- **Audit Logging** - Log all tool invocations
+- **Data Sanitization** - Sanitize inputs and outputs
+
+## Tool Types
+
+### API Tools
+
+```typescript
+const apiTool = new Tool({
+  name: 'api_call',
+  description: 'Make HTTP requests',
+  parameters: {
+    url: { type: 'string', required: true },
+    method: { type: 'string', default: 'GET' },
+    headers: { type: 'object' },
+    body: { type: 'object' }
+  },
+  handler: async (params) => {
+    const response = await fetch(params.url, {
+      method: params.method,
+      headers: params.headers,
+      body: JSON.stringify(params.body)
+    });
+    return response.json();
+  }
+});
+```
+
+**API Tool Features:**
+- **HTTP Methods** - Support for GET, POST, PUT, DELETE, PATCH
+- **Authentication** - Built-in support for API keys, OAuth, JWT
+- **Request Transformation** - Transform requests before sending
+- **Response Parsing** - Automatic response parsing and validation
+- **Error Handling** - Handle HTTP errors gracefully
+
+### Database Tools
+
+```typescript
+const dbTool = new Tool({
+  name: 'query_database',
+  description: 'Query the database',
+  parameters: {
+    query: { type: 'string', required: true },
+    params: { type: 'array' }
+  },
+  handler: async (params) => {
+    const result = await database.query(params.query, params.params);
+    return result;
+  }
+});
+```
+
+**Database Tool Features:**
+- **Query Execution** - Execute SQL queries safely
+- **Connection Pooling** - Efficient connection management
+- **Transaction Support** - Support for database transactions
+- **Query Optimization** - Automatic query optimization
+- **Result Formatting** - Format results for easy consumption
+
+### File Tools
+
+```typescript
+const fileTool = new Tool({
+  name: 'read_file',
+  description: 'Read file contents',
+  parameters: {
+    path: { type: 'string', required: true },
+    encoding: { type: 'string', default: 'utf-8' }
+  },
+  handler: async (params) => {
+    const fs = require('fs').promises;
+    return fs.readFile(params.path, params.encoding);
+  }
+});
+```
+
+**File Tool Features:**
+- **File Operations** - Read, write, delete, rename files
+- **Directory Operations** - List, create, delete directories
+- **Path Validation** - Validate file paths for security
+- **Encoding Support** - Support multiple file encodings
+- **Streaming** - Stream large files efficiently
+
+## Tool Composition
+
+### Combining Tools
+
+```typescript
+const compositeTool = new Tool({
+  name: 'search_and_summarize',
+  description: 'Search and summarize results',
+  parameters: {
+    query: { type: 'string', required: true }
+  },
+  handler: async (params) => {
+    // Use other tools
+    const searchResults = await searchTool.execute({ query: params.query });
+    const summary = await summarizeTool.execute({ text: searchResults });
+    return summary;
+  }
+});
+```
+
+**Composition Features:**
+- **Tool Chaining** - Chain multiple tools together
+- **Conditional Execution** - Execute tools based on conditions
+- **Parallel Execution** - Execute multiple tools in parallel
+- **Error Recovery** - Handle errors in tool chains
+- **Result Aggregation** - Combine results from multiple tools
+
+## Tool Testing
+
+```typescript
+import { ToolTester } from '@zgi/testing';
+
+const tester = new ToolTester(searchTool);
+
+await tester.test({
+  input: { query: 'AI news' },
+  expectedOutput: (result) => result.length > 0
+});
+```
+
+**Testing Features:**
+- **Unit Testing** - Test individual tools
+- **Integration Testing** - Test tool combinations
+- **Mock Support** - Mock external dependencies
+- **Performance Testing** - Measure tool performance
+- **Coverage Analysis** - Analyze test coverage
+
+## Tool Marketplace
+
+**Publishing Tools:**
+- **Tool Registry** - Publish tools to the ZGI marketplace
+- **Versioning** - Manage tool versions
+- **Documentation** - Auto-generated documentation
+- **Reviews** - Community reviews and ratings
+- **Monetization** - Monetize your tools
+
+**Using Marketplace Tools:**
+- **Discovery** - Find tools in the marketplace
+- **Installation** - One-click tool installation
+- **Updates** - Automatic tool updates
+- **Support** - Get support from tool authors
+
+## Next Steps
+
+- [Agent Development](./agents)
+- [Agent Orchestration](./orchestration)
+- [API Reference](../api-reference)

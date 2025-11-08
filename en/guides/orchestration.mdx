@@ -1,0 +1,304 @@
+---
+title: 'Agent Orchestration Guide'
+description: 'Learn how to orchestrate multiple agents and workflows'
+---
+
+# Agent Orchestration Guide
+
+Learn how to design, deploy, and manage complex multi-agent workflows.
+
+## What is Agent Orchestration?
+
+Agent Orchestration is the process of coordinating multiple agents to work together towards a common goal. It enables complex workflows, parallel execution, and intelligent task distribution.
+
+### Orchestration Features
+
+**Core Capabilities:**
+- **Multi-Agent Coordination** - Coordinate multiple agents working together
+- **Workflow Design** - Visual workflow designer with drag-and-drop interface
+- **State Management** - Manage state across multiple agents
+- **Communication** - Enable agents to communicate and share information
+- **Error Recovery** - Automatic error handling and recovery
+- **Monitoring** - Real-time monitoring of workflow execution
+
+**Advanced Features:**
+- **Conditional Branching** - Branch workflows based on conditions
+- **Parallel Execution** - Execute multiple agents in parallel
+- **Sequential Execution** - Execute agents in sequence
+- **Loop Support** - Implement loops and iterations
+- **Dynamic Routing** - Route tasks dynamically based on conditions
+- **Resource Management** - Manage resource allocation across agents
+
+## Creating a Workflow
+
+```typescript
+import { Workflow } from '@zgi/core';
+
+const workflow = new Workflow({
+  name: 'content-creation',
+  description: 'Create and publish content'
+});
+
+// Add agents to workflow
+workflow.addAgent('researcher', researchAgent);
+workflow.addAgent('writer', writerAgent);
+workflow.addAgent('editor', editorAgent);
+workflow.addAgent('publisher', publisherAgent);
+
+// Define workflow steps
+workflow.addStep({
+  name: 'research',
+  agent: 'researcher',
+  input: { topic: 'AI trends' }
+});
+
+workflow.addStep({
+  name: 'write',
+  agent: 'writer',
+  input: { research: '$research.output' },
+  dependsOn: ['research']
+});
+
+workflow.addStep({
+  name: 'edit',
+  agent: 'editor',
+  input: { content: '$write.output' },
+  dependsOn: ['write']
+});
+
+workflow.addStep({
+  name: 'publish',
+  agent: 'publisher',
+  input: { content: '$edit.output' },
+  dependsOn: ['edit']
+});
+```
+
+### Workflow Configuration Features
+
+**Workflow Definition:**
+- **Named Steps** - Define workflow steps with clear names
+- **Agent Assignment** - Assign agents to specific steps
+- **Input/Output Mapping** - Map outputs from one step to inputs of another
+- **Dependencies** - Define step dependencies
+- **Conditions** - Add conditional logic to steps
+- **Timeouts** - Set timeouts for each step
+
+**Data Flow:**
+- **Variable Substitution** - Use variables from previous steps
+- **Data Transformation** - Transform data between steps
+- **Aggregation** - Aggregate results from multiple steps
+- **Filtering** - Filter results based on conditions
+- **Validation** - Validate data at each step
+
+**Error Handling:**
+- **Retry Logic** - Automatic retry on failure
+- **Fallback Steps** - Define fallback steps on error
+- **Error Handlers** - Custom error handling logic
+- **Compensation** - Undo previous steps on failure
+- **Notifications** - Notify on errors
+
+## Workflow Patterns
+
+### Sequential Workflow
+
+```typescript
+const sequentialWorkflow = new Workflow({
+  name: 'sequential-process'
+});
+
+sequentialWorkflow.addStep({ name: 'step1', agent: 'agent1' });
+sequentialWorkflow.addStep({ name: 'step2', agent: 'agent2', dependsOn: ['step1'] });
+sequentialWorkflow.addStep({ name: 'step3', agent: 'agent3', dependsOn: ['step2'] });
+```
+
+**Sequential Workflow Features:**
+- **Linear Execution** - Execute steps one after another
+- **Dependency Tracking** - Automatic dependency resolution
+- **State Preservation** - Preserve state across steps
+- **Progress Tracking** - Track progress through workflow
+- **Checkpoint Support** - Save checkpoints for recovery
+
+### Parallel Workflow
+
+```typescript
+const parallelWorkflow = new Workflow({
+  name: 'parallel-process'
+});
+
+parallelWorkflow.addStep({ name: 'step1', agent: 'agent1' });
+parallelWorkflow.addStep({ name: 'step2', agent: 'agent2' });
+parallelWorkflow.addStep({ name: 'step3', agent: 'agent3' });
+parallelWorkflow.addStep({
+  name: 'aggregate',
+  agent: 'aggregator',
+  dependsOn: ['step1', 'step2', 'step3']
+});
+```
+
+**Parallel Workflow Features:**
+- **Concurrent Execution** - Execute multiple steps concurrently
+- **Resource Optimization** - Optimize resource usage
+- **Load Balancing** - Balance load across agents
+- **Synchronization** - Synchronize parallel steps
+- **Timeout Management** - Handle timeouts in parallel execution
+
+### Conditional Workflow
+
+```typescript
+const conditionalWorkflow = new Workflow({
+  name: 'conditional-process'
+});
+
+conditionalWorkflow.addStep({
+  name: 'check',
+  agent: 'checker'
+});
+
+conditionalWorkflow.addStep({
+  name: 'process_a',
+  agent: 'agentA',
+  condition: '$check.output.type === "A"',
+  dependsOn: ['check']
+});
+
+conditionalWorkflow.addStep({
+  name: 'process_b',
+  agent: 'agentB',
+  condition: '$check.output.type === "B"',
+  dependsOn: ['check']
+});
+```
+
+**Conditional Workflow Features:**
+- **Conditional Branching** - Branch based on conditions
+- **Expression Evaluation** - Evaluate complex expressions
+- **Multiple Branches** - Support multiple conditional branches
+- **Nested Conditions** - Support nested conditions
+- **Default Paths** - Define default paths
+
+### Loop Workflow
+
+```typescript
+const loopWorkflow = new Workflow({
+  name: 'loop-process'
+});
+
+loopWorkflow.addStep({
+  name: 'process_items',
+  agent: 'processor',
+  loop: {
+    items: '$input.items',
+    variable: 'item',
+    maxIterations: 100
+  }
+});
+```
+
+**Loop Workflow Features:**
+- **Iteration Support** - Iterate over collections
+- **Loop Variables** - Access loop variables
+- **Break Conditions** - Break loops based on conditions
+- **Iteration Limits** - Set maximum iterations
+- **Accumulation** - Accumulate results across iterations
+
+## Workflow Execution
+
+```typescript
+const execution = await workflow.execute({
+  topic: 'AI trends',
+  maxConcurrency: 5,
+  timeout: 300000
+});
+
+console.log(execution.status);
+console.log(execution.results);
+console.log(execution.metrics);
+```
+
+### Execution Features
+
+**Execution Control:**
+- **Synchronous Execution** - Wait for completion
+- **Asynchronous Execution** - Non-blocking execution
+- **Streaming Results** - Stream results as available
+- **Cancellation** - Cancel running workflows
+- **Pause/Resume** - Pause and resume workflows
+
+**Execution Monitoring:**
+- **Real-time Status** - Monitor workflow status in real-time
+- **Step Tracking** - Track individual step execution
+- **Progress Reporting** - Get progress updates
+- **Metrics Collection** - Collect execution metrics
+- **Logging** - Detailed execution logs
+
+**Result Management:**
+- **Result Aggregation** - Aggregate results from all steps
+- **Error Collection** - Collect errors from all steps
+- **Metrics Reporting** - Report execution metrics
+- **Result Caching** - Cache results for reuse
+- **Result Export** - Export results in various formats
+
+## Workflow Monitoring
+
+```typescript
+const monitor = workflow.createMonitor();
+
+monitor.on('step-started', (step) => {
+  console.log(`Step ${step.name} started`);
+});
+
+monitor.on('step-completed', (step) => {
+  console.log(`Step ${step.name} completed`);
+});
+
+monitor.on('workflow-completed', (result) => {
+  console.log('Workflow completed', result);
+});
+```
+
+**Monitoring Features:**
+- **Event Listeners** - Listen to workflow events
+- **Metrics Tracking** - Track performance metrics
+- **Alert System** - Alert on errors or anomalies
+- **Dashboard** - Visual workflow dashboard
+- **Reporting** - Generate execution reports
+
+## Workflow Optimization
+
+**Performance Optimization:**
+- **Parallel Execution** - Maximize parallelization
+- **Resource Allocation** - Optimize resource usage
+- **Caching** - Cache intermediate results
+- **Load Balancing** - Balance load across agents
+- **Timeout Tuning** - Optimize timeout settings
+
+**Cost Optimization:**
+- **Model Selection** - Choose cost-effective models
+- **Token Optimization** - Minimize token usage
+- **Batch Processing** - Batch similar tasks
+- **Result Reuse** - Reuse cached results
+- **Resource Scaling** - Scale resources based on demand
+
+## Workflow Templates
+
+**Pre-built Templates:**
+- **Content Creation** - Research, write, edit, publish
+- **Data Processing** - Extract, transform, load data
+- **Customer Support** - Route, respond, escalate
+- **Quality Assurance** - Test, review, approve
+- **Report Generation** - Collect, analyze, report
+
+**Template Features:**
+- **Customization** - Customize templates for your needs
+- **Reusability** - Reuse templates across projects
+- **Versioning** - Manage template versions
+- **Sharing** - Share templates with team members
+- **Marketplace** - Access community templates
+
+## Next Steps
+
+- [Agent Development](./agents)
+- [Tool Development](./tools)
+- [Knowledge Retrieval](./knowledge-retrieval)
+- [API Reference](../api-reference)

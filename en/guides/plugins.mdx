@@ -1,0 +1,458 @@
+---
+title: 'Plugin Architecture Guide'
+description: 'Learn how to build and integrate plugins'
+---
+
+# Plugin Architecture Guide
+
+Learn how to build and integrate plugins to connect your agents to any service, API, or data source.
+
+## What is a Plugin?
+
+A Plugin is a reusable component that extends ZGI's capabilities by connecting to external services, APIs, and data sources. Built on industry standards like MCP (Model Context Protocol) and Function Calling, plugins provide secure, scalable connectivity to your entire technology stack.
+
+### Plugin Features
+
+**Core Capabilities:**
+- **Pre-built Connectors** - 50+ pre-built connectors for popular services
+- **Custom Development** - Build custom plugins with SDK
+- **OAuth 2.0 Support** - Secure OAuth 2.0 authentication
+- **API Key Management** - Secure API key storage
+- **Rate Limiting** - Built-in rate limiting
+- **Error Handling** - Comprehensive error handling
+
+**Advanced Features:**
+- **Plugin Marketplace** - Access community plugins
+- **Versioning** - Manage plugin versions
+- **Testing Framework** - Test plugins before deployment
+- **Monitoring** - Monitor plugin performance
+- **Logging** - Detailed plugin logging
+- **Caching** - Cache plugin responses
+
+## Pre-built Connectors
+
+### CRM Connectors
+
+```typescript
+// Salesforce connector
+const salesforcePlugin = await gateway.loadPlugin('salesforce', {
+  apiKey: 'your-api-key',
+  instanceUrl: 'https://your-instance.salesforce.com'
+});
+
+// Query contacts
+const contacts = await salesforcePlugin.query('SELECT Id, Name, Email FROM Contact LIMIT 10');
+
+// Create opportunity
+const opportunity = await salesforcePlugin.create('Opportunity', {
+  Name: 'New Deal',
+  StageName: 'Prospecting',
+  Amount: 50000
+});
+```
+
+**Salesforce Features:**
+- **SOQL Queries** - Execute SOQL queries
+- **CRUD Operations** - Create, read, update, delete
+- **Batch Operations** - Batch operations
+- **Workflow Automation** - Trigger workflows
+- **Report Generation** - Generate reports
+- **Custom Objects** - Access custom objects
+- **Relationships** - Handle relationships
+- **Metadata** - Access metadata
+
+### Communication Connectors
+
+```typescript
+// Slack connector
+const slackPlugin = await gateway.loadPlugin('slack', {
+  botToken: 'xoxb-your-token'
+});
+
+// Send message
+await slackPlugin.sendMessage({
+  channel: '#general',
+  text: 'Hello from ZGI!'
+});
+
+// Create thread
+await slackPlugin.createThread({
+  channel: '#general',
+  threadTs: '1234567890.123456',
+  text: 'Reply in thread'
+});
+
+// Gmail connector
+const gmailPlugin = await gateway.loadPlugin('gmail', {
+  clientId: 'your-client-id',
+  clientSecret: 'your-client-secret'
+});
+
+// Send email
+await gmailPlugin.sendEmail({
+  to: 'user@example.com',
+  subject: 'Hello',
+  body: 'This is a test email'
+});
+```
+
+**Slack Features:**
+- **Message Sending** - Send messages to channels
+- **Thread Management** - Create and manage threads
+- **File Sharing** - Share files
+- **User Management** - Manage users
+- **Channel Management** - Manage channels
+- **Reactions** - Add reactions
+- **Mentions** - Handle mentions
+- **Webhooks** - Receive webhooks
+
+**Gmail Features:**
+- **Email Sending** - Send emails
+- **Email Reading** - Read emails
+- **Label Management** - Manage labels
+- **Draft Management** - Manage drafts
+- **Attachment Handling** - Handle attachments
+- **Search** - Search emails
+- **Thread Management** - Manage threads
+- **Signature Management** - Manage signatures
+
+### Development Connectors
+
+```typescript
+// GitHub connector
+const githubPlugin = await gateway.loadPlugin('github', {
+  token: 'your-github-token'
+});
+
+// Create issue
+const issue = await githubPlugin.createIssue({
+  owner: 'myorg',
+  repo: 'myrepo',
+  title: 'Bug: Something is broken',
+  body: 'Description of the bug',
+  labels: ['bug', 'urgent']
+});
+
+// Create pull request
+const pr = await githubPlugin.createPullRequest({
+  owner: 'myorg',
+  repo: 'myrepo',
+  title: 'Feature: New feature',
+  head: 'feature-branch',
+  base: 'main'
+});
+```
+
+**GitHub Features:**
+- **Repository Management** - Manage repositories
+- **Issue Management** - Create and manage issues
+- **Pull Request Management** - Manage pull requests
+- **Branch Management** - Manage branches
+- **Commit Operations** - Perform commit operations
+- **Release Management** - Manage releases
+- **Workflow Automation** - Trigger workflows
+- **Webhook Support** - Receive webhooks
+
+## Building Custom Plugins
+
+```typescript
+import { Plugin } from '@zgi/plugin-sdk';
+
+class MyCustomPlugin extends Plugin {
+  name = 'my-custom-plugin';
+  version = '1.0.0';
+  description = 'My custom plugin';
+
+  async initialize(config) {
+    this.apiKey = config.apiKey;
+    this.baseUrl = config.baseUrl;
+  }
+
+  async execute(action, params) {
+    switch (action) {
+      case 'get_data':
+        return this.getData(params);
+      case 'create_data':
+        return this.createData(params);
+      default:
+        throw new Error(`Unknown action: ${action}`);
+    }
+  }
+
+  private async getData(params) {
+    const response = await fetch(`${this.baseUrl}/data/${params.id}`, {
+      headers: { 'Authorization': `Bearer ${this.apiKey}` }
+    });
+    return response.json();
+  }
+
+  private async createData(params) {
+    const response = await fetch(`${this.baseUrl}/data`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    });
+    return response.json();
+  }
+}
+
+export default MyCustomPlugin;
+```
+
+### Plugin Development Features
+
+**Plugin Structure:**
+- **Plugin Class** - Extend Plugin base class
+- **Configuration** - Configure plugin settings
+- **Initialization** - Initialize plugin
+- **Action Handlers** - Define action handlers
+- **Error Handling** - Handle errors
+- **Logging** - Log plugin activity
+- **Validation** - Validate inputs
+- **Documentation** - Document plugin
+
+**Authentication:**
+- **API Key Auth** - Support API key authentication
+- **OAuth 2.0** - Support OAuth 2.0
+- **JWT Auth** - Support JWT authentication
+- **Basic Auth** - Support basic authentication
+- **Custom Auth** - Support custom authentication
+- **Token Refresh** - Handle token refresh
+- **Credential Storage** - Store credentials securely
+- **Credential Rotation** - Rotate credentials
+
+**Error Handling:**
+- **Error Types** - Define error types
+- **Error Messages** - Clear error messages
+- **Error Logging** - Log errors
+- **Retry Logic** - Implement retry logic
+- **Fallback** - Provide fallback behavior
+- **Timeout Handling** - Handle timeouts
+- **Rate Limit Handling** - Handle rate limits
+- **Validation Errors** - Validate inputs
+
+## Plugin Configuration
+
+```typescript
+const plugin = await gateway.loadPlugin('my-plugin', {
+  // Authentication
+  apiKey: 'your-api-key',
+  apiSecret: 'your-api-secret',
+  
+  // Configuration
+  baseUrl: 'https://api.example.com',
+  timeout: 30000,
+  retryAttempts: 3,
+  
+  // Rate Limiting
+  rateLimit: {
+    requestsPerSecond: 10,
+    tokensPerMinute: 1000
+  },
+  
+  // Caching
+  cache: {
+    enabled: true,
+    ttl: 3600
+  },
+  
+  // Logging
+  logging: {
+    level: 'info',
+    format: 'json'
+  }
+});
+```
+
+### Configuration Features
+
+**Connection Settings:**
+- **Base URL** - API base URL
+- **Timeout** - Request timeout
+- **Retry Logic** - Configure retries
+- **Connection Pool** - Connection pooling
+- **SSL Verification** - SSL verification
+- **Proxy Settings** - Proxy configuration
+- **Custom Headers** - Custom headers
+- **User Agent** - Custom user agent
+
+**Rate Limiting:**
+- **Requests Per Second** - Limit requests per second
+- **Tokens Per Minute** - Limit tokens per minute
+- **Concurrent Requests** - Limit concurrent requests
+- **Burst Allowance** - Allow burst requests
+- **Queue Management** - Manage request queue
+- **Backoff Strategy** - Backoff strategy
+- **Alert Thresholds** - Alert on limits
+- **Quota Management** - Manage quotas
+
+**Caching:**
+- **Cache Enabled** - Enable/disable caching
+- **Cache TTL** - Cache time-to-live
+- **Cache Key** - Define cache key
+- **Cache Size** - Maximum cache size
+- **Cache Strategy** - Cache strategy
+- **Cache Invalidation** - Invalidate cache
+- **Cache Warming** - Warm cache
+- **Cache Monitoring** - Monitor cache
+
+## Plugin Testing
+
+```typescript
+import { PluginTester } from '@zgi/plugin-testing';
+
+const tester = new PluginTester(MyCustomPlugin);
+
+await tester.test({
+  action: 'get_data',
+  params: { id: '123' },
+  expectedResult: (result) => result.id === '123'
+});
+
+await tester.testError({
+  action: 'get_data',
+  params: { id: 'invalid' },
+  expectedError: 'Not found'
+});
+```
+
+### Testing Features
+
+**Unit Testing:**
+- **Action Testing** - Test individual actions
+- **Mock Support** - Mock external APIs
+- **Assertion Support** - Assert results
+- **Error Testing** - Test error handling
+- **Timeout Testing** - Test timeouts
+- **Retry Testing** - Test retry logic
+- **Coverage Analysis** - Analyze coverage
+- **Performance Testing** - Test performance
+
+**Integration Testing:**
+- **Real API Testing** - Test with real APIs
+- **End-to-End Testing** - End-to-end tests
+- **Workflow Testing** - Test workflows
+- **Error Scenarios** - Test error scenarios
+- **Load Testing** - Load testing
+- **Stress Testing** - Stress testing
+- **Compatibility Testing** - Test compatibility
+- **Security Testing** - Security testing
+
+## Plugin Marketplace
+
+```typescript
+// Publish plugin
+await gateway.publishPlugin({
+  name: 'my-plugin',
+  version: '1.0.0',
+  description: 'My awesome plugin',
+  category: 'integration',
+  tags: ['api', 'integration'],
+  documentation: 'https://docs.example.com',
+  repository: 'https://github.com/example/my-plugin'
+});
+
+// Search marketplace
+const plugins = await gateway.searchPlugins({
+  query: 'salesforce',
+  category: 'crm',
+  sort: 'downloads'
+});
+
+// Install plugin
+await gateway.installPlugin('salesforce', '1.0.0');
+```
+
+### Marketplace Features
+
+**Publishing:**
+- **Plugin Registration** - Register plugin
+- **Version Management** - Manage versions
+- **Documentation** - Auto-generated docs
+- **Code Review** - Community code review
+- **Testing** - Automated testing
+- **Certification** - Plugin certification
+- **Monetization** - Monetize plugins
+- **Support** - Provide support
+
+**Discovery:**
+- **Search** - Search plugins
+- **Filter** - Filter by category
+- **Sort** - Sort by popularity
+- **Ratings** - View ratings
+- **Reviews** - Read reviews
+- **Downloads** - View download count
+- **Trending** - View trending plugins
+- **Recommendations** - Get recommendations
+
+**Installation:**
+- **One-Click Install** - Install with one click
+- **Dependency Management** - Manage dependencies
+- **Version Selection** - Choose version
+- **Configuration** - Configure plugin
+- **Testing** - Test before deployment
+- **Rollback** - Rollback to previous version
+- **Updates** - Automatic updates
+- **Uninstall** - Easy uninstall
+
+## Plugin Monitoring
+
+```typescript
+// Get plugin metrics
+const metrics = await gateway.getPluginMetrics('my-plugin', {
+  period: 'hour'
+});
+
+console.log(metrics.totalCalls);
+console.log(metrics.averageLatency);
+console.log(metrics.errorRate);
+console.log(metrics.cacheHitRate);
+
+// Get plugin logs
+const logs = await gateway.getPluginLogs('my-plugin', {
+  level: 'error',
+  limit: 100
+});
+```
+
+### Monitoring Features
+
+**Metrics:**
+- **Call Count** - Total calls
+- **Latency** - Average latency
+- **Error Rate** - Error rate
+- **Cache Hit Rate** - Cache hit rate
+- **Token Usage** - Token usage
+- **Cost** - Cost per call
+- **Availability** - Availability percentage
+- **Performance** - Performance metrics
+
+**Logging:**
+- **Log Levels** - Different log levels
+- **Log Filtering** - Filter logs
+- **Log Search** - Search logs
+- **Log Export** - Export logs
+- **Log Retention** - Log retention policy
+- **Structured Logging** - Structured logs
+- **Log Aggregation** - Aggregate logs
+- **Real-time Logs** - Real-time log streaming
+
+**Alerting:**
+- **Error Alerts** - Alert on errors
+- **Performance Alerts** - Alert on performance
+- **Availability Alerts** - Alert on unavailability
+- **Cost Alerts** - Alert on costs
+- **Quota Alerts** - Alert on quotas
+- **Custom Alerts** - Custom alerts
+- **Alert Routing** - Route alerts
+- **Alert Escalation** - Escalate alerts
+
+## Next Steps
+
+- [Agent Development](./agents)
+- [Tool Development](./tools)
+- [Agent Orchestration](./orchestration)
+- [API Reference](../api-reference)

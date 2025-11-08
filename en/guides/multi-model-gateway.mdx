@@ -1,0 +1,412 @@
+---
+title: 'Multi-Model Gateway Guide'
+description: 'Learn how to access 1000+ AI models through a single API'
+---
+
+# Multi-Model Gateway Guide
+
+Learn how to access and manage 1000+ AI models from multiple providers through a unified interface.
+
+## What is Multi-Model Gateway?
+
+The Multi-Model Gateway is a universal AI model router that provides seamless access to 1000+ models from multiple providers including OpenAI, Anthropic, Google, Meta, Mistral, DeepSeek, and more. It features intelligent load balancing, automatic failover, and multi-channel support for optimal performance and reliability.
+
+### Gateway Features
+
+**Core Capabilities:**
+- **1000+ Models** - Access to 1000+ models from major providers
+- **Unified API** - Single API compatible with OpenAI SDK
+- **Intelligent Routing** - Automatic routing to best provider
+- **Load Balancing** - Distribute load across providers
+- **Automatic Failover** - Failover to alternative providers
+- **Cost Optimization** - Optimize costs automatically
+
+**Advanced Features:**
+- **Multi-Channel Support** - Support multiple communication channels
+- **Real-time Monitoring** - Monitor model availability
+- **Rate Limiting** - Per-model rate limiting
+- **Quota Management** - Manage usage quotas
+- **Usage Analytics** - Track usage and costs
+- **Custom Routing** - Define custom routing rules
+
+## Accessing Models
+
+```typescript
+import { MultiModelGateway } from '@zgi/core';
+
+const gateway = new MultiModelGateway({
+  apiKey: 'your-api-key'
+});
+
+// List available models
+const models = await gateway.listModels();
+console.log(models);
+
+// Get model details
+const modelInfo = await gateway.getModel('gpt-4');
+console.log(modelInfo.provider);
+console.log(modelInfo.pricing);
+console.log(modelInfo.capabilities);
+```
+
+### Model Discovery Features
+
+**Model Listing:**
+- **All Models** - List all available models
+- **Filter by Provider** - Filter by provider
+- **Filter by Capability** - Filter by capabilities
+- **Filter by Price** - Filter by price range
+- **Search** - Search for models
+- **Sort** - Sort by various criteria
+- **Pagination** - Paginate results
+- **Caching** - Cache model list
+
+**Model Information:**
+- **Model Name** - Official model name
+- **Provider** - Model provider
+- **Capabilities** - Supported capabilities
+- **Pricing** - Per-token pricing
+- **Rate Limits** - Rate limit information
+- **Context Window** - Maximum context length
+- **Training Data** - Training data cutoff
+- **Status** - Current availability status
+
+## Making API Calls
+
+```typescript
+// Simple completion
+const response = await gateway.createCompletion({
+  model: 'gpt-4',
+  messages: [
+    { role: 'system', content: 'You are a helpful assistant' },
+    { role: 'user', content: 'Hello!' }
+  ],
+  temperature: 0.7,
+  maxTokens: 1000
+});
+
+console.log(response.choices[0].message.content);
+
+// Streaming
+const stream = await gateway.createCompletionStream({
+  model: 'gpt-4',
+  messages: [{ role: 'user', content: 'Tell me a story' }]
+});
+
+for await (const chunk of stream) {
+  process.stdout.write(chunk.choices[0].delta.content);
+}
+```
+
+### API Features
+
+**Request Options:**
+- **Model Selection** - Choose specific model
+- **Temperature** - Control randomness
+- **Max Tokens** - Limit response length
+- **Top P** - Control diversity
+- **Frequency Penalty** - Reduce repetition
+- **Presence Penalty** - Encourage new topics
+- **Stop Sequences** - Define stop tokens
+- **System Prompt** - Set system instructions
+
+**Response Handling:**
+- **Structured Output** - Get structured responses
+- **Token Counting** - Count tokens used
+- **Finish Reason** - Know why response ended
+- **Usage Stats** - Get usage information
+- **Cost Calculation** - Calculate API costs
+- **Error Handling** - Handle API errors
+- **Retry Logic** - Automatic retries
+- **Timeout Management** - Set timeouts
+
+**Streaming:**
+- **Server-Sent Events** - Use SSE for streaming
+- **WebSocket** - Use WebSocket for streaming
+- **Chunked Transfer** - Chunked response transfer
+- **Real-time Updates** - Get updates in real-time
+- **Error Streaming** - Stream errors
+- **Backpressure** - Handle backpressure
+- **Reconnection** - Auto-reconnect on failure
+- **Buffering** - Buffer streaming data
+
+## Intelligent Routing
+
+```typescript
+// Auto-routing based on criteria
+const response = await gateway.createCompletion({
+  messages: [{ role: 'user', content: 'Hello' }],
+  routing: {
+    strategy: 'cost-optimized',
+    maxLatency: 5000,
+    preferredProviders: ['openai', 'anthropic']
+  }
+});
+
+// Custom routing rules
+const customRouter = gateway.createRouter({
+  rules: [
+    {
+      condition: { capability: 'vision' },
+      provider: 'gpt-4-vision'
+    },
+    {
+      condition: { costBudget: { max: 0.01 } },
+      provider: 'gpt-3.5-turbo'
+    }
+  ]
+});
+```
+
+### Routing Features
+
+**Routing Strategies:**
+- **Cost-Optimized** - Choose cheapest model
+- **Performance-Optimized** - Choose fastest model
+- **Quality-Optimized** - Choose best quality
+- **Latency-Optimized** - Minimize latency
+- **Availability-Optimized** - Maximize availability
+- **Custom Strategy** - Define custom strategy
+- **Weighted Routing** - Weight-based routing
+- **Round-robin** - Round-robin routing
+
+**Routing Criteria:**
+- **Capability Matching** - Match required capabilities
+- **Cost Constraints** - Stay within budget
+- **Latency Constraints** - Meet latency requirements
+- **Provider Preference** - Prefer certain providers
+- **Model Preference** - Prefer certain models
+- **Availability** - Check model availability
+- **Rate Limits** - Respect rate limits
+- **Quota** - Respect usage quotas
+
+**Failover & Fallback:**
+- **Automatic Failover** - Failover on error
+- **Provider Failover** - Switch providers
+- **Model Fallback** - Use fallback model
+- **Cascade Fallback** - Try multiple fallbacks
+- **Retry Logic** - Retry with backoff
+- **Circuit Breaker** - Prevent cascading failures
+- **Health Checks** - Monitor provider health
+- **Recovery** - Recover from failures
+
+## Load Balancing
+
+```typescript
+// Enable load balancing
+const gateway = new MultiModelGateway({
+  apiKey: 'your-api-key',
+  loadBalancing: {
+    enabled: true,
+    strategy: 'round-robin',
+    healthCheck: true,
+    healthCheckInterval: 60000
+  }
+});
+
+// Get load balancing stats
+const stats = await gateway.getLoadBalancingStats();
+console.log(stats.requestsPerProvider);
+console.log(stats.averageLatencyPerProvider);
+console.log(stats.errorRatePerProvider);
+```
+
+### Load Balancing Features
+
+**Distribution Strategies:**
+- **Round-robin** - Distribute evenly
+- **Least Connections** - Route to least busy
+- **Weighted** - Weight-based distribution
+- **Latency-based** - Route to fastest
+- **Cost-based** - Route to cheapest
+- **Random** - Random distribution
+- **Sticky Sessions** - Keep user on same provider
+- **Dynamic Adjustment** - Adjust based on performance
+
+**Health Monitoring:**
+- **Health Checks** - Periodic health checks
+- **Latency Monitoring** - Monitor latencies
+- **Error Rate Monitoring** - Track error rates
+- **Availability Monitoring** - Track availability
+- **Capacity Monitoring** - Monitor capacity
+- **Alert System** - Alert on issues
+- **Auto-recovery** - Recover from failures
+- **Metrics Collection** - Collect metrics
+
+**Performance Optimization:**
+- **Connection Pooling** - Reuse connections
+- **Request Batching** - Batch requests
+- **Caching** - Cache responses
+- **Compression** - Compress data
+- **Parallel Requests** - Make parallel requests
+- **Request Prioritization** - Prioritize requests
+- **Queue Management** - Manage request queues
+- **Resource Allocation** - Allocate resources
+
+## Cost Management
+
+```typescript
+// Set budget limits
+const gateway = new MultiModelGateway({
+  apiKey: 'your-api-key',
+  budgetLimits: {
+    daily: 100,
+    monthly: 2000,
+    perRequest: 1
+  }
+});
+
+// Get cost analytics
+const costs = await gateway.getCostAnalytics({
+  period: 'month',
+  groupBy: 'model'
+});
+
+console.log(costs.totalCost);
+console.log(costs.costPerModel);
+console.log(costs.costTrends);
+```
+
+### Cost Management Features
+
+**Budget Control:**
+- **Daily Budget** - Set daily spending limit
+- **Monthly Budget** - Set monthly spending limit
+- **Per-Request Budget** - Limit per request
+- **Alert Threshold** - Alert when approaching limit
+- **Overage Handling** - Handle budget overages
+- **Budget Reset** - Reset budget periods
+- **Budget Sharing** - Share budget across teams
+- **Cost Forecasting** - Forecast future costs
+
+**Cost Analytics:**
+- **Cost Breakdown** - Break down costs by model
+- **Cost Trends** - Track cost trends
+- **Cost Comparison** - Compare model costs
+- **ROI Analysis** - Analyze return on investment
+- **Optimization Recommendations** - Get recommendations
+- **Usage Analytics** - Analyze usage patterns
+- **Efficiency Metrics** - Track efficiency
+- **Reporting** - Generate cost reports
+
+**Cost Optimization:**
+- **Model Recommendation** - Recommend cheaper models
+- **Batch Processing** - Batch similar requests
+- **Caching** - Cache responses
+- **Compression** - Compress data
+- **Token Optimization** - Optimize token usage
+- **Request Consolidation** - Consolidate requests
+- **Off-peak Routing** - Route to off-peak providers
+- **Reserved Capacity** - Use reserved capacity
+
+## Rate Limiting & Quotas
+
+```typescript
+// Configure rate limiting
+const gateway = new MultiModelGateway({
+  apiKey: 'your-api-key',
+  rateLimiting: {
+    requestsPerMinute: 1000,
+    tokensPerMinute: 100000,
+    concurrentRequests: 100
+  }
+});
+
+// Get rate limit status
+const status = await gateway.getRateLimitStatus();
+console.log(status.remaining);
+console.log(status.resetTime);
+console.log(status.limit);
+```
+
+### Rate Limiting Features
+
+**Rate Limit Types:**
+- **Request Rate** - Requests per minute
+- **Token Rate** - Tokens per minute
+- **Concurrent Requests** - Max concurrent requests
+- **Per-Model Rate** - Rate per model
+- **Per-Provider Rate** - Rate per provider
+- **Per-User Rate** - Rate per user
+- **Per-API-Key Rate** - Rate per API key
+- **Global Rate** - Global rate limit
+
+**Quota Management:**
+- **Daily Quota** - Daily usage quota
+- **Monthly Quota** - Monthly usage quota
+- **Per-Model Quota** - Quota per model
+- **Per-Provider Quota** - Quota per provider
+- **Quota Sharing** - Share quota across teams
+- **Quota Alerts** - Alert on quota usage
+- **Quota Reset** - Reset quota periods
+- **Quota Rollover** - Rollover unused quota
+
+**Handling Limits:**
+- **Queue Management** - Queue requests when limited
+- **Backoff Strategy** - Exponential backoff
+- **Priority Queue** - Prioritize requests
+- **Request Throttling** - Throttle requests
+- **Error Handling** - Handle rate limit errors
+- **Retry Logic** - Retry after limit
+- **Fallback** - Fallback to other providers
+- **Notifications** - Notify on limits
+
+## Monitoring & Analytics
+
+```typescript
+// Get gateway metrics
+const metrics = await gateway.getMetrics({
+  period: 'hour',
+  groupBy: 'model'
+});
+
+console.log(metrics.totalRequests);
+console.log(metrics.averageLatency);
+console.log(metrics.errorRate);
+console.log(metrics.costPerRequest);
+
+// Get provider comparison
+const comparison = await gateway.getProviderComparison();
+console.log(comparison.latency);
+console.log(comparison.reliability);
+console.log(comparison.cost);
+```
+
+### Monitoring Features
+
+**Metrics Collection:**
+- **Request Metrics** - Track requests
+- **Latency Metrics** - Track latencies
+- **Error Metrics** - Track errors
+- **Cost Metrics** - Track costs
+- **Token Metrics** - Track token usage
+- **Availability Metrics** - Track availability
+- **Performance Metrics** - Track performance
+- **Custom Metrics** - Define custom metrics
+
+**Analytics:**
+- **Trend Analysis** - Analyze trends
+- **Anomaly Detection** - Detect anomalies
+- **Performance Comparison** - Compare performance
+- **Cost Analysis** - Analyze costs
+- **Usage Patterns** - Analyze usage patterns
+- **Forecasting** - Forecast future usage
+- **Reporting** - Generate reports
+- **Dashboards** - Create dashboards
+
+**Alerting:**
+- **Threshold Alerts** - Alert on thresholds
+- **Anomaly Alerts** - Alert on anomalies
+- **Error Alerts** - Alert on errors
+- **Performance Alerts** - Alert on performance issues
+- **Cost Alerts** - Alert on cost issues
+- **Availability Alerts** - Alert on unavailability
+- **Custom Alerts** - Define custom alerts
+- **Alert Routing** - Route alerts to teams
+
+## Next Steps
+
+- [Agent Development](./agents)
+- [Tool Development](./tools)
+- [Agent Orchestration](./orchestration)
+- [API Reference](../api-reference)

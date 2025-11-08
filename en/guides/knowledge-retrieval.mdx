@@ -1,0 +1,329 @@
+---
+title: 'Knowledge Retrieval Guide'
+description: 'Learn how to build and use knowledge bases with RAG'
+---
+
+# Knowledge Retrieval Guide
+
+Learn how to build intelligent knowledge retrieval systems using advanced RAG (Retrieval-Augmented Generation) technology.
+
+## What is Knowledge Retrieval?
+
+Knowledge Retrieval is the process of extracting relevant information from large document collections to augment AI agent responses. It combines semantic search with generative AI to provide accurate, contextually relevant answers.
+
+### Knowledge Retrieval Features
+
+**Core Capabilities:**
+- **Multi-Format Support** - Process PDF, Word, Excel, Markdown, HTML, and more
+- **Semantic Search** - Find relevant documents using semantic similarity
+- **Hybrid Search** - Combine vector and keyword search
+- **Real-time Sync** - Synchronize data from databases and APIs
+- **Multi-language Support** - Retrieve across multiple languages
+- **Citation Tracking** - Track and attribute sources
+
+**Advanced Features:**
+- **Intelligent Chunking** - Automatically chunk documents intelligently
+- **Metadata Extraction** - Extract and index metadata
+- **Custom Embeddings** - Use custom embedding models
+- **Reranking** - Rerank results for better relevance
+- **Query Expansion** - Expand queries for better coverage
+- **Caching** - Cache frequently accessed documents
+
+## Creating a Knowledge Base
+
+```typescript
+import { KnowledgeBase } from '@zgi/core';
+
+const kb = new KnowledgeBase({
+  name: 'company-docs',
+  description: 'Company documentation and policies',
+  embeddingModel: 'text-embedding-3-large',
+  chunkSize: 1024,
+  chunkOverlap: 128
+});
+
+// Add documents
+await kb.addDocument({
+  path: 'docs/user-guide.pdf',
+  metadata: {
+    category: 'user-guide',
+    version: '1.0'
+  }
+});
+
+// Add from URL
+await kb.addDocumentFromUrl({
+  url: 'https://example.com/docs',
+  metadata: {
+    source: 'website'
+  }
+});
+
+// Add from database
+await kb.addDocumentsFromDatabase({
+  query: 'SELECT * FROM articles',
+  metadata: {
+    source: 'database'
+  }
+});
+```
+
+### Knowledge Base Configuration Features
+
+**Document Processing:**
+- **Format Support** - Support for 15+ document formats
+- **Automatic Parsing** - Automatically parse documents
+- **OCR Support** - Extract text from images
+- **Language Detection** - Detect document language
+- **Encoding Detection** - Handle various text encodings
+- **Cleanup** - Automatic text cleanup and normalization
+
+**Chunking Strategy:**
+- **Fixed Size Chunking** - Chunk by fixed size
+- **Semantic Chunking** - Chunk by semantic boundaries
+- **Sliding Window** - Use sliding window chunking
+- **Custom Chunking** - Define custom chunking logic
+- **Overlap Control** - Control chunk overlap
+- **Metadata Preservation** - Preserve metadata in chunks
+
+**Embedding Configuration:**
+- **Model Selection** - Choose from multiple embedding models
+- **Batch Processing** - Process documents in batches
+- **Caching** - Cache embeddings for reuse
+- **Dimension Control** - Control embedding dimensions
+- **Normalization** - Normalize embeddings
+- **Custom Embeddings** - Use custom embedding functions
+
+## Querying Knowledge Base
+
+```typescript
+const results = await kb.query({
+  query: 'How do I reset my password?',
+  topK: 5,
+  threshold: 0.7,
+  includeMetadata: true
+});
+
+for (const result of results) {
+  console.log(result.content);
+  console.log(result.score);
+  console.log(result.metadata);
+  console.log(result.source);
+}
+```
+
+### Query Features
+
+**Query Types:**
+- **Semantic Search** - Search by meaning
+- **Keyword Search** - Search by keywords
+- **Hybrid Search** - Combine semantic and keyword search
+- **Metadata Filter** - Filter by metadata
+- **Date Range Filter** - Filter by date range
+- **Category Filter** - Filter by category
+
+**Result Processing:**
+- **Ranking** - Rank results by relevance
+- **Reranking** - Rerank results using ML models
+- **Deduplication** - Remove duplicate results
+- **Filtering** - Filter results by criteria
+- **Aggregation** - Aggregate similar results
+- **Formatting** - Format results for display
+
+**Performance Optimization:**
+- **Caching** - Cache query results
+- **Indexing** - Optimize indexing strategy
+- **Batch Queries** - Process multiple queries efficiently
+- **Async Queries** - Non-blocking query execution
+- **Query Optimization** - Optimize query performance
+- **Load Balancing** - Balance load across replicas
+
+## RAG Integration
+
+```typescript
+import { Agent } from '@zgi/core';
+
+const agent = new Agent({
+  name: 'support-agent',
+  model: 'gpt-4'
+});
+
+// Add knowledge base tool
+agent.registerTool({
+  name: 'search_knowledge_base',
+  description: 'Search company knowledge base',
+  parameters: {
+    query: { type: 'string', required: true }
+  },
+  handler: async (params) => {
+    return kb.query({ query: params.query, topK: 5 });
+  }
+});
+
+// Use in agent
+const response = await agent.execute({
+  task: 'Answer user question about password reset'
+});
+```
+
+### RAG Features
+
+**Context Augmentation:**
+- **Document Retrieval** - Retrieve relevant documents
+- **Context Injection** - Inject context into prompts
+- **Citation Generation** - Generate citations automatically
+- **Source Attribution** - Attribute answers to sources
+- **Confidence Scoring** - Score answer confidence
+- **Fallback Handling** - Handle missing information
+
+**Generation Enhancement:**
+- **Prompt Optimization** - Optimize prompts for generation
+- **Temperature Control** - Control generation creativity
+- **Length Control** - Control response length
+- **Format Control** - Control response format
+- **Safety Filtering** - Filter unsafe content
+- **Quality Scoring** - Score generation quality
+
+**Feedback Loop:**
+- **User Feedback** - Collect user feedback
+- **Relevance Feedback** - Improve based on feedback
+- **Query Refinement** - Refine queries based on feedback
+- **Model Retraining** - Retrain models with feedback
+- **Performance Tracking** - Track performance over time
+- **A/B Testing** - Test different strategies
+
+## Document Management
+
+```typescript
+// Update document
+await kb.updateDocument('doc-id', {
+  content: 'Updated content',
+  metadata: { version: '2.0' }
+});
+
+// Delete document
+await kb.deleteDocument('doc-id');
+
+// List documents
+const documents = await kb.listDocuments({
+  filter: { category: 'user-guide' }
+});
+
+// Get document stats
+const stats = await kb.getStats();
+console.log(stats.totalDocuments);
+console.log(stats.totalChunks);
+console.log(stats.indexSize);
+```
+
+### Document Management Features
+
+**Document Operations:**
+- **Add Documents** - Add new documents
+- **Update Documents** - Update existing documents
+- **Delete Documents** - Delete documents
+- **Batch Operations** - Perform batch operations
+- **Version Control** - Track document versions
+- **Rollback** - Rollback to previous versions
+
+**Metadata Management:**
+- **Custom Metadata** - Add custom metadata
+- **Metadata Indexing** - Index metadata for filtering
+- **Metadata Search** - Search by metadata
+- **Metadata Update** - Update metadata
+- **Metadata Validation** - Validate metadata
+- **Metadata Export** - Export metadata
+
+**Document Lifecycle:**
+- **Scheduling** - Schedule document updates
+- **Expiration** - Set document expiration
+- **Archival** - Archive old documents
+- **Retention** - Manage document retention
+- **Compliance** - Ensure compliance
+- **Audit Trail** - Track document changes
+
+## Advanced Features
+
+### Custom Embeddings
+
+```typescript
+const kb = new KnowledgeBase({
+  name: 'custom-kb',
+  embeddingFunction: async (text) => {
+    // Custom embedding logic
+    return customEmbedding(text);
+  }
+});
+```
+
+**Custom Embedding Features:**
+- **Custom Models** - Use custom embedding models
+- **Domain-Specific** - Train domain-specific embeddings
+- **Fine-tuning** - Fine-tune embeddings
+- **Hybrid Embeddings** - Combine multiple embeddings
+- **Dimension Reduction** - Reduce embedding dimensions
+- **Similarity Metrics** - Use custom similarity metrics
+
+### Reranking
+
+```typescript
+const results = await kb.query({
+  query: 'How to deploy?',
+  topK: 10,
+  rerank: {
+    model: 'rerank-model',
+    topK: 5
+  }
+});
+```
+
+**Reranking Features:**
+- **ML Reranking** - Use ML models for reranking
+- **Custom Reranking** - Define custom reranking logic
+- **Multi-stage Ranking** - Multi-stage ranking pipeline
+- **Diversity Ranking** - Promote diverse results
+- **Freshness Ranking** - Prioritize recent documents
+- **Popularity Ranking** - Prioritize popular documents
+
+### Query Expansion
+
+```typescript
+const results = await kb.query({
+  query: 'password reset',
+  expandQuery: true,
+  expansionTerms: ['forgot password', 'account recovery']
+});
+```
+
+**Query Expansion Features:**
+- **Synonym Expansion** - Expand with synonyms
+- **Related Terms** - Add related terms
+- **Spelling Correction** - Correct spelling
+- **Abbreviation Expansion** - Expand abbreviations
+- **Semantic Expansion** - Semantic query expansion
+- **Custom Expansion** - Define custom expansion
+
+## Performance & Monitoring
+
+```typescript
+const metrics = await kb.getMetrics();
+console.log(metrics.queryLatency);
+console.log(metrics.indexSize);
+console.log(metrics.queryCount);
+console.log(metrics.averageRelevance);
+```
+
+**Monitoring Features:**
+- **Query Metrics** - Track query performance
+- **Index Metrics** - Monitor index health
+- **Relevance Metrics** - Track relevance scores
+- **Usage Analytics** - Analyze usage patterns
+- **Performance Alerts** - Alert on performance issues
+- **Reporting** - Generate performance reports
+
+## Next Steps
+
+- [Agent Development](./agents)
+- [Tool Development](./tools)
+- [Agent Orchestration](./orchestration)
+- [API Reference](../api-reference)

@@ -1,0 +1,380 @@
+---
+title: 'ZGI Guides'
+description: 'Comprehensive guides for all ZGI modules'
+---
+
+# ZGI Guides
+
+Welcome to the ZGI Guides! This section provides comprehensive documentation for all ZGI modules and features.
+
+## Getting Started
+
+Start with these guides to understand ZGI:
+
+1. **[Core Concepts](./concepts)** - Understand the fundamental concepts and architecture
+2. **[Quick Start](../quickstart)** - Get up and running in 5 minutes
+3. **[Introduction](../introduction)** - Learn about ZGI platform capabilities
+
+## Module Guides
+
+### 1. Agent Development
+
+**[Agent Development Guide](./agents)** - Build autonomous AI agents
+
+Learn how to:
+- Create and configure agents
+- Add tools and integrate APIs
+- Execute tasks and handle results
+- Monitor and debug agent execution
+
+**Key Features:**
+- Autonomous execution
+- Multi-tool integration
+- Context management
+- Error handling and recovery
+- State persistence
+- Real-time monitoring
+
+---
+
+### 2. Tool Development
+
+**[Tool Development Guide](./tools)** - Create reusable tools for agents
+
+Learn how to:
+- Create and register tools
+- Define tool parameters and schemas
+- Implement tool handlers
+- Test and debug tools
+- Publish tools to marketplace
+
+**Key Features:**
+- Dynamic tool registration
+- Parameter validation
+- Async operations
+- Error handling
+- Caching and versioning
+- Pre-built tool library
+
+---
+
+### 3. Agent Orchestration
+
+**[Agent Orchestration Guide](./orchestration)** - Design complex multi-agent workflows
+
+Learn how to:
+- Create and configure workflows
+- Define workflow steps and dependencies
+- Implement workflow patterns
+- Monitor workflow execution
+- Optimize workflow performance
+
+**Key Features:**
+- Visual workflow designer
+- Sequential and parallel execution
+- Conditional branching
+- Loop support
+- State management
+- Error recovery
+
+**Workflow Patterns:**
+- Sequential workflows
+- Parallel workflows
+- Conditional workflows
+- Loop workflows
+
+---
+
+### 4. Knowledge Retrieval
+
+**[Knowledge Retrieval Guide](./knowledge-retrieval)** - Build intelligent RAG systems
+
+Learn how to:
+- Create and manage knowledge bases
+- Add documents from multiple sources
+- Query knowledge bases
+- Integrate with agents
+- Optimize retrieval performance
+
+**Key Features:**
+- Multi-format document processing
+- Intelligent chunking
+- Semantic search
+- Hybrid search (vector + keyword)
+- Real-time data synchronization
+- Citation tracking
+- Multi-language support
+
+**Performance Metrics:**
+- 95%+ retrieval accuracy
+- <200ms query latency
+- 15+ supported formats
+
+---
+
+### 5. Structured Database Management
+
+**[Structured Database Guide](./database)** - Manage relational data with AI assistance
+
+Learn how to:
+- Create and configure databases
+- Design tables and relationships
+- Perform CRUD operations
+- Execute SQL queries
+- Import and export data
+- Optimize database performance
+
+**Key Features:**
+- AI-powered schema design
+- Visual table designer
+- Automatic system fields
+- Intelligent data import
+- Multi-tenant isolation
+- Native SQL support
+- Dual-mode architecture (PostgreSQL + HTTP API)
+
+**Performance Metrics:**
+- <100ms query performance
+- 15+ data types
+- 1000+ concurrent connections
+
+---
+
+### 6. Multi-Model Gateway
+
+**[Multi-Model Gateway Guide](./multi-model-gateway)** - Access 1000+ AI models
+
+Learn how to:
+- Discover and list available models
+- Make API calls to models
+- Implement intelligent routing
+- Configure load balancing
+- Manage costs and quotas
+- Monitor model performance
+
+**Key Features:**
+- Access to 1000+ models
+- Intelligent load balancing
+- Automatic failover
+- Real-time monitoring
+- Cost optimization
+- Rate limiting and quota management
+- Usage analytics
+
+**Supported Providers:**
+- OpenAI
+- Anthropic
+- Google
+- Meta
+- Mistral
+- DeepSeek
+- And 1000+ more
+
+---
+
+### 7. Plugin Architecture
+
+**[Plugin Architecture Guide](./plugins)** - Connect to any external service
+
+Learn how to:
+- Use pre-built connectors
+- Build custom plugins
+- Configure plugin authentication
+- Test and deploy plugins
+- Publish to marketplace
+- Monitor plugin performance
+
+**Key Features:**
+- 50+ pre-built connectors
+- Custom plugin development
+- OAuth 2.0 support
+- API key management
+- Rate limiting
+- Error handling
+- Plugin marketplace
+
+**Pre-built Connectors:**
+- **CRM:** Salesforce, HubSpot, Pipedrive
+- **Communication:** Slack, Gmail, Microsoft Teams
+- **Development:** GitHub, GitLab, Jira
+- **Data:** Stripe, Shopify, Airtable
+- **And many more...**
+
+---
+
+## Feature Matrix
+
+| Feature | Agents | Tools | Workflows | Knowledge | Database | Gateway | Plugins |
+|---------|--------|-------|-----------|-----------|----------|---------|---------|
+| Autonomous Execution | ✓ | - | ✓ | - | - | - | - |
+| Multi-Tool Integration | ✓ | ✓ | ✓ | - | - | - | ✓ |
+| Context Management | ✓ | - | ✓ | ✓ | - | - | - |
+| Error Handling | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Real-time Monitoring | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Caching | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Rate Limiting | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Audit Logging | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+## Common Workflows
+
+### 1. Customer Support Agent
+
+Combine agents, tools, knowledge bases, and plugins:
+
+1. **Agent** receives customer query
+2. **Knowledge Base** retrieves relevant documentation
+3. **Tool** queries customer database
+4. **Plugin** integrates with Slack for escalation
+5. **Workflow** orchestrates the entire process
+
+See: [Agent Development](./agents) → [Knowledge Retrieval](./knowledge-retrieval) → [Tool Development](./tools) → [Plugin Architecture](./plugins)
+
+### 2. Data Processing Pipeline
+
+Combine database, workflows, and agents:
+
+1. **Database** stores source data
+2. **Workflow** orchestrates processing steps
+3. **Agent** performs data transformation
+4. **Tool** validates and exports results
+5. **Database** stores processed data
+
+See: [Structured Database](./database) → [Agent Orchestration](./orchestration) → [Tool Development](./tools)
+
+### 3. Multi-Model Analysis
+
+Combine gateway, agents, and knowledge bases:
+
+1. **Gateway** routes to optimal model
+2. **Agent** analyzes documents
+3. **Knowledge Base** provides context
+4. **Tool** aggregates results
+5. **Workflow** coordinates analysis
+
+See: [Multi-Model Gateway](./multi-model-gateway) → [Agent Development](./agents) → [Knowledge Retrieval](./knowledge-retrieval)
+
+## Best Practices
+
+### Performance
+- Use caching for frequently accessed data
+- Batch similar requests together
+- Implement parallel execution where possible
+- Monitor and optimize query performance
+
+### Security
+- Use secure credential storage
+- Implement role-based access control
+- Enable audit logging
+- Encrypt sensitive data
+
+### Reliability
+- Implement error handling and retries
+- Use automatic failover
+- Monitor system health
+- Test error scenarios
+
+### Cost Optimization
+- Choose cost-effective models
+- Implement caching
+- Batch process requests
+- Monitor and optimize usage
+
+## Integration Examples
+
+### Example 1: Research Agent
+
+```typescript
+// Create agent
+const agent = new Agent({ model: 'gpt-4' });
+
+// Add tools
+agent.registerTool(searchTool);
+agent.registerTool(summarizeTool);
+
+// Add knowledge base
+const kb = new KnowledgeBase({ name: 'research-docs' });
+agent.registerTool(kbSearchTool);
+
+// Execute research task
+const result = await agent.execute({
+  task: 'Research latest AI trends'
+});
+```
+
+### Example 2: Data Processing Workflow
+
+```typescript
+// Create workflow
+const workflow = new Workflow({ name: 'data-processing' });
+
+// Add steps
+workflow.addStep({ name: 'extract', agent: extractAgent });
+workflow.addStep({ name: 'transform', agent: transformAgent, dependsOn: ['extract'] });
+workflow.addStep({ name: 'load', agent: loadAgent, dependsOn: ['transform'] });
+
+// Execute workflow
+const result = await workflow.execute({ data: inputData });
+```
+
+### Example 3: Multi-Model Comparison
+
+```typescript
+// Create gateway
+const gateway = new MultiModelGateway();
+
+// Query multiple models
+const results = await Promise.all([
+  gateway.createCompletion({ model: 'gpt-4', messages }),
+  gateway.createCompletion({ model: 'claude-3', messages }),
+  gateway.createCompletion({ model: 'gemini-pro', messages })
+]);
+
+// Compare results
+console.log(results);
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Agent not executing tasks:**
+- Check agent configuration
+- Verify tools are registered
+- Check error logs
+- See: [Agent Development](./agents)
+
+**Slow query performance:**
+- Check database indexes
+- Verify query optimization
+- Monitor connection pool
+- See: [Structured Database](./database)
+
+**Low retrieval accuracy:**
+- Check document chunking
+- Verify embeddings
+- Review query expansion
+- See: [Knowledge Retrieval](./knowledge-retrieval)
+
+**High API costs:**
+- Optimize model selection
+- Implement caching
+- Batch requests
+- See: [Multi-Model Gateway](./multi-model-gateway)
+
+## Resources
+
+- **[API Reference](../api-reference)** - Complete API documentation
+- **[Introduction](../introduction)** - Platform overview
+- **[Quick Start](../quickstart)** - Get started in 5 minutes
+- **[Blog](https://blog.zgi.ai)** - Latest updates and tutorials
+- **[Support](mailto:support@zgi.ai)** - Get help from our team
+
+## Next Steps
+
+1. Choose a module to learn about
+2. Read the module guide
+3. Try the code examples
+4. Build your first application
+5. Explore advanced features
+
+Happy building with ZGI! 🚀
