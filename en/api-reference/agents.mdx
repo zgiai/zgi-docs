@@ -4,6 +4,7 @@ description: 'Create and manage AI agents'
 category: 'API Reference'
 order: 2
 published: true
+method: 'GET'
 tags:
   - agents
   - api
@@ -48,6 +49,24 @@ List all agents.
 }
 ```
 
+### Try it out
+
+<APITester
+  method="GET"
+  endpoint="/console/api/v1/agents"
+  description="List all agents with pagination"
+  queryParams={{
+    page: {
+      type: 'integer',
+      description: 'Page number (default: 1)'
+    },
+    limit: {
+      type: 'integer',
+      description: 'Items per page (default: 10)'
+    }
+  }}
+/>
+
 ### Examples
 
 #### cURL
@@ -90,6 +109,19 @@ Create a new agent.
   }
 }
 ```
+
+### Try it out
+
+<APITester
+  method="POST"
+  endpoint="/console/api/v1/agents"
+  description="Create a new AI agent"
+  body={`{
+  "name": "My Agent",
+  "type": "chat",
+  "description": "A helpful agent"
+}`}
+/>
 
 ### Examples
 
