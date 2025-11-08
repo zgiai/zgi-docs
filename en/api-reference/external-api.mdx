@@ -1,0 +1,351 @@
+---
+title: 'External API'
+description: 'Third-party integration API with API key authentication'
+category: 'API Reference'
+order: 5
+published: true
+tags:
+  - external-api
+  - integration
+author: 'ZGI Team'
+last_updated: '2024-01-08'
+version: '1.0.0'
+---
+
+# External API
+
+Complete reference for external API endpoints.
+
+## Health Check
+
+### Endpoint
+```
+GET /api/health
+```
+
+### Description
+Check API health status.
+
+### Response (200)
+```json
+{
+  "status": "ok",
+  "service": "zgi-external-api",
+  "version": "1.0"
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/api/health
+```
+
+---
+
+## Run Workflow
+
+### Endpoint
+```
+POST /api/v1/workflows/run
+```
+
+### Description
+Execute workflow via external API.
+
+### Authentication
+Required: API Key
+
+### Request Body
+```json
+{
+  "variables": {
+    "input": "test"
+  }
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "run_id": "run_123",
+    "status": "completed",
+    "output": "result"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/api/v1/workflows/run \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "variables": {"input": "test"}
+  }'
+```
+
+---
+
+## Run Specific Workflow
+
+### Endpoint
+```
+POST /api/v1/workflows/:workflow_id/run
+```
+
+### Description
+Execute specific workflow.
+
+### Authentication
+Required: API Key
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "run_id": "run_456",
+    "status": "completed"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/api/v1/workflows/workflow_123/run \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "variables": {}
+  }'
+```
+
+---
+
+## Get Workflow Run Status
+
+### Endpoint
+```
+GET /api/v1/workflows/runs/:run_id
+```
+
+### Description
+Get workflow run status.
+
+### Authentication
+Required: API Key
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "run_id": "run_123",
+    "status": "completed",
+    "output": "result"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/api/v1/workflows/runs/run_123 \
+  -H "Authorization: Bearer $API_KEY"
+```
+
+---
+
+## Stop Workflow Task
+
+### Endpoint
+```
+POST /api/v1/workflows/tasks/:task_id/stop
+```
+
+### Description
+Stop a running task.
+
+### Authentication
+Required: API Key
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success"
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/api/v1/workflows/tasks/task_123/stop \
+  -H "Authorization: Bearer $API_KEY"
+```
+
+---
+
+## Run Chat Workflow
+
+### Endpoint
+```
+POST /api/v1/chat-workflows/run
+```
+
+### Description
+Execute chat workflow.
+
+### Authentication
+Required: API Key
+
+### Request Body
+```json
+{
+  "query": "Hello",
+  "conversation_id": "conv_123"
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "run_id": "run_789",
+    "output": "Hi there!"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/api/v1/chat-workflows/run \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Hello"
+  }'
+```
+
+---
+
+## Chat Completions
+
+### Endpoint
+```
+POST /api/v1/chat/completions
+```
+
+### Description
+OpenAI-compatible chat completions.
+
+### Authentication
+Required: API Key
+
+### Request Body
+```json
+{
+  "model": "gpt-4",
+  "messages": [
+    {"role": "user", "content": "Hello"}
+  ]
+}
+```
+
+### Response (200)
+```json
+{
+  "id": "chatcmpl-123",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": "Hi there!"
+      }
+    }
+  ]
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/api/v1/chat/completions \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
+```
+
+---
+
+## Upload File
+
+### Endpoint
+```
+POST /api/v1/files/upload
+```
+
+### Description
+Upload file via external API.
+
+### Authentication
+Required: API Key
+
+### Request
+Multipart form data
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "file_id": "file_123",
+    "name": "document.pdf"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/api/v1/files/upload \
+  -H "Authorization: Bearer $API_KEY" \
+  -F "file=@document.pdf"
+```
+
+---
+
+## Related Endpoints
+
+- [Workflows API](./workflows)
+- [API Keys API](./api-keys)
+
+---
+
+## Rate Limiting
+
+- **Limit**: 1000 requests/minute

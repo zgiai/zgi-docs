@@ -1,0 +1,180 @@
+---
+title: 'Error Codes Reference'
+description: 'Complete reference for API error codes'
+category: 'API Reference'
+order: 10
+published: true
+tags:
+  - errors
+  - troubleshooting
+author: 'ZGI Team'
+last_updated: '2024-01-08'
+version: '1.0.0'
+---
+
+# Error Codes Reference
+
+Complete reference for all API error codes.
+
+## HTTP Status Codes
+
+| Status | Description |
+|--------|-------------|
+| 200 | OK - Request successful |
+| 201 | Created - Resource created |
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Auth failed |
+| 403 | Forbidden - Access denied |
+| 404 | Not Found - Resource not found |
+| 409 | Conflict - Resource exists |
+| 429 | Too Many Requests - Rate limited |
+| 500 | Internal Server Error |
+| 503 | Service Unavailable |
+
+## Authentication Errors (401xxx)
+
+### 401001 - Unauthorized
+- **Cause**: Invalid or missing token
+- **Solution**: Check JWT token validity
+
+### 401002 - Token Expired
+- **Cause**: JWT token expired
+- **Solution**: Refresh token or re-authenticate
+
+### 401003 - Invalid Token
+- **Cause**: Malformed token
+- **Solution**: Verify token format
+
+## Authorization Errors (403xxx)
+
+### 403001 - Forbidden
+- **Cause**: User lacks permission
+- **Solution**: Check user role
+
+### 403002 - Quota Exceeded
+- **Cause**: Daily/monthly quota reached
+- **Solution**: Wait for reset or upgrade
+
+### 403003 - API Key Revoked
+- **Cause**: API key was revoked
+- **Solution**: Create new API key
+
+### 403004 - API Key Expired
+- **Cause**: API key expired
+- **Solution**: Create new API key
+
+## Validation Errors (400xxx)
+
+### 400001 - Invalid Request
+- **Cause**: Invalid parameters
+- **Solution**: Check request format
+
+### 400002 - Invalid Format
+- **Cause**: Wrong parameter format
+- **Solution**: Verify UUID/date format
+
+### 400003 - Missing Required Field
+- **Cause**: Required field missing
+- **Solution**: Include all required fields
+
+### 400004 - Invalid Data Type
+- **Cause**: Wrong data type
+- **Solution**: Convert to correct type
+
+## Resource Errors (404xxx)
+
+### 404001 - Not Found
+- **Cause**: Resource doesn't exist
+- **Solution**: Verify resource ID
+
+### 404002 - Agent Not Found
+- **Cause**: Agent doesn't exist
+- **Solution**: Check agent ID
+
+### 404003 - Workflow Not Found
+- **Cause**: Workflow doesn't exist
+- **Solution**: Create workflow first
+
+### 404004 - API Key Not Found
+- **Cause**: API key doesn't exist
+- **Solution**: Verify API key ID
+
+## Conflict Errors (409xxx)
+
+### 409001 - Resource Already Exists
+- **Cause**: Duplicate resource
+- **Solution**: Use different name
+
+### 409002 - Duplicate Entry
+- **Cause**: Duplicate data
+- **Solution**: Remove duplicates
+
+## Rate Limiting (429xxx)
+
+### 429001 - Too Many Requests
+- **Cause**: Rate limit exceeded
+- **Solution**: Implement backoff
+
+**Headers**:
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1704067200
+```
+
+## Server Errors (500xxx)
+
+### 500001 - Internal Server Error
+- **Cause**: Unexpected error
+- **Solution**: Retry request
+
+### 500002 - Service Unavailable
+- **Cause**: Server overloaded
+- **Solution**: Retry with backoff
+
+### 500003 - Database Error
+- **Cause**: Database operation failed
+- **Solution**: Retry or contact support
+
+### 500004 - External Service Error
+- **Cause**: External API failed
+- **Solution**: Check external service
+
+## Error Handling Best Practices
+
+### 1. Retry Logic
+
+```go
+for attempt := 0; attempt < 3; attempt++ {
+    resp, err := client.Do(req)
+    if err == nil && resp.StatusCode < 500 {
+        return resp, nil
+    }
+    time.Sleep(time.Duration(math.Pow(2, float64(attempt))) * time.Second)
+}
+```
+
+### 2. Rate Limiting
+
+```go
+if resp.StatusCode == 429 {
+    retryAfter := resp.Header.Get("Retry-After")
+    time.Sleep(time.Duration(retryAfter) * time.Second)
+}
+```
+
+### 3. Logging
+
+```go
+if resp.StatusCode >= 400 {
+    log.Printf("API Error: %d", resp.StatusCode)
+}
+```
+
+---
+
+## Support
+
+- 📖 [Documentation](https://docs.zgi.ai)
+- 💬 [Community Forum](https://community.zgi.ai)
+- 📧 [Support Email](mailto:support@zgi.ai)
