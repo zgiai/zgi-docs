@@ -1,0 +1,333 @@
+---
+title: 'Quick Start'
+description: 'Get started with ZGI in 5 minutes'
+---
+
+# Quick Start
+
+Create your first AI Agent in 5 minutes.
+
+## Prerequisites
+
+- Node.js 16+ installed
+- npm or yarn package manager
+- A code editor (VS Code recommended)
+
+## Step 1: Install ZGI CLI
+
+```bash
+npm install -g @zgi/cli
+```
+
+Verify installation:
+
+```bash
+zgi --version
+```
+
+## Step 2: Create a New Project
+
+```bash
+zgi init my-first-agent
+cd my-first-agent
+```
+
+This creates a new project with:
+- Example agent code
+- Configuration files
+- Package dependencies
+- Development server setup
+
+## Step 3: Install Dependencies
+
+```bash
+npm install
+```
+
+## Step 4: Create Your First Agent
+
+Open `src/agents/example.ts` and replace with:
+
+```typescript
+import { Agent } from '@zgi/core';
+
+const agent = new Agent({
+  name: 'assistant',
+  model: 'gpt-4',
+  systemPrompt: 'You are a helpful AI assistant that provides clear and concise answers.'
+});
+
+export default agent;
+```
+
+## Step 5: Execute a Task
+
+Create `src/index.ts`:
+
+```typescript
+import agent from './agents/example';
+
+async function main() {
+  const result = await agent.execute({
+    task: 'Introduce yourself and explain what you can help with'
+  });
+
+  console.log('Agent Response:');
+  console.log(result.output);
+  console.log('\nExecution Time:', result.executionTime, 'ms');
+  console.log('Tokens Used:', result.tokensUsed);
+}
+
+main().catch(console.error);
+```
+
+## Step 6: Run Your Agent
+
+```bash
+npm run dev
+```
+
+You should see output like:
+
+```
+Agent Response:
+Hello! I'm an AI assistant powered by GPT-4. I'm here to help you with a wide range of tasks...
+
+Execution Time: 1234 ms
+Tokens Used: 156
+```
+
+## What's Next?
+
+### Add Tools to Your Agent
+
+```typescript
+import { Agent } from '@zgi/core';
+
+const agent = new Agent({
+  name: 'assistant',
+  model: 'gpt-4',
+  systemPrompt: 'You are a helpful AI assistant'
+});
+
+// Add a web search tool
+agent.registerTool({
+  name: 'web_search',
+  description: 'Search the web for information',
+  parameters: {
+    query: {
+      type: 'string',
+      description: 'Search query',
+      required: true
+    }
+  },
+  handler: async (params) => {
+    // Implement search logic
+    return `Search results for: ${params.query}`;
+  }
+});
+
+export default agent;
+```
+
+### Create a Workflow
+
+```typescript
+import { Workflow } from '@zgi/core';
+import agent1 from './agents/researcher';
+import agent2 from './agents/writer';
+
+const workflow = new Workflow({
+  name: 'content-creation'
+});
+
+workflow.addStep({
+  name: 'research',
+  agent: agent1,
+  input: { topic: 'AI trends' }
+});
+
+workflow.addStep({
+  name: 'write',
+  agent: agent2,
+  input: { research: '$research.output' },
+  dependsOn: ['research']
+});
+
+export default workflow;
+```
+
+### Query a Knowledge Base
+
+```typescript
+import { KnowledgeBase } from '@zgi/core';
+
+const kb = new KnowledgeBase({
+  name: 'company-docs'
+});
+
+// Add documents
+await kb.addDocument({
+  path: 'docs/user-guide.pdf'
+});
+
+// Query
+const results = await kb.query({
+  query: 'How do I reset my password?',
+  topK: 5
+});
+
+console.log(results);
+```
+
+## Common Tasks
+
+### Task 1: Create Multiple Agents
+
+```bash
+zgi create agent researcher
+zgi create agent writer
+zgi create agent editor
+```
+
+### Task 2: Add Environment Variables
+
+Create `.env`:
+
+```env
+OPENAI_API_KEY=sk_your_key_here
+ZGI_API_KEY=zgi_sk_your_key_here
+LOG_LEVEL=info
+```
+
+### Task 3: Deploy to Production
+
+```bash
+# Build for production
+npm run build
+
+# Deploy to Vercel
+vercel deploy
+
+# Or deploy to your own server
+npm run start
+```
+
+## Project Structure
+
+```
+my-first-agent/
+├── src/
+│   ├── agents/
+│   │   └── example.ts          # Your agent code
+│   ├── tools/
+│   │   └── example.ts          # Custom tools
+│   ├── workflows/
+│   │   └── example.ts          # Workflows
+│   └── index.ts                # Entry point
+├── .env                        # Environment variables
+├── .env.example                # Example env file
+├── package.json                # Dependencies
+├── tsconfig.json               # TypeScript config
+├── zgi.config.json             # ZGI config
+└── README.md                   # Project readme
+```
+
+## Useful Commands
+
+```bash
+# Development
+npm run dev              # Start development server
+
+# Building
+npm run build            # Build for production
+npm run start            # Start production server
+
+# Testing
+npm run test             # Run tests
+npm run test:watch      # Run tests in watch mode
+
+# Linting
+npm run lint             # Lint code
+npm run lint:fix         # Fix linting issues
+
+# ZGI CLI Commands
+zgi create agent         # Create new agent
+zgi create tool          # Create new tool
+zgi create workflow      # Create new workflow
+zgi list agents          # List all agents
+zgi models list          # List available models
+zgi status              # Check API status
+```
+
+## Troubleshooting
+
+### Issue: "API key not found"
+
+**Solution**: Set your API key:
+
+```bash
+export ZGI_API_KEY=your-api-key
+# or add to .env file
+```
+
+### Issue: "Module not found"
+
+**Solution**: Install dependencies:
+
+```bash
+npm install
+```
+
+### Issue: "Port 3000 already in use"
+
+**Solution**: Use a different port:
+
+```bash
+npm run dev -- --port 3001
+```
+
+### Issue: "Agent execution timeout"
+
+**Solution**: Increase timeout in `zgi.config.json`:
+
+```json
+{
+  "agents": {
+    "timeout": 60000
+  }
+}
+```
+
+## Next Steps
+
+1. **[Guides](../guides)** - Learn about each module in detail
+   - [Agent Development](../guides/agents)
+   - [Tool Development](../guides/tools)
+   - [Workflows](../guides/orchestration)
+   - [Knowledge Retrieval](../guides/knowledge-retrieval)
+
+2. **[API Reference](../api-reference)** - Explore complete API documentation
+
+3. **[Examples](./examples)** - See more examples and use cases
+
+4. **[Deployment](./deployment)** - Deploy your agent to production
+
+## Resources
+
+- 📖 [Full Documentation](https://docs.zgi.ai)
+- 🎓 [Video Tutorials](https://tutorials.zgi.ai)
+- 💬 [Community Forum](https://community.zgi.ai)
+- 📧 [Support](mailto:support@zgi.ai)
+- 🐛 [Report Issues](https://github.com/zgi/zgi-cli/issues)
+
+## Getting Help
+
+If you get stuck:
+
+1. Check the [Guides](../guides) for detailed explanations
+2. Search the [API Reference](../api-reference)
+3. Ask in the [Community Forum](https://community.zgi.ai)
+4. Contact [Support](mailto:support@zgi.ai)
+
+Congratulations! 🎉 You've created your first ZGI agent. Now explore the guides to learn more!

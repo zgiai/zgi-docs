@@ -1,0 +1,227 @@
+---
+title: 'Agents API'
+description: 'Create and manage AI agents'
+category: 'API Reference'
+order: 2
+published: true
+tags:
+  - agents
+  - api
+author: 'ZGI Team'
+last_updated: '2024-01-08'
+version: '1.0.0'
+---
+
+# Agents API
+
+Complete reference for agent management endpoints.
+
+## List Agents
+
+### Endpoint
+```
+GET /console/api/v1/agents
+```
+
+### Description
+List all agents.
+
+### Query Parameters
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| page | integer | Page number |
+| limit | integer | Items per page |
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": [
+    {
+      "id": "agent_123",
+      "name": "My Agent",
+      "type": "chat",
+      "status": "active"
+    }
+  ]
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET "http://localhost:8080/console/api/v1/agents?page=1&limit=10" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Create Agent
+
+### Endpoint
+```
+POST /console/api/v1/agents
+```
+
+### Description
+Create a new agent.
+
+### Request Body
+```json
+{
+  "name": "My Agent",
+  "type": "chat",
+  "description": "A helpful agent"
+}
+```
+
+### Response (201)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "agent_456",
+    "name": "My Agent",
+    "type": "chat",
+    "status": "active"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/agents \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Agent",
+    "type": "chat"
+  }'
+```
+
+---
+
+## Get Agent
+
+### Endpoint
+```
+GET /console/api/v1/agents/:agent_id
+```
+
+### Description
+Get agent details.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "agent_123",
+    "name": "My Agent",
+    "type": "chat",
+    "status": "active"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/agents/agent_123 \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Update Agent
+
+### Endpoint
+```
+PUT /console/api/v1/agents/:agent_id
+```
+
+### Description
+Update an agent.
+
+### Request Body
+```json
+{
+  "name": "Updated Agent",
+  "description": "Updated description"
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "agent_123",
+    "name": "Updated Agent"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X PUT http://localhost:8080/console/api/v1/agents/agent_123 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Agent"
+  }'
+```
+
+---
+
+## Delete Agent
+
+### Endpoint
+```
+DELETE /console/api/v1/agents/:agent_id
+```
+
+### Description
+Delete an agent.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "message": "Agent deleted"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X DELETE http://localhost:8080/console/api/v1/agents/agent_123 \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Related Endpoints
+
+- [Workflows API](./workflows)
+- [API Keys API](./api-keys)
+
+---
+
+## Rate Limiting
+
+- **Limit**: 100 requests/minute

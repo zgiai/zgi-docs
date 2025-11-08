@@ -1,0 +1,320 @@
+---
+title: 'API Keys API'
+description: 'Manage API keys for external access'
+category: 'API Reference'
+order: 4
+published: true
+tags:
+  - api-keys
+  - authentication
+author: 'ZGI Team'
+last_updated: '2024-01-08'
+version: '1.0.0'
+---
+
+# API Keys API
+
+Complete reference for API key management endpoints.
+
+## List API Keys
+
+### Endpoint
+```
+GET /console/api/v1/agents/:agent_id/api-keys
+```
+
+### Description
+List all API keys for an agent.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": [
+    {
+      "id": "key_123",
+      "name": "My API Key",
+      "status": "active",
+      "daily_quota": 1000,
+      "daily_usage": 250
+    }
+  ]
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/agents/agent_123/api-keys \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Create API Key
+
+### Endpoint
+```
+POST /console/api/v1/agents/:agent_id/api-keys
+```
+
+### Description
+Create a new API key.
+
+### Request Body
+```json
+{
+  "name": "My API Key",
+  "daily_quota": 1000,
+  "monthly_quota": 30000
+}
+```
+
+### Response (201)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "key_456",
+    "key": "zgi_sk_abc123...",
+    "name": "My API Key",
+    "status": "active"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/agents/agent_123/api-keys \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My API Key",
+    "daily_quota": 1000
+  }'
+```
+
+---
+
+## Get API Key
+
+### Endpoint
+```
+GET /console/api/v1/agents/:agent_id/api-keys/:api_key_id
+```
+
+### Description
+Get API key details.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "key_123",
+    "name": "My API Key",
+    "status": "active",
+    "daily_quota": 1000,
+    "daily_usage": 250
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/agents/agent_123/api-keys/key_123 \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Update API Key
+
+### Endpoint
+```
+PUT /console/api/v1/agents/:agent_id/api-keys/:api_key_id
+```
+
+### Description
+Update API key settings.
+
+### Request Body
+```json
+{
+  "name": "Updated Key",
+  "daily_quota": 2000
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "key_123",
+    "name": "Updated Key",
+    "daily_quota": 2000
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X PUT http://localhost:8080/console/api/v1/agents/agent_123/api-keys/key_123 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Key"
+  }'
+```
+
+---
+
+## Delete API Key
+
+### Endpoint
+```
+DELETE /console/api/v1/agents/:agent_id/api-keys/:api_key_id
+```
+
+### Description
+Delete an API key.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success"
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X DELETE http://localhost:8080/console/api/v1/agents/agent_123/api-keys/key_123 \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Revoke API Key
+
+### Endpoint
+```
+POST /console/api/v1/agents/:agent_id/api-keys/:api_key_id/revoke
+```
+
+### Description
+Revoke an API key.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "status": "revoked"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/agents/agent_123/api-keys/key_123/revoke \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Get Usage Logs
+
+### Endpoint
+```
+GET /console/api/v1/agents/:agent_id/api-keys/:api_key_id/usage
+```
+
+### Description
+Get API key usage logs.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": [
+    {
+      "timestamp": "2024-01-08T12:00:00Z",
+      "endpoint": "/api/v1/workflows/run",
+      "status": 200
+    }
+  ]
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/agents/agent_123/api-keys/key_123/usage \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Get Usage Stats
+
+### Endpoint
+```
+GET /console/api/v1/agents/:agent_id/api-keys/:api_key_id/usage/stats
+```
+
+### Description
+Get API key usage statistics.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "total_requests": 5000,
+    "successful_requests": 4950,
+    "failed_requests": 50
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/agents/agent_123/api-keys/key_123/usage/stats \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Related Endpoints
+
+- [Agents API](./agents)
+- [Workflows API](./workflows)
+
+---
+
+## Rate Limiting
+
+- **Limit**: 100 requests/minute

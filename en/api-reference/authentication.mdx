@@ -1,0 +1,388 @@
+---
+title: 'Authentication API'
+description: 'User authentication and API key management'
+category: 'API Reference'
+order: 1
+published: true
+tags:
+  - authentication
+  - api
+  - jwt
+author: 'ZGI Team'
+last_updated: '2024-01-08'
+version: '1.0.0'
+---
+
+# Authentication API
+
+Complete reference for authentication endpoints.
+
+## Login
+
+### Endpoint
+```
+POST /console/api/v1/auth/login
+```
+
+### Description
+Authenticate user and get JWT token.
+
+### Request Body
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "user": {
+      "id": "user_123",
+      "email": "user@example.com"
+    }
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "password123"
+  }'
+```
+
+#### Go
+```go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+)
+
+func login() {
+	client := &http.Client{}
+	data := map[string]string{
+		"email":    "user@example.com",
+		"password": "password123",
+	}
+	body, _ := json.Marshal(data)
+	req, _ := http.NewRequest("POST", "http://localhost:8080/console/api/v1/auth/login", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	resp, _ := client.Do(req)
+	defer resp.Body.Close()
+}
+```
+
+#### Python
+```python
+import requests
+
+response = requests.post(
+    'http://localhost:8080/console/api/v1/auth/login',
+    json={
+        'email': 'user@example.com',
+        'password': 'password123'
+    }
+)
+print(response.json())
+```
+
+---
+
+## Get Profile
+
+### Endpoint
+```
+GET /console/api/v1/auth/profile
+```
+
+### Description
+Get current user profile.
+
+### Authentication
+Required: JWT token
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "user_123",
+    "email": "user@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/auth/profile \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Update Profile
+
+### Endpoint
+```
+PUT /console/api/v1/auth/profile
+```
+
+### Description
+Update user profile.
+
+### Authentication
+Required: JWT token
+
+### Request Body
+```json
+{
+  "name": "John Doe",
+  "email": "newemail@example.com"
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "user_123",
+    "email": "newemail@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X PUT http://localhost:8080/console/api/v1/auth/profile \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe"
+  }'
+```
+
+---
+
+## Change Password
+
+### Endpoint
+```
+POST /console/api/v1/auth/password
+```
+
+### Description
+Change user password.
+
+### Authentication
+Required: JWT token
+
+### Request Body
+```json
+{
+  "old_password": "oldpassword123",
+  "new_password": "newpassword123"
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "message": "Password changed successfully"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/auth/password \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "old_password": "oldpassword123",
+    "new_password": "newpassword123"
+  }'
+```
+
+---
+
+## Refresh Token
+
+### Endpoint
+```
+POST /console/api/v1/auth/refresh
+```
+
+### Description
+Refresh JWT token.
+
+### Authentication
+Required: JWT token
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs...",
+    "expires_in": 86400
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/auth/refresh \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Logout
+
+### Endpoint
+```
+POST /console/api/v1/auth/logout
+```
+
+### Description
+Logout user.
+
+### Authentication
+Required: JWT token
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "message": "Logged out successfully"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/auth/logout \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Register
+
+### Endpoint
+```
+POST /console/api/v1/auth/register
+```
+
+### Description
+Register new user account.
+
+### Request Body
+```json
+{
+  "email": "newuser@example.com",
+  "password": "password123",
+  "name": "New User"
+}
+```
+
+### Response (201)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "user_456",
+    "email": "newuser@example.com",
+    "name": "New User"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "newuser@example.com",
+    "password": "password123",
+    "name": "New User"
+  }'
+```
+
+---
+
+## Best Practices
+
+### 1. Token Security
+- Store tokens securely
+- Use HTTPS only
+- Implement token rotation
+
+### 2. Error Handling
+```go
+if err.Code == "401001" {
+    // Handle unauthorized
+}
+```
+
+---
+
+## Related Endpoints
+
+- [Agents API](./agents)
+- [API Keys API](./api-keys)
+
+---
+
+## Common Errors
+
+**401 Unauthorized**
+- Solution: Check token validity
+
+**400 Invalid Credentials**
+- Solution: Verify email and password
+
+---
+
+## Rate Limiting
+
+- **Limit**: 100 requests/minute
+- **Reset**: Every minute

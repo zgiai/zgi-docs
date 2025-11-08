@@ -21,7 +21,6 @@ Official documentation for ZGI Platform - Enterprise AI Development Platform.
 └── ja-jp/                # 日本語 (Coming soon)
 ```
 
-**扁平化设计** - 参考 Dify 文档结构，去除不必要的嵌套层级
 
 ## 🤝 Contributing
 

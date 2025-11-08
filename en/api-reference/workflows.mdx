@@ -1,0 +1,315 @@
+---
+title: 'Workflows API'
+description: 'Design and execute workflows'
+category: 'API Reference'
+order: 3
+published: true
+tags:
+  - workflows
+  - execution
+author: 'ZGI Team'
+last_updated: '2024-01-08'
+version: '1.0.0'
+---
+
+# Workflows API
+
+Complete reference for workflow management endpoints.
+
+## Get Draft Workflow
+
+### Endpoint
+```
+GET /console/api/v1/agents/:agent_id/workflows/draft
+```
+
+### Description
+Get draft workflow for an agent.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "id": "workflow_123",
+    "type": "chat",
+    "graph": {"nodes": [], "edges": []}
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/agents/agent_123/workflows/draft \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Sync Draft Workflow
+
+### Endpoint
+```
+POST /console/api/v1/agents/:agent_id/workflows/draft
+```
+
+### Description
+Create or update draft workflow.
+
+### Request Body
+```json
+{
+  "type": "chat",
+  "graph": {
+    "nodes": [],
+    "edges": []
+  }
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "result": "success",
+    "hash": "abc123"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/agents/agent_123/workflows/draft \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "chat",
+    "graph": {"nodes": [], "edges": []}
+  }'
+```
+
+---
+
+## Run Draft Workflow
+
+### Endpoint
+```
+POST /console/api/v1/agents/:agent_id/workflows/draft/run
+```
+
+### Description
+Execute draft workflow.
+
+### Request Body
+```json
+{
+  "variables": {
+    "input": "test"
+  }
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "run_id": "run_123",
+    "status": "completed",
+    "output": "result"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/agents/agent_123/workflows/draft/run \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "variables": {"input": "test"}
+  }'
+```
+
+---
+
+## Publish Workflow
+
+### Endpoint
+```
+POST /console/api/v1/agents/:agent_id/workflows/publish
+```
+
+### Description
+Publish workflow to production.
+
+### Request Body
+```json
+{
+  "version": "1.0.0",
+  "description": "Initial release"
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "workflow_id": "workflow_xyz",
+    "version": "1.0.0",
+    "status": "published"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/agents/agent_123/workflows/publish \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "version": "1.0.0"
+  }'
+```
+
+---
+
+## Run Published Workflow
+
+### Endpoint
+```
+POST /console/api/v1/agents/:agent_id/workflows/run
+```
+
+### Description
+Execute published workflow.
+
+### Request Body
+```json
+{
+  "variables": {
+    "input": "test"
+  }
+}
+```
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "run_id": "run_456",
+    "status": "completed",
+    "output": "result"
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X POST http://localhost:8080/console/api/v1/agents/agent_123/workflows/run \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "variables": {"input": "test"}
+  }'
+```
+
+---
+
+## List Workflow Runs
+
+### Endpoint
+```
+GET /console/api/v1/agents/:agent_id/workflows/runs
+```
+
+### Description
+List workflow runs.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": [
+    {
+      "run_id": "run_123",
+      "status": "completed",
+      "elapsed_time": 1234
+    }
+  ]
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/agents/agent_123/workflows/runs \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Get Workflow Run
+
+### Endpoint
+```
+GET /console/api/v1/agents/:agent_id/workflows/runs/:run_id
+```
+
+### Description
+Get workflow run details.
+
+### Response (200)
+```json
+{
+  "code": "0",
+  "message": "success",
+  "data": {
+    "run_id": "run_123",
+    "status": "completed",
+    "output": "result",
+    "elapsed_time": 1234
+  }
+}
+```
+
+### Examples
+
+#### cURL
+```bash
+curl -X GET http://localhost:8080/console/api/v1/agents/agent_123/workflows/runs/run_123 \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Related Endpoints
+
+- [Agents API](./agents)
+- [API Keys API](./api-keys)
+
+---
+
+## Rate Limiting
+
+- **Limit**: 100 requests/minute
