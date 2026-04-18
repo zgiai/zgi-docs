@@ -1,306 +1,106 @@
 ---
-title: 'Core Concepts'
-description: 'Understand the core concepts of ZGI'
+title: 'Key Concepts'
+description: 'Learn the core mental model behind zgi-pre: root ownership, submodules, bootstrap, and shared infrastructure.'
+category: 'Developer Guide'
+order: 1
+published: true
 ---
 
-# Core Concepts
+# Key Concepts
 
-Learn the fundamental concepts and architecture of ZGI.
+This page gives you the mental model for working in the current ZGI open-source stack.
 
-## ZGI Architecture Overview
+## 1. Product shell
 
-ZGI is built on a modular architecture with six core components:
+`zgi-pre` is the product shell repository.
 
-1. **Agent Orchestration Platform** - Design and manage complex multi-agent workflows
-2. **Knowledge Retrieval System** - Build intelligent RAG systems for document understanding
-3. **Structured Database Management** - Manage relational data with AI assistance
-4. **Multi-Model Gateway** - Access 1000+ AI models through a unified interface
-5. **Extensible Plugin Architecture** - Connect to any external service or API
-6. **Enterprise Deployment Options** - Deploy on cloud or on-premise
+That means it owns integration, not all business logic. It is the place where we define how the stack boots, how the services connect, and how contributors can start the product locally.
 
-## Agents
+## 2. Submodule-first services
 
-An **Agent** is an autonomous AI entity that can understand tasks, call tools, maintain context, and make intelligent decisions.
+Each major service keeps its own repository, history, and lifecycle.
 
-### Key Concepts
+- `api/`
+- `web/`
+- `sandbox/`
+- `plugin-runner/`
 
-**Autonomy:**
-- Agents operate independently without continuous human intervention
-- They can make decisions based on available information and task requirements
-- They maintain state and context across multiple interactions
+This lets each service evolve independently while still being assembled into one local product experience.
 
-**Tool Integration:**
-- Agents can register and use multiple tools
-- Tools are functions or APIs that agents can invoke
-- Tools have defined parameters and return structured results
+## 3. Root-level orchestration
 
-**Context Management:**
-- Agents maintain conversation history
-- Context is preserved across multiple interactions
-- Context can be shared between agents in a workflow
+The root repository is where we coordinate:
 
-**Error Handling:**
-- Agents automatically retry failed operations
-- Errors are logged and reported
-- Agents can recover from failures gracefully
+- Docker Compose generation
+- env bootstrap and sync helpers
+- top-level scripts
+- GitHub templates and workflows
+- submodule pointer updates
 
-## Workflows
+If a change is about product integration, it probably belongs here.
 
-A **Workflow** is a coordinated sequence of steps executed by multiple agents to achieve a complex goal.
+## 4. Service-level ownership
 
-### Workflow Patterns
+If a change is about application behavior, it usually belongs in the service repository itself.
 
-**Sequential Workflows:**
-- Steps execute one after another
-- Output from one step becomes input to the next
-- Dependencies are tracked automatically
+Examples:
 
-**Parallel Workflows:**
-- Multiple steps execute concurrently
-- Results are aggregated when all steps complete
-- Improves performance for independent tasks
+- API logic belongs in `api/`
+- frontend UI belongs in `web/`
+- sandbox runtime behavior belongs in `sandbox/`
+- plugin execution flow belongs in `plugin-runner/`
 
-**Conditional Workflows:**
-- Steps execute based on conditions
-- Different branches can be taken based on intermediate results
-- Supports complex decision logic
+## 5. Bootstrap, not manual setup
 
-**Loop Workflows:**
-- Steps can iterate over collections
-- Supports break conditions and iteration limits
-- Results are accumulated across iterations
+The current root startup flow is designed to reduce fragile manual setup.
 
-## Tools
+Instead of asking contributors to hand-copy every env file and remember every command, the bootstrap flow can:
 
-A **Tool** is a reusable component that agents can invoke to perform specific actions.
+- initialize submodules
+- copy missing env templates
+- generate the root compose file
+- start the stack
 
-### Tool Categories
+This is why `make dev-docker` is the preferred starting point for most contributors.
 
-**API Tools:**
-- Make HTTP requests to external APIs
-- Support various authentication methods
-- Handle request/response transformation
+## 6. Shared infrastructure in product mode
 
-**Database Tools:**
-- Query and manipulate databases
-- Support transactions and batch operations
-- Provide connection pooling
+Standalone services may have their own Docker workflows, but the full product stack can reuse shared infrastructure.
 
-**File Tools:**
-- Read, write, and process files
-- Support multiple file formats
-- Handle file streaming
+For example:
 
-**Integration Tools:**
-- Connect to external services
-- Support pre-built connectors
-- Enable custom integrations
+- `sandbox` can run with its own bundled dependencies when started alone
+- in `zgi-pre`, `sandbox` reuses the shared root Postgres and Redis
 
-## Knowledge Bases
+This keeps standalone workflows simple without duplicating infrastructure in the full local stack.
 
-A **Knowledge Base** is a collection of documents indexed for semantic search and retrieval.
+## 7. China-aware builds
 
-### Key Concepts
+Some services support mirror-aware Docker builds for China mainland networks.
 
-**Document Processing:**
-- Documents are automatically parsed and chunked
-- Metadata is extracted and indexed
-- Multiple formats are supported (PDF, Word, Excel, etc.)
+At the root level, the current entry point is:
 
-**Embeddings:**
-- Documents are converted to vector embeddings
-- Embeddings capture semantic meaning
-- Similarity search uses embeddings
+```bash
+./dev/start-docker --china
+```
 
-**Retrieval:**
-- Queries are converted to embeddings
-- Similar documents are retrieved
-- Results are ranked by relevance
-
-**RAG Integration:**
-- Retrieved documents augment AI responses
-- Context is injected into prompts
-- Citations are generated automatically
+The goal is to improve build reliability without permanently rewriting tracked templates.
 
-## Databases
+## 8. Two-layer commit model
 
-A **Database** is a structured collection of related data organized in tables.
+When you change code in a submodule, there are usually two commits involved:
 
-### Key Concepts
+1. A commit in the service repository
+2. A commit in `zgi-pre` updating the submodule pointer
 
-**Tables:**
-- Tables organize data into rows and columns
-- Each column has a type and constraints
-- System fields (id, uuid, timestamps) are auto-generated
-
-**Relationships:**
-- Tables can reference other tables
-- One-to-many and many-to-many relationships are supported
-- Foreign keys enforce referential integrity
+That is normal for this architecture.
 
-**Queries:**
-- SQL queries retrieve and manipulate data
-- Parameterized queries prevent SQL injection
-- Query results are cached for performance
+## 9. Documentation scope
 
-**Transactions:**
-- Multiple operations can be grouped in transactions
-- ACID properties are guaranteed
-- Transactions can be rolled back on error
+The docs site should start by explaining the product shell and the local stack, not by pretending `zgi-pre` is the full implementation repository.
 
-## Multi-Model Gateway
-
-The **Multi-Model Gateway** provides unified access to 1000+ AI models from multiple providers.
+That is why the current onboarding docs focus on:
 
-### Key Concepts
-
-**Model Routing:**
-- Requests are routed to appropriate providers
-- Routing can be based on cost, performance, or availability
-- Automatic failover to alternative providers
-
-**Load Balancing:**
-- Requests are distributed across providers
-- Load is balanced based on capacity and performance
-- Health checks monitor provider availability
-
-**Rate Limiting:**
-- Requests are rate-limited per model and provider
-- Quotas can be set for usage and cost
-- Alerts notify when limits are approaching
-
-**Cost Optimization:**
-- Models are selected based on cost and performance
-- Caching reduces redundant API calls
-- Batch processing improves efficiency
-
-## Plugins
-
-A **Plugin** is a reusable component that extends ZGI by connecting to external services.
-
-### Key Concepts
-
-**Pre-built Connectors:**
-- 50+ pre-built connectors for popular services
-- Connectors handle authentication and API details
-- One-click installation and configuration
-
-**Custom Plugins:**
-- Build custom plugins with the SDK
-- Plugins extend functionality
-- Plugins can be published to the marketplace
-
-**Authentication:**
-- Plugins support multiple authentication methods
-- Credentials are stored securely
-- Token refresh is handled automatically
-
-**Error Handling:**
-- Plugins handle errors gracefully
-- Retry logic is configurable
-- Fallback behavior is supported
-
-## State Management
-
-**Agent State:**
-- Agents maintain state across interactions
-- State can be saved and restored
-- State is isolated per agent
-
-**Workflow State:**
-- Workflows track state across steps
-- Step outputs are stored as state
-- State is accessible to subsequent steps
-
-**Context Sharing:**
-- Agents can share context in workflows
-- Context is passed between steps
-- Context can be filtered and transformed
-
-## Error Handling & Recovery
-
-**Automatic Retry:**
-- Failed operations are retried automatically
-- Exponential backoff prevents overwhelming services
-- Maximum retry attempts can be configured
-
-**Fallback Behavior:**
-- Alternative providers can be used on failure
-- Fallback models can be specified
-- Graceful degradation is supported
-
-**Error Logging:**
-- All errors are logged with context
-- Error traces help with debugging
-- Errors can be filtered and searched
-
-## Performance Optimization
-
-**Caching:**
-- Query results are cached
-- Embeddings are cached
-- Cache TTL can be configured
-
-**Parallel Execution:**
-- Multiple tasks execute concurrently
-- Resource utilization is optimized
-- Execution time is reduced
-
-**Batch Processing:**
-- Similar requests are batched
-- Batch processing reduces overhead
-- Throughput is improved
-
-**Connection Pooling:**
-- Database connections are reused
-- Connection overhead is reduced
-- Performance is improved
-
-## Security & Compliance
-
-**Authentication:**
-- Multiple authentication methods are supported
-- Credentials are stored securely
-- Token refresh is handled automatically
-
-**Authorization:**
-- Role-based access control (RBAC) is supported
-- Granular permissions can be defined
-- Access is enforced at all levels
-
-**Encryption:**
-- Data is encrypted in transit
-- Data can be encrypted at rest
-- Encryption keys are managed securely
-
-**Audit Logging:**
-- All operations are logged
-- Logs include user, action, and timestamp
-- Logs can be searched and analyzed
-
-## Monitoring & Analytics
-
-**Metrics Collection:**
-- Execution metrics are collected
-- Performance metrics are tracked
-- Cost metrics are calculated
-
-**Real-time Monitoring:**
-- Workflows can be monitored in real-time
-- Alerts notify on issues
-- Dashboards visualize metrics
-
-**Analytics:**
-- Usage patterns are analyzed
-- Performance trends are identified
-- Recommendations are provided
-
-## Next Steps
-
-- [Agent Development](./agents) - Learn how to build agents
-- [Tool Development](./tools) - Learn how to build tools
-- [Agent Orchestration](./orchestration) - Learn how to orchestrate workflows
-- [Knowledge Retrieval](./knowledge-retrieval) - Learn how to build knowledge bases
-- [Structured Database](./database) - Learn how to manage databases
-- [Multi-Model Gateway](./multi-model-gateway) - Learn how to access models
-- [Plugin Architecture](./plugins) - Learn how to build plugins
+- what ZGI is
+- how to start the stack
+- how to think about the repository structure

@@ -1,241 +1,68 @@
 ---
-title: 'Introduction to ZGI'
-description: 'Learn about ZGI - Enterprise AI Development Platform'
+title: 'What Is ZGI'
+description: 'Understand what zgi-pre is, what it owns, and how it fits the open-source ZGI stack.'
 category: 'Getting Started'
 order: 1
 published: true
 ---
 
-# Introduction to ZGI
+# What Is ZGI
 
-ZGI is a powerful enterprise-grade AI development platform focused on visual Agent workflow design, advanced RAG systems, and multi-Agent orchestration.
+ZGI is an open-source AI product stack organized around a top-level integration repository called `zgi-pre`.
 
-## What is ZGI?
+`zgi-pre` is not the place where all business logic lives. It is the product shell that brings the stack together for local development, Docker startup, release coordination, and top-level repository management.
 
-ZGI is a comprehensive AI infrastructure platform that enables you to:
+## One-sentence definition
 
-- **Build Intelligent Agents** - Create autonomous AI agents that can understand tasks, call APIs, and make decisions
-- **Design Complex Workflows** - Orchestrate multiple agents working together through visual workflow designer
-- **Manage Knowledge** - Build intelligent knowledge retrieval systems with advanced RAG capabilities
-- **Access Any Model** - Route to 1000+ AI models from multiple providers through a unified API
-- **Manage Data** - Store and query structured data with AI-assisted schema design
-- **Integrate Everything** - Connect to any service, API, or data source through extensible plugins
+ZGI is a product shell for composing the open-source ZGI services into one local stack, with consistent startup workflows, shared infrastructure, and clear repository boundaries.
 
-## Core Capabilities
+> ZGI is not trying to collapse every service into one giant repository. It keeps service code independent while giving contributors a single place to boot and integrate the whole stack.
 
-### 🤖 Agent Orchestration Platform
-Enterprise-grade agent orchestration system for designing, deploying, and managing complex multi-agent workflows.
+## What `zgi-pre` owns
 
-**Key Features:**
-- Visual workflow designer with drag-and-drop interface
-- Pre-built agent templates for common use cases
-- Dynamic tool invocation and API integration
-- Context sharing and memory management across agents
-- Conditional branching and parallel execution
-- Real-time debugging and execution monitoring
+At the root level, `zgi-pre` is responsible for:
 
-**Performance:**
-- Unlimited workflow complexity
-- 100+ concurrent agents
-- 98% execution success rate
+- Docker startup and compose generation
+- local bootstrap scripts under `dev/`
+- top-level metadata such as GitHub workflows and templates
+- release integration across repositories
+- English and localized repository README files
 
-### 🧠 Knowledge Retrieval System
-Advanced RAG engine that converts your organization's documents into an intelligent, queryable system.
+## What lives in submodules
 
-**Key Features:**
-- Multi-format document processing (PDF, Word, Excel, Markdown, HTML, etc.)
-- Intelligent chunking with semantic boundary detection
-- Hybrid search combining vector similarity and keyword matching
-- Real-time data synchronization from databases and APIs
-- Multi-language support with cross-lingual retrieval
-- Citation tracking and source attribution
+The application code stays in dedicated repositories that are pulled in as git submodules:
 
-**Performance:**
-- 95%+ retrieval accuracy
-- &lt;200ms query latency
-- 15+ supported formats
+- `api/` for the backend service
+- `web/` for the frontend
+- `sandbox/` for code execution isolation
+- `plugin-runner/` for plugin execution
 
-### 🔌 Multi-Model Gateway
-Universal AI model router providing seamless access to 1000+ models from multiple providers.
+This keeps service ownership clean while still allowing us to boot everything together from the root repository.
 
-**Key Features:**
-- Access to 1000+ models: OpenAI, Anthropic, Google, Meta, Mistral, DeepSeek, and more
-- Intelligent load balancing across multiple providers and regions
-- Multi-channel routing with automatic failover and retry logic
-- Real-time model availability monitoring and cost optimization
-- Unified API compatible with OpenAI SDK and major frameworks
-- Per-model rate limiting, quota management, and usage analytics
+## Why this structure exists
 
-### 💾 Structured Database Management
-Enterprise-grade SQL database with AI-powered intelligence for managing structured data.
+Most teams hit the same problems when they open-source a multi-service AI product:
 
-**Key Features:**
-- AI-powered schema inference from files and documents
-- Visual table designer with automatic system fields
-- Intelligent batch data import with automatic type conversion
-- Native SQL query execution with parameterization and injection protection
-- Multi-tenant isolation and granular permissions
-- Dual-mode architecture: Direct PostgreSQL or HTTP API
+1. The real code lives in different repositories.
+2. Local startup requires too many manual steps.
+3. Docker assets drift from source development workflows.
+4. Contributors do not know which repository should own a change.
 
-**Performance:**
-- &lt;100ms query performance
-- 15+ data types
-- 1000+ concurrent connections
+`zgi-pre` exists to solve those integration problems without forcing every service into a monorepo.
 
-### 🔧 Extensible Plugin Architecture
-Comprehensive plugin ecosystem for seamless integration with external services and APIs.
+## What this means in practice
 
-**Key Features:**
-- Pre-built connectors for popular services (Salesforce, Slack, GitHub, etc.)
-- Custom plugin development with SDK and templates
-- OAuth 2.0 and API key management
-- Rate limiting and quota management
-- Plugin marketplace with community contributions
+When you work in `zgi-pre`, you are usually doing one of these things:
 
-### 🚀 Enterprise Deployment Options
-Multiple deployment options designed for enterprise security and compliance.
+- booting the full local stack
+- updating top-level Docker assets
+- coordinating env templates and startup scripts
+- updating submodule pointers after a service change
+- working on contributor-facing docs and repository metadata
 
-**Key Features:**
-- Cloud-hosted SaaS with global CDN
-- Private cloud deployment (AWS, Azure, GCP)
-- On-premise installation with air-gapped support
-- Kubernetes-native architecture for auto-scaling
-- SOC 2, GDPR, and HIPAA compliance
-- Dedicated support and SLA guarantees
+If the change is service business logic, it usually belongs in the relevant submodule first.
 
-## Enterprise Features
+## Where to start next
 
-ZGI delivers enterprise-grade AI infrastructure with:
-
-- **Private Deployment & Data Sovereignty** - Keep your data where you need it
-- **Modular Architecture** - Use only what you need
-- **Multi-Model Orchestration** - Leverage the best models for each task
-- **Real-Time Monitoring** - Track everything in real-time
-- **SLA Guarantees** - Enterprise-grade reliability
-- **SOC 2, GDPR & HIPAA Compliance** - Meet regulatory requirements
-- **Role-Based Access Control** - Fine-grained permissions
-- **API Rate Limiting & Quota Management** - Control usage
-- **Custom Branding** - White-label options available
-- **Enterprise SSO** - Integrate with your identity provider
-
-## Use Cases
-
-### Customer Support
-Build intelligent support agents that understand customer issues, search your knowledge base, and provide accurate answers.
-
-### Content Creation
-Orchestrate agents to research topics, write content, edit, and publish across multiple channels.
-
-### Data Processing
-Automate data extraction, transformation, and loading with intelligent agents and workflows.
-
-### Business Intelligence
-Analyze data from multiple sources, generate insights, and create reports automatically.
-
-### Document Analysis
-Process documents, extract information, and organize data with intelligent RAG systems.
-
-### API Integration
-Connect to any service or API through extensible plugins and custom integrations.
-
-## Architecture
-
-ZGI follows a modular, microservices-based architecture:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    User Applications                     │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│                    ZGI Platform API                      │
-├─────────────────────────────────────────────────────────┤
-│  Agents  │ Workflows │ Tools │ Knowledge │ Database     │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│                  Core Services Layer                     │
-├─────────────────────────────────────────────────────────┤
-│ Multi-Model │ RAG Engine │ Database │ Plugin │ Compute  │
-│  Gateway    │            │ Engine   │ System │ Engine   │
-└─────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────┐
-│              Infrastructure & Deployment                │
-├─────────────────────────────────────────────────────────┤
-│  Cloud │ Private Cloud │ On-Premise │ Kubernetes        │
-└─────────────────────────────────────────────────────────┘
-```
-
-## Getting Started
-
-### Option 1: Cloud (Recommended for Getting Started)
-```bash
-# Sign up for ZGI Cloud
-# Visit: https://cloud.zgi.ai
-
-# Create a project
-zgi init my-project
-
-# Start building
-cd my-project
-npm run dev
-```
-
-### Option 2: Local Development
-```bash
-# Install ZGI CLI
-npm install -g @zgi/cli
-
-# Create and run a project
-zgi init my-project
-cd my-project
-npm run dev
-```
-
-### Option 3: Docker
-```bash
-# Run ZGI in Docker
-docker run -it zgi/cli:latest init my-project
-```
-
-## Key Concepts
-
-### Agents
-Autonomous AI entities that can understand tasks, call tools, maintain context, and make decisions.
-
-### Workflows
-Coordinated sequences of steps executed by multiple agents to achieve complex goals.
-
-### Tools
-Reusable components that agents can invoke to perform specific actions.
-
-### Knowledge Bases
-Collections of documents indexed for semantic search and retrieval.
-
-### Models
-AI language models accessed through the Multi-Model Gateway.
-
-### Plugins
-Reusable components that extend ZGI by connecting to external services.
-
-## Next Steps
-
-1. **[Installation](./installation)** - Set up ZGI in your environment
-2. **[Quick Start](./quickstart)** - Create your first agent in 5 minutes
-3. **[Guides](../guides)** - Learn about each module in detail
-4. **[API Reference](../api-reference)** - Explore the complete API
-
-## Resources
-
-- 📖 [Documentation](https://docs.zgi.ai)
-- 🎓 [Tutorials](https://tutorials.zgi.ai)
-- 💬 [Community](https://community.zgi.ai)
-- 📧 [Support](mailto:support@zgi.ai)
-- 🌐 [Website](https://zgi.ai)
-
-## Questions?
-
-- Check the [FAQ](./faq) for common questions
-- Visit our [Community Forum](https://community.zgi.ai)
-- Contact [Support](mailto:support@zgi.ai)
+- Read [Quick Start](/docs/en/getting-started/quickstart) to boot the stack
+- Read [Key Concepts](/docs/en/guides/concepts) to understand root vs submodule ownership

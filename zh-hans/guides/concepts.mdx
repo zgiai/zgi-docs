@@ -1,0 +1,107 @@
+---
+title: '关键概念'
+description: '理解 zgi-pre 的核心心智模型：root 仓库职责、submodule、bootstrap 与共享基础设施。'
+category: '开发指南'
+order: 1
+published: true
+---
+
+# 关键概念
+
+这页的目标，是帮助你先建立对当前 ZGI 开源栈的正确心智模型。
+
+## 1. Product shell
+
+`zgi-pre` 是 product shell 仓库。
+
+它的重点是“集成”，不是“承载全部业务代码”。它负责定义整个产品怎么启动、服务之间怎么连接，以及贡献者如何在本地把完整栈拉起来。
+
+## 2. Submodule-first 服务结构
+
+主要服务仍然保持独立仓库：
+
+- `api/`
+- `web/`
+- `sandbox/`
+- `plugin-runner/`
+
+这些仓库各自保留自己的历史、生命周期和维护方式，而 `zgi-pre` 负责把它们组合成一套产品级本地体验。
+
+## 3. Root 层编排
+
+root 仓库主要协调这些事情：
+
+- Docker Compose 生成
+- env bootstrap / check / sync
+- 顶层开发脚本
+- GitHub 模板和 workflow
+- submodule 指针更新
+
+如果改动属于“产品级集成”，大概率就该落在这里。
+
+## 4. 服务级归属
+
+如果改动的是应用行为，通常应该放回服务仓库本身。
+
+例如：
+
+- API 行为放在 `api/`
+- 前端页面和交互放在 `web/`
+- 沙箱执行逻辑放在 `sandbox/`
+- 插件执行链路放在 `plugin-runner/`
+
+## 5. Bootstrap 优先，而不是手工初始化
+
+当前 root 层启动流刻意在减少脆弱的手工步骤。
+
+它会尽量自动完成：
+
+- submodule 初始化
+- env 模板补齐
+- compose 生成
+- 本地栈启动
+
+这也是为什么大多数贡献者都应该先从 `make dev-docker` 开始，而不是自己拼命记启动顺序。
+
+## 6. Product mode 下的共享基础设施
+
+单服务可以保留自己的 Docker 启动方式，但完整产品栈可以共享基础设施。
+
+比如：
+
+- `sandbox` 单独运行时可以带自己那套依赖
+- 在 `zgi-pre` 里运行时，`sandbox` 复用 root 的 Postgres 和 Redis
+
+这样既保留独立性，也避免整栈联调时重复起太多中间件。
+
+## 7. 中国网络友好的构建模式
+
+部分服务已经支持面向中国大陆网络环境的 Docker 构建参数。
+
+root 层统一入口是：
+
+```bash
+./dev/start-docker --china
+```
+
+目标是提升镜像构建成功率，同时不把镜像源配置硬编码进仓库默认模板。
+
+## 8. 两层提交模型
+
+当你修改 submodule 里的代码时，通常会有两层提交：
+
+1. 子仓库自己的提交
+2. `zgi-pre` 里更新 submodule 指针的提交
+
+这不是额外负担，而是当前仓库结构的正常协作方式。
+
+## 9. 文档应该先讲什么
+
+当前文档站的入门部分，应该先讲清楚：
+
+- ZGI 是什么
+- `zgi-pre` 到底是什么仓库
+- 如何把本地栈拉起来
+- 如何理解 root 与 submodule 的边界
+
+而不是一开始就假设读者面对的是单体应用仓库。
