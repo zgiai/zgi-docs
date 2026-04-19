@@ -1,17 +1,43 @@
-name: Deploy to Vercel
+name: deploy
 
 on:
   push:
     branches:
       - main
-      - develop
 
 jobs:
-  deploy:
+  trigger-jenkins:
+    name: Trigger Jenkins Docs Deployment
     runs-on: ubuntu-latest
+
     steps:
-      - name: Trigger Vercel Deployment
+      - name: Trigger Jenkins build
+        env:
+          JENKINS_URL: ${{ secrets.JENKINS_URL }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_API_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+          JENKINS_JOB_PATH: ${{ secrets.JENKINS_JOB_PATH }}
+          JENKINS_JOB_TOKEN: ${{ secrets.JENKINS_JOB_TOKEN }}
         run: |
-          curl -X POST \
-            https://api.vercel.com/v1/integrations/deploy/prj_lmTrn9GLUgoNY4efKoOJaeP13U5N/cKxQDHuVBW \
-            -H "Content-Type: application/json"
+          set -euo pipefail
+
+          if [ -z "${JENKINS_URL:-}" ] || [ -z "${JENKINS_USER:-}" ] || [ -z "${JENKINS_API_TOKEN:-}" ] || [ -z "${JENKINS_JOB_PATH:-}" ] || [ -z "${JENKINS_JOB_TOKEN:-}" ]; then
+            echo "Missing one or more Jenkins secrets."
+            exit 1
+          fi
+
+          echo "Triggering Jenkins job: ${JENKINS_JOB_PATH}"
+          response_body="$(mktemp)"
+          response_code=$(curl -sS -o "${response_body}" -w "%{http_code}" \
+            -X POST \
+            -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" \
+            "${JENKINS_URL%/}/${JENKINS_JOB_PATH}/build?token=${JENKINS_JOB_TOKEN}")
+
+          if [ "$response_code" = "200" ] || [ "$response_code" = "201" ] || [ "$response_code" = "202" ] || [ "$response_code" = "302" ]; then
+            echo "Jenkins build triggered successfully: HTTP ${response_code}"
+          else
+            echo "Failed to trigger Jenkins build: HTTP ${response_code}"
+            echo "Jenkins response:"
+            cat "${response_body}"
+            exit 1
+          fi
