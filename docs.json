@@ -1,0 +1,50 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "ZGI Documentation",
+  "description": "Official documentation for the ZGI open-source AI product stack.",
+  "colors": {
+    "primary": "#16A34A"
+  },
+  "navigation": {
+    "languages": [
+      {
+        "language": "en",
+        "default": true,
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "en/getting-started/introduction",
+              "en/getting-started/quickstart"
+            ]
+          },
+          {
+            "group": "Developer Guide",
+            "pages": [
+              "en/guides/concepts"
+            ]
+          }
+        ]
+      },
+      {
+        "language": "zh-Hans",
+        "groups": [
+          {
+            "group": "快速开始",
+            "pages": [
+              "zh-hans/getting-started/introduction",
+              "zh-hans/getting-started/quickstart"
+            ]
+          },
+          {
+            "group": "开发指南",
+            "pages": [
+              "zh-hans/guides/concepts"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

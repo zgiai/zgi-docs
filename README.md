@@ -43,7 +43,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details
+MIT License
 
 ## 🔗 Links
 
