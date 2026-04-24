@@ -53,6 +53,8 @@
             "group": "开发者",
             "pages": [
               "zh-hans/developers/workflow-api",
+              "zh-hans/developers/sdk-integrations",
+              "zh-hans/developers/deployment",
               "zh-hans/developers/security-compliance"
             ]
           },

@@ -1,0 +1,86 @@
+---
+title: 'SDK 与集成'
+description: '了解如何通过 Python、JavaScript、Webhook 和企业单点登录集成 ZGI。'
+category: '开发者'
+order: 2
+published: true
+---
+
+# SDK 与集成
+
+ZGI 可以通过 SDK、HTTP API、Webhook 和企业身份系统接入现有业务平台。正式 SDK 名称和包版本应以实际发布为准；本页展示常见集成方式和接口形态。
+
+## Python 集成
+
+Python 适合后端服务、数据处理脚本和内部自动化任务。
+
+```bash
+pip install zgi-sdk
+```
+
+```python
+from zgi import ZGIClient
+
+client = ZGIClient(api_key="YOUR_API_KEY")
+
+result = client.knowledge.query(
+    knowledge_base_id="kb_xxxxxx",
+    question="最近签署的合同有哪些付款条款？"
+)
+
+print(result.answer)
+print(result.citations)
+```
+
+## JavaScript / TypeScript 集成
+
+JavaScript 和 TypeScript 适合 Web 服务、Node.js 后端和前端配套服务。生产环境中 API Key 仍应保存在后端。
+
+```bash
+npm install @zgi/sdk
+```
+
+```typescript
+import { ZGIClient } from '@zgi/sdk';
+
+const client = new ZGIClient({ apiKey: process.env.ZGI_API_KEY });
+
+const result = await client.knowledge.query({
+  knowledgeBaseId: 'kb_xxxxxx',
+  question: '最近签署的合同有哪些付款条款？'
+});
+
+console.log(result.answer);
+console.log(result.citations);
+```
+
+## Webhook 集成
+
+工作流执行完成后，可以把结果推送到业务系统配置的 Webhook 地址。
+
+```json
+{
+  "event": "workflow.completed",
+  "workflow_id": "wf_xxxxxx",
+  "run_id": "run_xxxxxx",
+  "status": "completed",
+  "outputs": {
+    "review_result": "合同风险等级：低。",
+    "citations": []
+  },
+  "created_at": "2026-03-01T10:30:00Z"
+}
+```
+
+Webhook 适合对接 OA、CRM、工单系统、审批平台和通知系统。
+
+## 企业单点登录
+
+企业版可对接统一身份系统，减少重复账号管理。常见方式包括：
+
+- LDAP / AD 域
+- SAML 2.0
+- OAuth 2.0
+- 飞书、钉钉、企业微信等企业身份入口
+
+对接 SSO 后，可以统一账号生命周期、组织架构、登录策略和离职权限回收。

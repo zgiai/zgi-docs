@@ -1,6 +1,6 @@
 ---
 title: '工作流 API'
-description: '了解如何通过 API 创建、触发和查询 ZGI 工作流。'
+description: '了解工作流对话 API 的鉴权、请求参数、流式响应事件、错误码和会话上下文设置。'
 category: '开发者'
 order: 1
 published: true
@@ -8,29 +8,103 @@ published: true
 
 # 工作流 API
 
-工作流 API 用于让外部系统触发 ZGI 中的自动化流程。它适合接入业务系统、内部平台、定时任务或第三方服务。
+工作流 API 用于让外部系统触发 ZGI 中的对话型工作流。它支持会话持久化，可以把历史对话作为上下文继续回答，适合客服、聊天助手、业务问答和流程触发场景。
 
-## 常见操作
+## Base URL
 
-- 创建或更新工作流定义
-- 触发一次工作流运行
-- 查询运行状态
-- 获取运行结果
-- 读取步骤日志和错误信息
-- 取消正在运行的任务
+```text
+https://cloud.zgi.cn/v1/api
+```
 
-## 典型调用流程
+## 鉴权
 
-1. 外部系统提交输入参数。
-2. ZGI 创建一次工作流运行记录。
-3. 工作流按节点顺序执行。
-4. 外部系统轮询状态或接收回调。
-5. 调用方读取最终输出和运行日志。
+Service API 使用 API Key 鉴权。所有请求都应在 `Authorization` 请求头中携带密钥：
 
-## 鉴权建议
+```http
+Authorization: Bearer {API_KEY}
+```
 
-生产环境中应为不同业务系统分配独立 API Key，并限制访问范围、来源 IP 和过期时间。高风险工作流建议增加人工确认或审批节点。
+生产环境中不要把 API Key 暴露在前端或客户端应用中。建议放在后端服务或密钥管理系统中，并为不同系统创建独立 Key。
 
-## 文档状态
+## 发送对话消息
 
-具体接口路径、请求参数和响应结构需要与后端实现保持一致。后续应在这里补充完整 OpenAPI 说明。
+| 方法 | 路径 | 说明 |
+| --- | --- | --- |
+| `POST` | `/chat-workflows/run` | 创建会话消息，支持基于历史对话继续回答 |
+
+## 请求体
+
+| 参数名 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `query` | `string` | 是 | 用户输入或提问内容 |
+| `response_mode` | `string` | 是 | 当前支持 `streaming`，基于 SSE 返回 |
+| `conversation_id` | `string` | 否 | 会话 ID；不传则创建新会话 |
+| `history_window_size` | `int` | 否 | 保留多少轮历史作为上下文，默认 `0` |
+
+## 请求示例
+
+### 新会话
+
+```bash
+curl --location --max-time 20 'https://cloud.zgi.cn/v1/api/chat-workflows/run' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {api_key}' \
+  --data '{
+    "query": "你好，我是程序员",
+    "response_mode": "streaming",
+    "history_window_size": 1
+  }'
+```
+
+### 继续会话
+
+```bash
+curl --location --max-time 20 'https://cloud.zgi.cn/v1/api/chat-workflows/run' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {api_key}' \
+  --data '{
+    "query": "我刚才说我是什么职业？",
+    "response_mode": "streaming",
+    "conversation_id": "1749ede3-ee92-471c-be92-9d17d58e193b",
+    "history_window_size": 1
+  }'
+```
+
+## 流式响应
+
+响应 `Content-Type` 为 `text/event-stream`。每个流式块以 `data:` 开头，块之间用两个换行分隔。
+
+常见事件：
+
+| 事件 | 说明 |
+| --- | --- |
+| `workflow_started` | 工作流开始执行 |
+| `node_started` | 节点开始执行 |
+| `node_finished` | 节点执行结束 |
+| `workflow_finished` | 工作流执行结束 |
+| `message` | 模型返回文本片段 |
+| `message_end` | 消息结束，通常包含用量和元数据 |
+| `error` | 流式过程中出现异常 |
+| `ping` | 保持连接存活的心跳事件 |
+
+## history_window_size
+
+- `0`：不使用历史消息，只处理当前问题。
+- `1`：保留最近一轮对话和当前问题。
+- `N`：保留最近 N 轮对话作为上下文。
+
+客服场景通常需要 3 到 5 轮上下文；简单问答可设置为 1 到 2 轮。历史窗口越大，上下文越完整，但 Token 成本也越高。
+
+## 错误码
+
+| HTTP 状态码 | 错误码 | 说明 |
+| --- | --- | --- |
+| `400` | `invalid_param` | 参数异常 |
+| `400` | `app_unavailable` | 应用配置不可用 |
+| `400` | `provider_not_initialize` | 没有可用模型凭据 |
+| `400` | `provider_quota_exceeded` | 模型调用额度不足 |
+| `400` | `model_currently_not_support` | 当前模型不可用 |
+| `400` | `completion_request_error` | 文本生成失败 |
+| `401` | `unauthorized` | API Key 无效 |
+| `404` | - | 会话不存在 |
+| `500` | - | 服务内部异常 |
