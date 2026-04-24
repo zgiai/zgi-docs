@@ -1,6 +1,6 @@
 ---
 title: '快速开始'
-description: '用最短路径启动当前 zgi-pre 本地栈，并理解最重要的启动命令。'
+description: '用最短路径启动 zgi-pre 本地环境，并了解日常开发最常用的命令。'
 category: '快速开始'
 order: 2
 published: true
@@ -8,17 +8,17 @@ published: true
 
 # 快速开始
 
-这份指南帮助你快速拉起当前的 `zgi-pre` 本地环境。
+这份指南帮助你在本地启动 `zgi-pre`，并了解最常用的开发命令。完成这些步骤后，你应该可以拉起完整的 ZGI 本地产品栈。
 
 ## 前置要求
 
 开始前请确保本机具备：
 
 - Git
-- Docker Desktop 或兼容的 Docker 运行环境
+- Docker Desktop，或其他兼容的 Docker 运行环境
 - Make
 
-## 用 submodule 一起克隆
+## 克隆仓库和子模块
 
 推荐直接递归克隆：
 
@@ -35,17 +35,17 @@ git submodule update --init --recursive
 
 ## 启动完整本地栈
 
-推荐入口是：
+推荐使用下面的命令启动：
 
 ```bash
 make dev-docker
 ```
 
-第一次运行时，root 层的 bootstrap 流程会自动完成：
+第一次运行时，顶层启动流程会自动完成这些工作：
 
-- 初始化缺失的 submodule
-- 给各服务补齐缺失的 env 模板
-- 重新生成 root compose 文件
+- 初始化缺失的子模块
+- 为各服务补齐缺失的环境变量模板
+- 重新生成顶层 Docker Compose 文件
 - 启动整套本地 Docker 栈
 
 ## 中国大陆网络构建模式
@@ -56,11 +56,11 @@ make dev-docker
 ./dev/start-docker --china
 ```
 
-这个模式会在当前构建里启用更友好的镜像源配置，但不会改写仓库里受版本控制的模板文件。
+这个模式会在当前构建中启用更适合中国大陆网络环境的镜像源配置，但不会改写仓库中受版本控制的模板文件。
 
 ## 常用辅助命令
 
-只检查本地 env 和模板之间的差异：
+只检查本地环境变量文件和模板之间的差异：
 
 ```bash
 make env-check
@@ -72,7 +72,7 @@ make env-check
 make env-sync
 ```
 
-如果你想走“源码开发 + 中间件 Docker”模式：
+如果你想使用“源码开发 + 中间件容器化”的模式：
 
 ```bash
 make setup
@@ -85,11 +85,11 @@ make dev-web
 
 当前常用入口包括：
 
-- Web: `http://localhost:13000`
-- API: `http://localhost:2678`
+- 前端应用：`http://localhost:13000`
+- 后端接口：`http://localhost:2678`
 - Weaviate: `http://localhost:18080`
-- Sandbox: `http://localhost:18194`
-- Plugin Runner: `http://localhost:15000`
+- 代码执行沙箱：`http://localhost:18194`
+- 插件执行服务：`http://localhost:15000`
 
 如果端口和本机已有服务冲突，可以修改 `docker/.env` 中对应的宿主机端口。
 
@@ -97,15 +97,15 @@ make dev-web
 
 在完整 `zgi-pre` 产品栈里：
 
-- `postgres` 是共享的
-- `redis` 是共享的
-- `sandbox` 在 product mode 下复用 shared Postgres / Redis，而不是再起一套独立实例
+- PostgreSQL 由整套产品栈共享
+- Redis 由整套产品栈共享
+- 代码执行沙箱在完整产品模式下复用共享的 PostgreSQL 和 Redis，不再单独启动一套实例
 
 这样做的目标是：在保留单服务独立启动能力的同时，避免完整本地栈里重复起太多基础设施。
 
 ## 什么时候要回到子仓库
 
-`zgi-pre` 负责“组装和启动”。
+`zgi-pre` 负责组装和启动整套产品栈。
 
 如果你要改具体服务行为，通常应该回到对应仓库：
 
@@ -117,4 +117,4 @@ make dev-web
 如果改了子仓库，常见流程是：
 
 1. 先在子仓库提交
-2. 再在 `zgi-pre` 提交更新后的 submodule 指针
+2. 再回到 `zgi-pre` 提交更新后的子模块指针
