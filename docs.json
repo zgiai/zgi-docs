@@ -16,13 +16,34 @@
             "group": "Getting Started",
             "pages": [
               "en/getting-started/introduction",
-              "en/getting-started/quickstart"
+              "en/getting-started/quickstart",
+              "en/getting-started/architecture"
             ]
           },
           {
-            "group": "Developer Guide",
+            "group": "Core Features",
             "pages": [
-              "en/guides/concepts"
+              "en/core-features/knowledge-base",
+              "en/core-features/agent-orchestration",
+              "en/core-features/model-gateway",
+              "en/core-features/workflow",
+              "en/core-features/permissions",
+              "en/core-features/database"
+            ]
+          },
+          {
+            "group": "Developers",
+            "pages": [
+              "en/developers/api-reference",
+              "en/developers/deployment",
+              "en/developers/security"
+            ]
+          },
+          {
+            "group": "Use Cases",
+            "pages": [
+              "en/use-cases/scenarios",
+              "en/use-cases/agent-templates"
             ]
           }
         ]
