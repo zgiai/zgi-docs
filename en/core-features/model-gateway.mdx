@@ -1,0 +1,52 @@
+---
+title: "Model Gateway"
+description: "One API for all LLMs — hot-swap, load balancing, cost routing"
+---
+
+# Model Gateway
+
+## Supported Models
+
+The model list is continuously expanding. Connect via API Key in the admin console:
+
+| Provider | Model | Features |
+|---|---|---|
+| OpenAI | GPT-4o | Strongest overall capability |
+| Anthropic | Claude 3.5 Sonnet | Long context + code |
+| DeepSeek | V3 / R1 | Exceptional cost-performance ratio |
+| Alibaba | Qwen (Tongyi) | Top domestic choice |
+| Baidu | Wenxin (ERNIE) | Baidu ecosystem integration |
+| Google | Gemini | Multimodal capabilities |
+| Private Models | Enterprise self-trained | Data stays within network |
+
+## Routing Strategies
+
+| Strategy | Description | Use Cases |
+|---|---|---|
+| **Performance Routing** | Prefer the fastest responding model | Real-time chat, low-latency scenarios |
+| **Cost Routing** | Low-cost models for simple tasks, premium for complex | High-volume daily tasks |
+| **Auto Fallback** | Auto-switch to backup when primary fails | Production high availability |
+| **Load Balancing** | Multi-key rotation, no single-key rate limit | High concurrency calls |
+
+## OpenAI-Compatible API
+
+ZGI exposes a standard OpenAI-compatible interface. Existing OpenAI SDK projects can switch by changing `base_url`:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_ZGI_API_KEY",
+    base_url="https://api.zgi.cn/v1"  # or local: http://localhost:2678/v1
+)
+
+response = client.chat.completions.create(
+    model="zgi-default",
+    messages=[{"role": "user", "content": "Summarize the key contract terms"}],
+    extra_body={"knowledge_base_id": "kb_xxxxxx"}
+)
+
+print(response.choices[0].message.content)
+```
+
+Switching models requires only a gateway config change — **zero business code changes**.

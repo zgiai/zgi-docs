@@ -1,0 +1,53 @@
+---
+title: "Agent Orchestration"
+description: "Visually build AI apps — drag nodes, wire execution"
+---
+
+# Agent Orchestration
+
+## Two Agent Types
+
+| Type | Description | Best For |
+|---|---|---|
+| **Conversational Agent** | Direct user interaction, answering questions from knowledge base and models | Customer service, Q&A, consulting |
+| **Workflow Agent** | Executes multi-step tasks following a preset workflow | Contract review, report generation, data analysis |
+
+## Workflow Node Types
+
+| Node | Function | Typical Usage |
+|---|---|---|
+| **Start Node** | Define workflow input parameters | Receive user input or API request parameters |
+| **LLM Node** | Call LLMs for inference | Text generation, analysis, translation, classification |
+| **Knowledge Node** | Retrieve from knowledge base | Q&A, clause lookup, cited answers |
+| **NL2SQL Node** | Natural language to SQL query | Query enterprise databases without writing SQL |
+| **Conditional Branch** | Choose execution path based on variable value | Risk level routing, type classification |
+| **Code Node** | Run custom Python/JS logic | Data processing, format conversion |
+| **HTTP Node** | Call external APIs | Integrate with CRM, ERP, OA systems |
+| **Iterator Node** | Batch process array data | Per-contract review, per-record processing |
+| **Loop Node** | Repeat execution until condition met | Retry logic, iterative refinement |
+| **End Node** | Output final results | Return JSON, text, or trigger downstream actions |
+
+## Workflow Features
+
+- **SSE Streaming Execution** — Real-time push of each node's execution status and results. Frontend can display step-by-step progress.
+- **Auto-Save Drafts** — Auto-saves workflow drafts every 30 seconds to prevent edit loss.
+- **Version Management** — Auto-generates version numbers on each publish. Traceable and rollbackable.
+- **Variable System** — Supports environment, session, and node variables. Data passes safely between nodes.
+
+## Trigger Types
+
+| Trigger | Description | Typical Scenarios |
+|---|---|---|
+| User Conversation | Trigger when user sends a message | Customer service Q&A, smart assistant |
+| API Call | Trigger via REST API | System integration, automation pipelines |
+| Scheduled Task | Execute periodically via Cron expression | Periodic reports, data synchronization |
+| File Upload | Auto-trigger when user uploads a file | Auto-review on contract upload |
+| Webhook | Trigger from external system callbacks | OA approval, CRM events, ERP changes |
+
+## Variables & Context
+
+| Variable Type | Scope | Typical Usage |
+|---|---|---|
+| Environment Variable | Global | API keys, model configs, sensitive info |
+| Session Variable | Single conversation | Context memory, user preferences |
+| Node Variable | Between nodes | Previous node output as next node input |

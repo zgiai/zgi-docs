@@ -1,0 +1,84 @@
+---
+title: "Database"
+description: "Structured data foundation for business intelligence with NL2SQL"
+---
+
+# Database
+
+ZGI Database is not a simple "data storage" module — it's a **structured data foundation for business intelligence**. Users can start from business documents to quickly generate table schemas, then chain together queries, analytics, calculations, and agent Q&A.
+
+<Info>
+**Core Value:** Not just "storing data" — making that data reliably queryable, accurately computable, clearly auditable, and accessible to business users through natural language.
+</Info>
+
+## Core Capabilities
+
+| Capability | Includes | Description |
+|---|---|---|
+| **Schema Design** | Field definition, type setting, required marking | Manual and AI-generated schema creation |
+| **AI Schema Generation** | Upload docs to auto-generate schemas | Auto-detect fields from documents, spreadsheets, contracts |
+| **Data Import** | Batch structured data ingestion | 15 records per import currently, being optimized |
+| **Data Queries** | Exact, conditional, fuzzy matching | Multiple query types for various business needs |
+| **Analytics** | Aggregation, grouping, sorting, joins | Complex analysis and multi-dimensional statistics |
+| **NL2SQL** | Natural language to SQL auto-conversion | Business users ask in plain language, get results directly |
+| **Audit Logs** | SQL execution records, operation tracking | Full audit trail for troubleshooting and review |
+| **Agent Integration** | As a workflow data source node | Database + agents for end-to-end business loops |
+
+## Supported Data Types
+
+| Type | Usage | Typical Scenarios |
+|---|---|---|
+| `text` | String content | Names, addresses, descriptions |
+| `numeric` | Precise numeric values | Amounts, rates, prices |
+| `integer` | Integer values | Quantities, days, sequence numbers |
+| `timestamp` | Date/time values | Contract dates, operation times |
+| `boolean` | True/false flags | Enabled/disabled, completed/pending |
+
+## AI Schema Generation
+
+Upload reference files with a requirements description. The system identifies key fields and infers a reasonable schema based on file content and business intent.
+
+**Supported inputs:** DOC, DOCX, PDF, XLSX, XLS, PPTX, JPG, or custom text descriptions.
+
+**Generated output:** Field names, descriptions, recommended data types, required field suggestions, and potential business primary keys.
+
+## Natural Language Queries (NL2SQL)
+
+Business users ask questions in plain language. The system automatically converts to SQL and executes:
+
+```
+User: "What is Sunshine Corp's property fee payment method?"
+
+→ System generates SQL:
+  SELECT payment_method FROM contracts WHERE company_name = 'Sunshine Corp';
+
+→ Returns natural language:
+  "Sunshine Corp's property fee payment method is 'quarterly prepayment'."
+```
+
+### Conversion Flow
+
+1. **Understand Query** — System identifies query target, metrics, and type
+2. **Generate SQL** — Auto-generate SQL based on table schema
+3. **Execute Query** — Run SQL and retrieve raw results
+4. **Natural Language Response** — Convert results into a business-friendly answer
+
+## Query Types
+
+| Type | Description | Example |
+|---|---|---|
+| Exact Query | Locate by primary key | "Contract info for Company A" |
+| Conditional Filter | Filter by conditions | "All contracts expiring this month" |
+| Fuzzy Match | Keyword fuzzy search | "Projects containing 'property'" |
+| Aggregate Stats | Sum, count, group, sort | "Total annual rent per building" |
+| Multi-Table Join | Cross-table association | "Main table + clauses table joint query" |
+| Complex Calculation | Multi-field computation | "Penalty = daily rent × overdue days × rate" |
+
+## Agent Workflow Integration
+
+The database serves directly as a core node in agent workflows:
+
+- **As Data Source** — Provide query objects and statistics for agents to consume
+- **Analytics Pipeline** — Handle computation and result delivery for business analysis
+- **Complex Computation** — Provide numeric and rule fields for rule-driven calculations
+- **Natural Language Replies** — Generate NL answers from query results, not just tables

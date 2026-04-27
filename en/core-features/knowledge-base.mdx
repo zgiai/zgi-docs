@@ -1,0 +1,62 @@
+---
+title: "Knowledge Base & RAG"
+description: "Enterprise retrieval-augmented generation — finding answers from source documents, not guessing"
+---
+
+# Knowledge Base & RAG
+
+## Why a Knowledge Base
+
+Throwing questions directly at an LLM invites confident hallucination. A knowledge base adds a "searchable enterprise memory" — first finding relevant passages from source documents, then having the model generate answers based on those passages, not thin air.
+
+## Three-Path Hybrid Recall
+
+ZGI doesn't rely on a single retrieval path. Three paths run in parallel, then a Rerank model fuses and sorts the results:
+
+| Recall Path | Technology | Strength | Example Query |
+|---|---|---|---|
+| **Vector Search** | Embedding + Cosine Similarity | Fuzzy semantics, synonyms | "What are the payment-related clauses" |
+| **Keyword Search** | BM25 Algorithm | Exact numbers, contract IDs | "Contract ID ZGI-2025-0312" |
+| **Knowledge Graph** | Neo4j Entity Traversal | Association queries, cross-document | "All active contracts for Company A" |
+
+After all three paths return results, a **Rerank** cross-encoder model performs precision re-ranking to ensure the most relevant content surfaces first.
+
+## Knowledge Graph
+
+The ceiling of traditional RAG is "semantic similarity" — vector search only finds passages with similar wording. But in enterprise scenarios, many questions are **relational**: Company A's contracts → clauses → penalties → related parties. This requires relationship reasoning, not semantic matching.
+
+During document import, ZGI automatically extracts entities (companies, names, contract IDs, amounts, dates) and builds relationship edges, stored in Neo4j. When queries involve multi-entity associations, graph paths deliver complete, accurate results directly.
+
+| Dimension | Vector-Only Retrieval | ZGI Knowledge Graph + Vector |
+|---|---|---|
+| Semantic Matching | ✓ Strong | ✓ Also supported |
+| Relational Queries | ✕ Cannot handle | ✓ Graph traversal reasoning |
+| Exact Number/ID Matching | ✕ Weak | ✓ BM25 + graph index |
+| Cross-Document Relations | ✕ Documents isolated | ✓ Unified entity graph |
+| Relational Query Recall | 70–85% | **99%+** |
+
+### Knowledge Graph Construction Flow
+
+1. **Document Parsing** — Multi-modal engine processes PDF, Word, Excel, images, extracting text and tables
+2. **Semantic Chunking** — Intelligent splitting by paragraph, section, and table while preserving context
+3. **Vectorization** — Embedding model generates high-dimensional vectors, written to Weaviate
+4. **Entity Extraction** — Identifies key entities: companies, names, contract IDs, amounts, dates
+5. **Relationship Building** — Establishes relationship edges: signatory → contract → clause → amount → date
+6. **Graph Storage** — Entities and relationships written to Neo4j for graph traversal and reasoning
+
+### Ontology (Coming Soon)
+
+ZGI is developing Ontology enterprise ontology modeling on top of the existing knowledge graph. By defining enterprise entity types (customers, contracts, products, personnel, departments) and their relationship types (signed, responsible, belongs to, associated), AI will move beyond text retrieval to truly understanding enterprise logic structures.
+
+## Citation Traceability
+
+Every AI answer includes precise citations: **source filename, page number, and the exact paragraph text**. Legal, financial, and compliance scenarios fear hallucination the most. With source citations, verification time is compressed by 80%+.
+
+## Document Processing
+
+| Document Type | Supported Formats | Processing |
+|---|---|---|
+| Text Documents | TXT, Markdown | Direct chunking & vectorization |
+| Office Documents | PDF, Word, Excel, PPT | Multi-modal parsing + table extraction |
+| Scanned Files | Scanned PDF, JPG, PNG | Proprietary OCR engine (data stays on-premise) |
+| Bulk Import | ZIP archives | Auto-extract, organized by directory |

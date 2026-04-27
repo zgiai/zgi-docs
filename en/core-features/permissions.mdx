@@ -1,0 +1,44 @@
+---
+title: "Permissions & Cost Control"
+description: "RBAC permissions + precise token metering — who can use what, and how much it costs"
+---
+
+# Permissions & Cost Control
+
+## Permission System
+
+Based on RBAC (Role-Based Access Control) with multi-tenant isolation:
+
+| Role | Permission Scope |
+|---|---|
+| **Super Admin** | All features + billing + deployment management |
+| **Workspace Admin** | All features within workspace + member management |
+| **Developer** | Create/edit workflows + API key management + view call logs |
+| **Business User** | Use published apps + view own usage |
+| **Read-Only Member** | View workflows and knowledge bases, no modifications |
+
+### Key Features
+
+- **Multi-Tenant Isolation** — Strict data separation between tenants and workspaces
+- **Feature-Level Control** — Permissions granular to individual features, not just pages
+- **Asset Handoff** — Employee offboarding triggers automatic asset transfer; prompts, workflows, and knowledge bases stay with the organization
+- **SSO Integration** — LDAP, SAML 2.0, OAuth 2.0 (Slack, Google Workspace, Microsoft Entra ID)
+- **Audit Trail** — All admin operations fully logged, tamper-proof
+
+## Cost Control
+
+- **Precise Token Attribution** — Token consumption tracked down to each person, department, and application
+- **Budget Limits** — Set monthly budget caps for each workspace and API key
+- **Auto Alerts** — Notifications at 80% budget utilization; auto-throttle at 100%
+- **Visual Billing** — Multi-dimensional cost breakdown by time, department, model, and application
+
+### How It Works
+
+Every API call and agent execution logs:
+- Which user triggered the call
+- Which workspace and application it belongs to
+- Which model was used
+- How many input/output tokens were consumed
+- The total cost based on the model's pricing
+
+This data feeds into real-time dashboards and alerting rules, so finance and IT teams always know where AI budget is going.

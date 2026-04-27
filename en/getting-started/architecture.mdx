@@ -1,0 +1,64 @@
+---
+title: "Architecture"
+description: "ZGI's five-layer architecture and technology stack"
+---
+
+# Architecture
+
+## Five-Layer Architecture
+
+```
+┌──────────────────────────────────────────────────┐
+│           Application Layer / Use Cases           │
+│  Contract Review · Customer Service · Data Analysis│
+├──────────────────────────────────────────────────┤
+│        Agent Orchestration Layer                  │
+│  Visual Workflow · Multi-Agent · Branching · Loops │
+├──────────────────────────────────────────────────┤
+│          Knowledge & Data Layer                   │
+│  Document ETL · Vector Index · Knowledge Graph    │
+│  Hybrid Recall · NL2SQL · Structured Database     │
+├──────────────────────────────────────────────────┤
+│            Model Layer / Gateway                  │
+│  OpenAI · Claude · DeepSeek · Qwen · Local Models │
+├──────────────────────────────────────────────────┤
+│        Infrastructure & Security Layer            │
+│  Self-Hosted · RBAC · AES-256 · SOC 2 · Docker/K8s│
+└──────────────────────────────────────────────────┘
+```
+
+## Layer Responsibilities
+
+| Layer | Name | Responsibility | Core Components |
+|---|---|---|---|
+| L5 | Application | End-user-facing AI applications | Contract Review · Customer Service Bot · Data Analysis |
+| L4 | Orchestration | Agent creation and workflow engine | Visual Canvas · Conditional Branching · Loops · Parallel Execution |
+| L3 | Knowledge | Unstructured + structured data processing | Document ETL · Vector Search · Knowledge Graph · NL2SQL |
+| L2 | Model | Unified multi-model access and routing | Load Balancing · Auto Fallback · Cost Routing · Key Rotation |
+| L1 | Infrastructure | Security, permissions, deployment | RBAC · Encryption · Auditing · Compliance · Containerization |
+
+## Technology Stack
+
+| Layer | Technology | Notes |
+|---|---|---|
+| Backend | Go 1.24 + Gin 1.9 | High performance, low resource footprint |
+| Frontend | Next.js 16 + React 19 + TypeScript | Server-side rendering + responsive UI |
+| Primary DB | PostgreSQL 16.0 + GORM | Core business data storage |
+| Vector DB | Weaviate | Knowledge base vector index |
+| Graph DB | Neo4j | Knowledge graph storage |
+| Cache | Redis 7.2 | Hot data & session management |
+| Queue | Asynq | Async tasks (doc parsing, vectorization) |
+| Container | Docker 24 + Kubernetes | One-click deployment, high availability |
+| UI Components | shadcn/ui + Tailwind CSS | Responsive design, theme customization |
+
+## Module Overview
+
+The backend is organized into the following core modules:
+
+- **Agent Management** — Full lifecycle management for conversational and workflow agents
+- **Workflow Engine** — Visual orchestration with SSE streaming execution
+- **Knowledge Base** — Document ETL, vector indexing, knowledge graph construction
+- **Model Gateway** — Multi-provider routing, load balancing, automatic fallback
+- **Database & NL2SQL** — Structured data management with natural language queries
+- **Permission System** — Multi-tenant RBAC with feature-level access control
+- **API Layer** — OpenAI-compatible RESTful API endpoints
