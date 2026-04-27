@@ -1,0 +1,121 @@
+---
+title: "Deployment Guide"
+description: "From cloud trial to self-hosted production — choose the right deployment for you"
+---
+
+# Deployment Guide
+
+## Deployment Options
+
+| Method | Best For | Data Location | Time to Launch |
+|---|---|---|---|
+| **Cloud SaaS** | Quick validation, small teams | ZGI cloud (encrypted) | Instant |
+| **Docker Compose** | Dev environment, small production | Enterprise intranet | 1 hour |
+| **Kubernetes** | Production high availability | Enterprise intranet | 30 minutes |
+| **Enterprise On-Premise** | Finance, government, healthcare | Fully self-controlled | 3 business days |
+
+## System Requirements (Self-Hosted)
+
+| Component | Minimum | Recommended |
+|---|---|---|
+| OS | Linux (Ubuntu 20.04+) | Ubuntu 22.04 LTS |
+| CPU | 8 cores | 16+ cores |
+| Memory | 16 GB | 32 GB+ |
+| Storage | 100 GB SSD | 500 GB SSD+ |
+| Runtime | Docker 20.10+ | Kubernetes 1.24+ |
+| Database | PostgreSQL 14+ | PostgreSQL 16+ |
+
+## Open Source — Quick Start
+
+ZGI's core framework is fully open source. Clone and run:
+
+### macOS / Linux (Recommended)
+
+```bash
+git clone https://github.com/zgiai/zgi.git
+cd zgi
+make dev-docker
+```
+
+`make dev-docker` auto-completes on first run: initialize submodules → copy env templates → generate compose → start stack.
+
+### China Mainland Mirror
+
+```bash
+./dev/start-docker --china
+```
+
+### Source Code Development
+
+Run `api/` and `web/` from source, with middleware via Docker:
+
+```bash
+make setup
+make dev-docker
+make dev-api
+make dev-web
+```
+
+### Windows
+
+```powershell
+.\dev\start-docker.ps1
+# With China mirrors:
+.\dev\start-docker.ps1 -china
+```
+
+### Environment Variable Management
+
+```bash
+# Check env vs template diff
+make env-check
+
+# Append missing keys (does not overwrite existing values)
+make env-sync
+```
+
+## Enterprise Docker Compose
+
+```bash
+wget https://releases.zgi.cn/zgi-v2026-enterprise.tar.gz
+tar -xzf zgi-v2026-enterprise.tar.gz && cd zgi-enterprise
+cp .env.example .env
+# Edit .env with License Key, database connection, etc.
+docker-compose up -d
+docker-compose ps
+```
+
+## Kubernetes
+
+```bash
+helm repo add zgi https://charts.zgi.cn
+helm install zgi zgi/zgi \
+  --namespace zgi --create-namespace \
+  --set global.storageClass=your-storage-class \
+  --values values-production.yaml
+```
+
+## Default Service Addresses
+
+| Service | Address | Notes |
+|---|---|---|
+| Web Frontend | `http://localhost:13000` | Console UI |
+| API Backend | `http://localhost:2678` | REST API |
+| PostgreSQL | `localhost:15432` | Primary database |
+| Redis | `localhost:16379` | Cache & queue |
+| Weaviate | `http://localhost:18080` | Vector database |
+| Neo4j | `http://localhost:17474` | Knowledge graph |
+| Sandbox | `http://localhost:18194` | Code execution |
+| Plugin Runner | `http://localhost:15000` | Plugin runner |
+
+<Tip>
+All ports can be customized via `HOST_*_PORT` variables in `.env`.
+</Tip>
+
+## Enterprise Edition Extras
+
+- Dedicated technical support (SLA-backed)
+- Self-hosted OCR engine (data never leaves your network)
+- Ontology enterprise knowledge graph
+- SOC 2 / GDPR / MLPS Level 3 compliance support
+- Custom model integration and tuning

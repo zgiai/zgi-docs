@@ -1,0 +1,111 @@
+---
+title: "API Reference"
+description: "OpenAI-compatible RESTful API"
+---
+
+# API Reference
+
+## Authentication
+
+All API requests require an API Key in the header:
+
+```bash
+Authorization: Bearer YOUR_API_KEY
+```
+
+API keys can be created and managed in **Workspace Settings → API Key Management**.
+
+## Base URL
+
+| Environment | Base URL |
+|---|---|
+| Cloud SaaS | `https://api.zgi.cn/v1` |
+| Self-Hosted | `http://YOUR_HOST:2678/v1` |
+
+## Core Endpoints
+
+### Chat Completions
+
+<ParamField method="POST" path="/v1/chat/completions">
+Send a chat request with knowledge base retrieval and streaming support.
+</ParamField>
+
+```bash
+curl -X POST https://api.zgi.cn/v1/chat/completions \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "zgi-default",
+    "messages": [
+      { "role": "system", "content": "You are a helpful contract assistant." },
+      { "role": "user", "content": "What are the payment terms in the latest contract?" }
+    ],
+    "knowledge_base_id": "kb_xxxxxx",
+    "stream": true,
+    "temperature": 0.7
+  }'
+```
+
+#### Request Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `model` | string | Yes | Model ID to use |
+| `messages` | array | Yes | Array of conversation messages |
+| `knowledge_base_id` | string | No | Associated knowledge base ID |
+| `stream` | boolean | No | Enable SSE streaming output |
+| `temperature` | float | No | Sampling temperature (0–2) |
+
+### List Models
+
+<ParamField method="GET" path="/v1/models">
+Get list of available models.
+</ParamField>
+
+### Run Workflow
+
+<ParamField method="POST" path="/v1/workflows/{workflow_id}/run">
+Trigger a specific workflow execution.
+</ParamField>
+
+### Upload Document
+
+<ParamField method="POST" path="/v1/knowledge-bases/{kb_id}/documents">
+Upload a document to a knowledge base.
+</ParamField>
+
+### Search Knowledge Base
+
+<ParamField method="POST" path="/v1/knowledge-bases/{kb_id}/search">
+Query knowledge base retrieval results.
+</ParamField>
+
+## SDKs
+
+```bash
+# Python
+pip install zgi-sdk
+
+# JavaScript / TypeScript
+npm install @zgi/sdk
+```
+
+```python
+from zgi import ZGIClient
+
+client = ZGIClient(api_key="YOUR_API_KEY")
+
+# Query knowledge base
+result = client.knowledge.query(
+    knowledge_base_id="kb_xxxxxx",
+    question="What is the payment cycle for this contract?"
+)
+print(result.answer)
+print(result.citations)  # [{"source": "Contract.pdf", "page": 4, "text": "..."}]
+
+# Run workflow
+run = client.workflows.run(
+    workflow_id="wf_xxxxxx",
+    inputs={"document_url": "https://..."}
+)
+```

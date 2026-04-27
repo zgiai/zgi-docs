@@ -1,0 +1,50 @@
+---
+title: "Workflow"
+description: "Multi-step AI task orchestration — triggers, execution engine, variable management"
+---
+
+# Workflow
+
+The workflow engine is the execution backbone of ZGI agents. It turns visual node graphs into reliable, production-grade AI pipelines.
+
+## Execution Engine
+
+Workflow execution uses **SSE (Server-Sent Events) streaming**, delivering each node's results in real-time. The frontend can display step-by-step progress:
+
+```
+Node 1 [Start] ✓ → Node 2 [Knowledge Retrieval] ✓ → Node 3 [LLM Analysis] ⏳ → Node 4 [Output]
+```
+
+Each node execution event is pushed to the client, including:
+- Node ID and name
+- Execution status (running / success / failed)
+- Execution duration
+- Output variables and values
+
+## Production-Grade Reliability
+
+ZGI workflows are designed for production, not just demos:
+
+- **Assertions** — Define validation rules per node (e.g., "retrieval must return citations", "output must match JSON schema")
+- **Retry** — Failed nodes auto-retry with configurable limits and backoff
+- **Fallback** — When retries exhaust, degrade gracefully (e.g., output a "pending review" list instead of failing silently)
+
+## Workflow Lifecycle
+
+1. **Draft** — Edit and save on the visual canvas. Auto-saved every 30 seconds.
+2. **Debug** — Test with sample inputs. SSE streams node-by-node execution in the debug panel.
+3. **Publish** — One-click publish generates a version number and makes the workflow available via API or chat.
+4. **Monitor** — View run history, execution logs, token consumption, and error rates.
+
+## Example: Contract Review Workflow
+
+```
+[Start: Upload Contract]
+    → [OCR Parse Document]
+    → [Knowledge Retrieval: Legal Clauses]
+    → [LLM: Risk Analysis]
+    → [Conditional Branch: Risk Level]
+        ├── High Risk → [Notify Legal Team via Webhook]
+        └── Low Risk → [Generate Report]
+    → [End: Return Structured Report with Citations]
+```

@@ -1,120 +1,117 @@
 ---
-title: 'Quick Start'
-description: 'Boot the current zgi-pre stack locally with Docker and understand the most important commands.'
-category: 'Getting Started'
-order: 2
-published: true
+title: "Quick Start"
+description: "From registration to your first knowledge base — 30 minutes"
 ---
 
 # Quick Start
 
-This guide helps you boot the current `zgi-pre` stack quickly and safely.
-
 ## Prerequisites
 
-Before you start, make sure you have:
+Before you begin, ensure the following:
 
-- Git
-- Docker Desktop or a compatible Docker runtime
-- Make
+- A business email (for registration)
+- Documents to import (PDF, Word, Excel — or use sample data)
+- For self-hosted: Docker environment or Kubernetes cluster
 
-## Clone with submodules
+## Choose Your Path
 
-Use recursive clone so all service repositories are available immediately:
+<CardGroup cols={2}>
+  <Card title="Cloud SaaS (Recommended)" icon="cloud">
+    Sign up and start immediately. No IT infrastructure needed. Perfect for validation and small teams.
+  </Card>
+  <Card title="Self-Hosted Deployment" icon="server">
+    Physical data isolation meeting finance and government compliance. Contact us for the installation package.
+  </Card>
+</CardGroup>
+
+## Four Steps to Your First AI App
+
+<Steps>
+  <Step title="Register & Create Workspace">
+    Go to [cloud.zgi.cn](https://cloud.zgi.cn) to register, create your enterprise workspace, and invite team members.
+  </Step>
+  <Step title="Import Data & Build Knowledge Base">
+    Upload enterprise documents (contracts, reports, manuals, FAQs) to the knowledge base module. The system automatically handles parsing, chunking, vectorization, and graph construction. Supports PDF, Word, Excel, scanned images, and more.
+
+    <Warning>
+    We recommend starting with a small batch (under 10 documents) to validate retrieval accuracy before bulk importing.
+    </Warning>
+  </Step>
+  <Step title="Connect Models & Configure Gateway">
+    In the Model Management page, connect your LLM API keys (OpenAI, Claude, DeepSeek, Qwen, etc.), or use ZGI's built-in shared models. Set call priorities and budget limits.
+  </Step>
+  <Step title="Orchestrate Agents & Publish">
+    On the visual workflow canvas, drag and drop nodes to build your AI application logic. Once debugging passes, publish with one click as a Web App or API endpoint.
+  </Step>
+</Steps>
+
+## Make Your First API Call
+
+For developers, integrate directly via the API:
 
 ```bash
-git clone --recurse-submodules <repo-url>
-cd zgi-pre
+curl -X POST https://api.zgi.cn/v1/chat \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "zgi-default",
+    "messages": [{ "role": "user", "content": "What contracts are expiring in the next three months?" }],
+    "knowledge_base_id": "kb_xxxxxx"
+  }'
 ```
 
-If you already cloned the repository earlier:
+Response:
 
-```bash
-git submodule update --init --recursive
+```json
+{
+  "id": "msg_xxxxxx",
+  "content": "Based on the knowledge base, the following contracts expire within three months: ...",
+  "citations": [
+    { "source": "Procurement_Contract_2025Q4.pdf", "page": 3, "paragraph": "Article 5: Contract Term..." }
+  ]
+}
 ```
 
-## Start the full local stack
+<Tip>
+**Every answer includes source citations.** The `citations` field returns the specific document, page number, and paragraph, so business teams can verify directly — no guessing about sources.
+</Tip>
 
-The recommended entry point is:
+## Local Docker Deployment
+
+For developers who want to run ZGI locally:
 
 ```bash
+# Clone the repository
+git clone https://github.com/zgiai/zgi.git
+cd zgi
+
+# One-click startup
 make dev-docker
 ```
 
-On first run, the root bootstrap flow will:
+`make dev-docker` automatically initializes submodules, copies env templates, generates the root compose file, and starts the full Docker stack.
 
-- initialize missing submodules
-- copy missing env templates into the right service directories
-- regenerate the root Docker Compose file
-- boot the local stack
+### Default Service Addresses
 
-## China mainland build mirrors
+| Service | Address | Notes |
+|---|---|---|
+| **Web Frontend** | `http://localhost:13000` | Console UI |
+| **API Backend** | `http://localhost:2678` | REST API |
+| PostgreSQL | `localhost:15432` | Primary database |
+| Redis | `localhost:16379` | Cache & message queue |
+| Weaviate | `http://localhost:18080` | Vector database |
+| Neo4j HTTP | `http://localhost:17474` | Knowledge graph |
+| Sandbox | `http://localhost:18194` | Code execution sandbox |
+| Plugin Runner | `http://localhost:15000` | Plugin runner |
 
-If image builds are slow or flaky on mainland networks, use:
+### Windows
 
-```bash
-./dev/start-docker --china
+Minimum requirement: **Docker Desktop + PowerShell**.
+
+```powershell
+# PowerShell
+.\dev\start-docker.ps1
+
+# With China mainland mirrors
+.\dev\start-docker.ps1 -china
 ```
-
-This mode applies mirror-friendly build settings for the current run without rewriting tracked templates.
-
-## Useful follow-up commands
-
-Check local env drift without overwriting anything:
-
-```bash
-make env-check
-```
-
-Append only missing template keys while keeping existing values:
-
-```bash
-make env-sync
-```
-
-Run source development for backend and frontend while keeping shared middleware in Docker:
-
-```bash
-make setup
-make dev-docker
-make dev-api
-make dev-web
-```
-
-## Default local endpoints
-
-Common local endpoints in the current stack:
-
-- Web: `http://localhost:13000`
-- API: `http://localhost:2678`
-- Weaviate: `http://localhost:18080`
-- Sandbox: `http://localhost:18194`
-- Plugin Runner: `http://localhost:15000`
-
-Some host ports can be changed in `docker/.env` if they collide with other local services.
-
-## What happens with infrastructure
-
-In the full `zgi-pre` product stack:
-
-- `postgres` is shared across the stack
-- `redis` is shared across the stack
-- `sandbox` reuses the shared Postgres and Redis instead of starting dedicated copies
-
-This gives us one coherent local environment while still allowing services like `sandbox` and `plugin-runner` to keep standalone startup paths in their own repositories.
-
-## When you should work in submodules
-
-Use `zgi-pre` to boot and integrate the stack.
-
-Use individual service repositories when you need to change:
-
-- backend behavior in `api/`
-- frontend behavior in `web/`
-- sandbox runtime behavior in `sandbox/`
-- plugin execution behavior in `plugin-runner/`
-
-If you change a submodule, the normal workflow is:
-
-1. Commit in the submodule repository.
-2. Commit the updated submodule pointer in `zgi-pre`.
