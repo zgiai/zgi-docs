@@ -82,7 +82,6 @@
           {
             "group": "案例与场景",
             "pages": [
-              "zh-hans/use-cases/customer-stories",
               "zh-hans/use-cases/industry-scenarios",
               "zh-hans/use-cases/agent-library"
             ]
