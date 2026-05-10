@@ -26,9 +26,9 @@ API keys can be created and managed in **Workspace Settings → API Key Manageme
 
 ### Chat Completions
 
-<ParamField method="POST" path="/v1/chat/completions">
+`POST /v1/chat/completions`
+
 Send a chat request with knowledge base retrieval and streaming support.
-</ParamField>
 
 ```bash
 curl -X POST https://api.zgi.cn/v1/chat/completions \
@@ -58,27 +58,27 @@ curl -X POST https://api.zgi.cn/v1/chat/completions \
 
 ### List Models
 
-<ParamField method="GET" path="/v1/models">
+`GET /v1/models`
+
 Get list of available models.
-</ParamField>
 
 ### Run Workflow
 
-<ParamField method="POST" path="/v1/workflows/{workflow_id}/run">
+`POST /v1/workflows/{workflow_id}/run`
+
 Trigger a specific workflow execution.
-</ParamField>
 
 ### Upload Document
 
-<ParamField method="POST" path="/v1/knowledge-bases/{kb_id}/documents">
+`POST /v1/knowledge-bases/{kb_id}/documents`
+
 Upload a document to a knowledge base.
-</ParamField>
 
 ### Search Knowledge Base
 
-<ParamField method="POST" path="/v1/knowledge-bases/{kb_id}/search">
+`POST /v1/knowledge-bases/{kb_id}/search`
+
 Query knowledge base retrieval results.
-</ParamField>
 
 ## SDKs
 

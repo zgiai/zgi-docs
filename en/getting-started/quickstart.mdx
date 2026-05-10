@@ -15,35 +15,30 @@ Before you begin, ensure the following:
 
 ## Choose Your Path
 
-<CardGroup cols={2}>
-  <Card title="Cloud SaaS (Recommended)" icon="cloud">
-    Sign up and start immediately. No IT infrastructure needed. Perfect for validation and small teams.
-  </Card>
-  <Card title="Self-Hosted Deployment" icon="server">
-    Physical data isolation meeting finance and government compliance. Contact us for the installation package.
-  </Card>
-</CardGroup>
+| Path | When to use it |
+| --- | --- |
+| **Cloud SaaS (Recommended)** | Sign up and start immediately. No IT infrastructure needed. Perfect for validation and small teams. |
+| **Self-Hosted Deployment** | Physical data isolation meeting finance and government compliance. Contact us for the installation package. |
 
 ## Four Steps to Your First AI App
 
-<Steps>
-  <Step title="Register & Create Workspace">
-    Go to [cloud.zgi.cn](https://cloud.zgi.cn) to register, create your enterprise workspace, and invite team members.
-  </Step>
-  <Step title="Import Data & Build Knowledge Base">
-    Upload enterprise documents (contracts, reports, manuals, FAQs) to the knowledge base module. The system automatically handles parsing, chunking, vectorization, and graph construction. Supports PDF, Word, Excel, scanned images, and more.
+1. **Register & Create Workspace**
 
-    <Warning>
-    We recommend starting with a small batch (under 10 documents) to validate retrieval accuracy before bulk importing.
-    </Warning>
-  </Step>
-  <Step title="Connect Models & Configure Gateway">
-    In the Model Management page, connect your LLM API keys (OpenAI, Claude, DeepSeek, Qwen, etc.), or use ZGI's built-in shared models. Set call priorities and budget limits.
-  </Step>
-  <Step title="Orchestrate Agents & Publish">
-    On the visual workflow canvas, drag and drop nodes to build your AI application logic. Once debugging passes, publish with one click as a Web App or API endpoint.
-  </Step>
-</Steps>
+   Go to [cloud.zgi.cn](https://cloud.zgi.cn) to register, create your enterprise workspace, and invite team members.
+
+2. **Import Data & Build Knowledge Base**
+
+   Upload enterprise documents (contracts, reports, manuals, FAQs) to the knowledge base module. The system automatically handles parsing, chunking, vectorization, and graph construction. Supports PDF, Word, Excel, scanned images, and more.
+
+   We recommend starting with a small batch (under 10 documents) to validate retrieval accuracy before bulk importing.
+
+3. **Connect Models & Configure Gateway**
+
+   In the Model Management page, connect your LLM API keys (OpenAI, Claude, DeepSeek, Qwen, etc.), or use ZGI's built-in shared models. Set call priorities and budget limits.
+
+4. **Orchestrate Agents & Publish**
+
+   On the visual workflow canvas, drag and drop nodes to build your AI application logic. Once debugging passes, publish with one click as a Web App or API endpoint.
 
 ## Make Your First API Call
 
@@ -72,9 +67,7 @@ Response:
 }
 ```
 
-<Tip>
-**Every answer includes source citations.** The `citations` field returns the specific document, page number, and paragraph, so business teams can verify directly — no guessing about sources.
-</Tip>
+> **Every answer includes source citations.** The `citations` field returns the specific document, page number, and paragraph, so business teams can verify directly — no guessing about sources.
 
 ## Local Docker Deployment
 
