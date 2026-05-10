@@ -1,59 +1,59 @@
 ---
 title: '部署指南'
-description: '了解 ZGI 的云端 SaaS、私有化部署、混合架构、开源版本地启动和 Kubernetes 部署方式。'
+description: '了解 ZGI 的云端 SaaS、Docker Compose、Kubernetes 和私有化企业版部署方式。'
 category: '开发者'
 order: 3
 published: true
 ---
 
-ZGI 可以按业务阶段和安全要求选择不同部署方式：云端 SaaS、私有化部署、混合架构或开源版本地启动。
+ZGI 可以从云端体验到私有化上线，根据团队阶段、数据边界和运维能力选择部署方式。
 
 ## 部署方式对比
 
-| 维度 | 云端 SaaS | 私有化部署 | 混合架构 |
+| 方式 | 适合场景 | 数据位置 | 上线时间 |
 | --- | --- | --- | --- |
-| 数据位置 | ZGI 云端 | 企业内网 | 核心数据内网，部分计算云端 |
-| 上线时间 | 即开即用 | 需要企业 IT 配合 | 需要架构设计 |
-| 运维成本 | 低 | 中到高 | 中 |
-| 合规控制 | 平台统一提供 | 企业完全自控 | 按数据类型分级 |
-| 适合场景 | 快速验证、中小团队 | 金融、政务、医疗等敏感场景 | 跨区域或大型企业 |
+| 云端 SaaS | 快速验证、中小团队 | ZGI 云端（加密存储） | 即开即用 |
+| Docker Compose | 开发环境、小规模生产 | 企业内网 | 1 小时 |
+| Kubernetes | 生产高可用 | 企业内网 | 30 分钟 |
+| 私有化企业版 | 金融、政务、医疗合规 | 完全自控 | 3 个工作日 |
 
-## 私有化部署准备
+## 系统要求（私有化部署）
 
-私有化部署通常需要提前确认 License、安装包、数据库、对象存储、模型来源和网络策略。
+| 组件 | 最低配置 | 推荐配置 |
+| --- | --- | --- |
+| 操作系统 | Linux (Ubuntu 20.04+) | Ubuntu 22.04 LTS |
+| 处理器 | 8 核 | 16 核+ |
+| 内存 | 16 GB | 32 GB+ |
+| 存储 | 100 GB SSD | 500 GB SSD+ |
+| Docker | 20.10+ | Kubernetes 1.24+ |
 
-最低环境建议：
+## 开源版部署
 
-| 组件 | 建议 |
-| --- | --- |
-| 操作系统 | Linux，例如 Ubuntu 20.04+ 或 CentOS 7+ |
-| CPU | 8 核起步，生产建议 16 核以上 |
-| 内存 | 16 GB 起步，生产建议 32 GB 以上 |
-| 存储 | SSD，按知识库规模规划 |
-| 运行时 | Docker 20.10+ 或 Kubernetes 1.24+ |
-| 数据库 | PostgreSQL 14+、Redis 6+ |
+ZGI 核心框架在 GitHub 开源，可以直接从源码启动完整服务栈。仓库采用 git submodule 方式组织多仓库，顶层仓库负责产品级聚合。
 
-## 开源版本地启动
+| 目录 | 说明 | 仓库地址 |
+| --- | --- | --- |
+| `api/` | 后端服务（Go） | `zgiai/zgi-api` |
+| `web/` | 前端应用（React） | `zgiai/zgi-web` |
+| `sandbox/` | 代码执行沙箱 | `zgiai/zgi-sandbox` |
+| `plugin-runner/` | 插件执行服务 | `zgiai/zgi-plugin-runner` |
+| `docker/` | 共享中间件与部署资产 | — |
 
-开源版采用多仓库和子模块组织。顶层仓库负责聚合服务、生成 Compose 配置和启动本地环境。
+## macOS / Linux：Docker 一键启动
 
 ```bash
-git clone --recurse-submodules https://github.com/zgiai/zgi.git
+git clone https://github.com/zgiai/zgi.git
 cd zgi
 make dev-docker
 ```
 
-首次运行会自动完成子模块初始化、环境变量模板补齐、Compose 文件生成和服务启动。
+`make dev-docker` 首次运行会自动完成初始化 submodule、复制缺失的 env 模板、重新生成 root compose、启动完整 Docker 栈。
 
 ## 中国大陆网络加速
-
-如果镜像构建较慢，可以使用中国大陆网络模式：
 
 ```bash
 ./dev/start-docker --china
 ```
-
-该模式只影响本次构建配置，不应永久改写仓库中的默认模板。
 
 ## 环境变量管理
 
@@ -62,17 +62,13 @@ make env-check
 make env-sync
 ```
 
-`env-check` 用于检查本地环境变量和模板差异，`env-sync` 用于追加缺失项而不覆盖已有值。
+## Windows 部署
 
-## 源码开发模式
+Windows 最低支持 Docker Desktop + PowerShell。
 
-如果后端和前端希望直接用源码运行，可以让数据库、缓存等中间件继续通过 Docker 提供。
-
-```bash
-make setup
-make dev-docker
-make dev-api
-make dev-web
+```powershell
+.\dev\start-docker.ps1
+.\dev\start-docker.ps1 -china
 ```
 
 ## 默认服务地址
@@ -85,17 +81,13 @@ make dev-web
 | Redis | `localhost:16379` | 缓存与消息队列 |
 | Weaviate | `http://localhost:18080` | 向量数据库 |
 | Neo4j HTTP | `http://localhost:17474` | 知识图谱 |
-| Neo4j Bolt | `bolt://localhost:17687` | 图数据库协议 |
 | Sandbox | `http://localhost:18194` | 代码执行沙箱 |
 | Plugin Runner | `http://localhost:15000` | 插件执行服务 |
 
 ## Kubernetes 部署
 
-生产高可用场景建议使用 Kubernetes，并结合 Helm Chart、持久化存储、日志采集、监控告警和密钥管理统一规划。
-
 ```bash
 helm repo add zgi https://charts.zgi.cn
-
 helm install zgi zgi/zgi \
   --namespace zgi --create-namespace \
   --set global.storageClass=your-storage-class \
