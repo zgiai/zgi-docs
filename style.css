@@ -2,15 +2,16 @@
   --zgi-blue: #0053ff;
 }
 
-a {
-  color: var(--zgi-blue);
-}
-
 mark {
   background: rgba(0, 83, 255, 0.16);
   color: inherit;
   border-radius: 4px;
   padding: 0 4px;
+}
+
+main a:hover,
+article a:hover {
+  color: var(--zgi-blue);
 }
 
 code {
