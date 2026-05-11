@@ -3,58 +3,117 @@ title: "Knowledge Base & RAG"
 description: "Enterprise retrieval-augmented generation — finding answers from source documents, not guessing"
 ---
 
-## Why a Knowledge Base
+## Overview
 
-Throwing questions directly at an LLM invites confident hallucination. A knowledge base adds a "searchable enterprise memory" — first finding relevant passages from source documents, then having the model generate answers based on those passages, not thin air.
+In ZGI, the knowledge base is the core module that connects enterprise private data and large model applications. It uses **RAG (Retrieval Augmented Generation)** to transform unstructured content such as documents, FAQs, systems, product information, and research reports into searchable, recallable, and manageable knowledge assets, allowing agents and workflows to answer questions based on reliable context, rather than relying solely on the model's own memory.
 
-## Three-Path Hybrid Recall
+> **Core Value**
+>
+> Turn enterprise documents into a contextual layer that can be retrieved and referenced by AI, improving answer accuracy, reducing hallucinations, and supporting ongoing maintenance by workspace, folder, document, and segment.
 
-ZGI doesn't rely on a single retrieval path. Three paths run in parallel, then a Rerank model fuses and sorts the results:
+## core concepts
 
-| Recall Path | Technology | Strength | Example Query |
-|---|---|---|---|
-| **Vector Search** | Embedding + Cosine Similarity | Fuzzy semantics, synonyms | "What are the payment-related clauses" |
-| **Keyword Search** | BM25 Algorithm | Exact numbers, contract IDs | "Contract ID ZGI-2025-0312" |
-| **Knowledge Graph** | Neo4j Entity Traversal | Association queries, cross-document | "All active contracts for Company A" |
+| concept | illustrate |
+| --- | --- |
+| **knowledge base** | Knowledge collections established for a certain business field or data source can be managed by workspace or classified by folders |
+| **document** | When importing raw data into the knowledge base, the system will record the language, word count, number of hits, number of segments, index status and file metadata. |
+| **Segmentation** | The smallest recall unit after the document has been cleaned and divided, which can be enabled, disabled, edited, deleted, or imported in batches |
+| **Sub-segment** | Used for more fine-grained content maintenance, suitable for long paragraphs, hierarchical materials and scenarios that require fine recall |
+| **Retrieve configuration** | Supports parameter settings such as semantic retrieval, graph retrieval, Top K, score threshold, Rerank rearrangement, etc. |
+| **Hit Test** | Validate recall results with real issues before releasing the app, supporting single testing, external knowledge base testing, batch testing and test reporting |
 
-After all three paths return results, a **Rerank** cross-encoder model performs precision re-ranking to ensure the most relevant content surfaces first.
+## RAG workflow
 
-## Knowledge Graph
+### Prepare data
 
-The ceiling of traditional RAG is "semantic similarity" — vector search only finds passages with similar wording. But in enterprise scenarios, many questions are **relational**: Company A's contracts → clauses → penalties → related parties. This requires relationship reasoning, not semantic matching.
+Create a knowledge base and upload documents, or continue to add information to an existing knowledge base.
 
-During document import, ZGI automatically extracts entities (companies, names, contract IDs, amounts, dates) and builds relationship edges, stored in Neo4j. When queries involve multi-entity associations, graph paths deliver complete, accurate results directly.
+### Parsing and cleaning
 
-| Dimension | Vector-Only Retrieval | ZGI Knowledge Graph + Vector |
-|---|---|---|
-| Semantic Matching | ✓ Strong | ✓ Also supported |
-| Relational Queries | ✕ Cannot handle | ✓ Graph traversal reasoning |
-| Exact Number/ID Matching | ✕ Weak | ✓ BM25 + graph index |
-| Cross-Document Relations | ✕ Documents isolated | ✓ Unified entity graph |
-| Relational Query Recall | 70–85% | **99%+** |
+The system parses, cleans, and segments files, and generates indexing tasks.
 
-### Knowledge Graph Construction Flow
+### Vectorization and indexing
 
-1. **Document Parsing** — Multi-modal engine processes PDF, Word, Excel, images, extracting text and tables
-2. **Semantic Chunking** — Intelligent splitting by paragraph, section, and table while preserving context
-3. **Vectorization** — Embedding model generates high-dimensional vectors, written to Weaviate
-4. **Entity Extraction** — Identifies key entities: companies, names, contract IDs, amounts, dates
-5. **Relationship Building** — Establishes relationship edges: signatory → contract → clause → amount → date
-6. **Graph Storage** — Entities and relationships written to Neo4j for graph traversal and reasoning
+Use the configured Embedding model to generate vectors and write vector indexes; when GraphFlow is enabled, it will also enter the graph indexing process such as extraction, alignment, and storage.
 
-### Ontology (Coming Soon)
+### Search and reorder
 
-ZGI is developing Ontology enterprise ontology modeling on top of the existing knowledge graph. By defining enterprise entity types (contracts, products, personnel, departments, projects) and their relationship types (signed, responsible, belongs to, associated), AI will move beyond text retrieval to truly understanding enterprise logic structures.
+After the user asks a question, the system recalls candidate fragments according to the retrieval configuration, and can be combined with the Rerank model to improve relevance ranking.
 
-## Citation Traceability
+### generate answer
 
-Every AI answer includes precise citations: **source filename, page number, and the exact paragraph text**. Legal, financial, and compliance scenarios fear hallucination the most. With source citations, verification time is compressed by 80%+.
+The agent or workflow passes the retrieved context to the LLM to generate an informed answer.
 
-## Document Processing
+## Support capabilities
 
-| Document Type | Supported Formats | Processing |
-|---|---|---|
-| Text Documents | TXT, Markdown | Direct chunking & vectorization |
-| Office Documents | PDF, Word, Excel, PPT | Multi-modal parsing + table extraction |
-| Scanned Files | Scanned PDF, JPG, PNG | Proprietary OCR engine (data stays on-premise) |
-| Bulk Import | ZIP archives | Auto-extract, organized by directory |
+| ability | illustrate |
+| --- | --- |
+| **Knowledge Base Management** | Create, query, update, and delete knowledge bases; view the knowledge base list by organization or workspace |
+| **Folder Management** | Create, edit, delete knowledge base folders, and support moving the knowledge base to specified folders |
+| **Document Management** | Upload documents, view details and metadata, enable/disable in batches, archive/unarchive, and delete in batches |
+| **Segmented Maintenance** | View segments, edit content, batch import, enable/disable, delete; view keywords, number of Tokens, and number of hits |
+| **Issue Enhancement** | Add FAQs to segments, support question generation and batch import, and improve the stability of FAQ scenario recall |
+| **Retrieval Test** | Support hit-testing, external knowledge base testing, asynchronous batch testing, test records and reports |
+| **Map Capabilities** | Supports knowledge graph data viewing and graph retrieval, which can be used for knowledge question and answer with stronger entity relationships. |
+
+## How to build a knowledge base
+
+1. Enter the "Knowledge Base" module of the console and click New Knowledge Base.
+2. Fill in the name, description, workspace and icon, and select the data source type.
+3. Configure the indexing method, Embedding model and retrieval parameters; if you need entity relationship retrieval, you can enable GraphFlow.
+4. Upload files or import existing files and wait for parsing, cleaning, segmentation, and indexing to be completed.
+5. Go to the document details page to check the quality of the segments, and if necessary, edit the segments, add segmentation questions or sub-segments.
+6. Enter a real business problem in "Recall Test" and check whether the Top K, threshold and Rerank configurations are as expected.
+7. Connect the knowledge base to the agent or workflow and use it as a context retrieval source in the application.
+
+## Maintenance and optimization suggestions
+
+- Split the knowledge base by business topic to avoid mixing completely unrelated knowledge in the same index
+
+- Prioritize cleaning the table of contents, headers and footers, duplicate disclaimers and invalid tables in the source document to reduce noise
+
+- Establish an update person responsible for time-sensitive content such as policies, product specifications, prices, terms of service, etc., and archive old documents regularly
+
+- Use segmented questions to enhance fixed Q&A scenarios such as FAQs, regulations, product descriptions, etc.
+
+- Cover high-frequency questions, boundary questions and synonymous questions through batch testing to avoid judging the effect based on a single test sample
+
+- Increase the score threshold or narrow the knowledge base when the hit result is too wide; lower the threshold, increase Top K or optimize segmentation when the recall is insufficient
+
+## Knowledge graph enhanced retrieval
+
+The ceiling of traditional RAG is "semantic similarity" - vector searches can only find passages with similar wording. But in enterprise scenarios, a large number of issues are related: Company A’s contract → terms → liquidated damages → related persons. What this requires is not semantic matching but relational reasoning.
+
+ZGI automatically extracts entities (company, person name, contract number, amount, date) when importing documents, establishes relationship edges, and stores them in the graph database. When user queries involve multi-entity relationships, the graph path directly gives complete and accurate results.
+
+| Contrast Dimensions | Pure vector search | ZGI map + vector |
+| --- | --- | --- |
+| semantic matching | ? Good at | ? Also supported |
+| Related query | ? Unable to process | ? Graph traversal reasoning |
+| Cross-document associations | ? Isolation between documents | ? Unified Entity Graph |
+| Relevant question recall rate | 70-85% | **99%+** |
+
+## Application scenarios
+
+| scene | Example |
+| --- | --- |
+| Internal knowledge Q&A | When an employee asks "What is the company's reimbursement process?", the system recalls the corresponding terms from the system document and generates an answer. |
+| Intelligent customer service and FAQ automation | Customer service robots answer customer inquiries based on product descriptions, after-sales policies and FAQs |
+| R&D and Operation Assistant | Make interface documents, deployment manuals, and fault records into a knowledge base to assist in troubleshooting |
+| Sales and solution support | Retrieve product information, industry cases and quotation rules, and quickly generate customer communication materials |
+| Compliance and Legal Search | Search contract templates, compliance systems, audit instructions, and assist in locating key terms |
+| Privatized Deployment Q&A | Run RAG in the local model and private vector library environment to meet the requirement that the data does not leave the domain |
+
+## Advantages of ZGI Knowledge Base
+
+- **Multi-level governance** from knowledge base, documents, segments to sub-segments, suitable for long-term operations
+
+- **Retrieval configuration visualization**, supporting semantic retrieval, graph retrieval, threshold control and Rerank
+
+- Linked to the **Model Network**, model dependencies such as Embedding, Rerank, and LLM can be managed in a unified manner
+
+- Supports **Permission Control**, knowledge base viewing, management, recall testing, folder management and locking can be authorized by role
+
+- **Complete test closed loop**, supports single test, batch test, test history and reports, making it easy to evaluate quality before going online
+
+## Knowledge base demo video

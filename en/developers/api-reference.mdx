@@ -5,28 +5,34 @@ description: "OpenAI-compatible RESTful API"
 
 ## Authentication
 
-All API requests require an API Key in the header:
+All API requests need to carry the API Key in the header:
 
-```bash
+```text
 Authorization: Bearer YOUR_API_KEY
 ```
 
-API keys can be created and managed in **Workspace Settings → API Key Management**.
+API Keys can be created and managed in Workspace Settings → API Key Management.
 
 ## Base URL
 
 | Environment | Base URL |
-|---|---|
+| --- | --- |
 | Cloud SaaS | `https://api.zgi.cn/v1` |
-| Self-Hosted | `http://YOUR_HOST:2678/v1` |
+| Private deployment | `http://YOUR_HOST:2678/v1` |
 
-## Core Endpoints
+## Core endpoint
 
-### Chat Completions
+- `POST /v1/chat/completions`: Send conversation request, support knowledge base retrieval and streaming output
 
-`POST /v1/chat/completions`
+- `GET /v1/models`: Get the list of available models
 
-Send a chat request with knowledge base retrieval and streaming support.
+- `POST /v1/workflows/{workflow_id}/run`: triggers the execution of the specified workflow
+
+- `POST /v1/knowledge-bases/{kb_id}/documents`: Upload documents to the knowledge base
+
+- `POST /v1/knowledge-bases/{kb_id}/search`: Query knowledge base search results
+
+## Dialog request example
 
 ```bash
 curl -X POST https://api.zgi.cn/v1/chat/completions \
@@ -35,8 +41,8 @@ curl -X POST https://api.zgi.cn/v1/chat/completions \
   -d '{
     "model": "zgi-default",
     "messages": [
-      { "role": "system", "content": "You are a helpful contract assistant." },
-      { "role": "user", "content": "What are the payment terms in the latest contract?" }
+      { "role": "system", "content": "You are a contract review assistant" },
+      { "role": "user", "content": "What are the payment terms in this contract?" }
     ],
     "knowledge_base_id": "kb_xxxxxx",
     "stream": true,
@@ -44,41 +50,17 @@ curl -X POST https://api.zgi.cn/v1/chat/completions \
   }'
 ```
 
-#### Request Parameters
+## Request parameters
 
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `model` | string | Yes | Model ID to use |
-| `messages` | array | Yes | Array of conversation messages |
-| `knowledge_base_id` | string | No | Associated knowledge base ID |
-| `stream` | boolean | No | Enable SSE streaming output |
-| `temperature` | float | No | Sampling temperature (0–2) |
+| Parameters | Type | Required | Description |
+| --- | --- | --- | --- |
+| `model` | string | required | Model ID to use |
+| `messages` | array | required | array of conversation messages |
+| `knowledge_base_id` | string | Optional | The associated knowledge base ID |
+| `stream` | boolean | Optional | Whether to enable streaming output |
+| `temperature` | float | optional | sampling temperature (0-2) |
 
-### List Models
-
-`GET /v1/models`
-
-Get list of available models.
-
-### Run Workflow
-
-`POST /v1/workflows/{workflow_id}/run`
-
-Trigger a specific workflow execution.
-
-### Upload Document
-
-`POST /v1/knowledge-bases/{kb_id}/documents`
-
-Upload a document to a knowledge base.
-
-### Search Knowledge Base
-
-`POST /v1/knowledge-bases/{kb_id}/search`
-
-Query knowledge base retrieval results.
-
-## SDKs
+## SDK
 
 ```bash
 # Python
@@ -96,12 +78,12 @@ client = ZGIClient(api_key="YOUR_API_KEY")
 # Query knowledge base
 result = client.knowledge.query(
     knowledge_base_id="kb_xxxxxx",
-    question="What is the payment cycle for this contract?"
+    question="How many days is the payment cycle in this contract?"
 )
 print(result.answer)
-print(result.citations)  # [{"source": "Contract.pdf", "page": 4, "text": "..."}]
+print(result.citations)  # [{"source": "contract.pdf", "page": 4, "text": "..."}]
 
-# Run workflow
+# trigger workflow
 run = client.workflows.run(
     workflow_id="wf_xxxxxx",
     inputs={"document_url": "https://..."}

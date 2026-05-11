@@ -3,78 +3,190 @@ title: "Database"
 description: "Structured data foundation for business intelligence with NL2SQL"
 ---
 
-ZGI Database is not a simple "data storage" module — it's a **structured data foundation for business intelligence**. Users can start from business documents to quickly generate table schemas, then chain together queries, analytics, calculations, and agent Q&A.
+## Function overview
 
-> **Core Value:** Not just "storing data" — making that data reliably queryable, accurately computable, clearly auditable, and accessible to business users through natural language.
+ZGI database is not a simple "data storage" module, but a set of **structured data capability base** for business intelligence scenarios. It supports users to quickly generate data table structures starting from business documents, tables or explanatory materials, and connect subsequent data query, statistical analysis, complex calculations, log tracking, agent question and answer and other capabilities in series.
 
-## Core Capabilities
+The database function can be used as an independent data management tool or as the core data source in the agent workflow. For scenarios such as contract management, project ledgers, operating data statistics, business record analysis, rule management, etc., the database module can undertake a complete link from "structured modeling" to "natural language query".
 
-| Capability | Includes | Description |
-|---|---|---|
-| **Schema Design** | Field definition, type setting, required marking | Manual and AI-generated schema creation |
-| **AI Schema Generation** | Upload docs to auto-generate schemas | Auto-detect fields from documents, spreadsheets, contracts |
-| **Data Import** | Batch structured data ingestion | 15 records per import currently, being optimized |
-| **Data Queries** | Exact, conditional, fuzzy matching | Multiple query types for various business needs |
-| **Analytics** | Aggregation, grouping, sorting, joins | Complex analysis and multi-dimensional statistics |
-| **NL2SQL** | Natural language to SQL auto-conversion | Business users ask in plain language, get results directly |
-| **Audit Logs** | SQL execution records, operation tracking | Full audit trail for troubleshooting and review |
-| **Agent Integration** | As a workflow data source node | Database + agents for end-to-end business loops |
+> **Core Value**
+>
+> It's not just about "storing data in", but it's about allowing these data to be stably checked, accurately calculated, clearly tracked, and finally returned to business personnel through natural language.
 
-## Supported Data Types
+Database capabilities are particularly suitable for the following types of business problems:
 
-| Type | Usage | Typical Scenarios |
-|---|---|---|
-| `text` | String content | Names, addresses, descriptions |
-| `numeric` | Precise numeric values | Amounts, rates, prices |
-| `integer` | Integer values | Quantities, days, sequence numbers |
-| `timestamp` | Date/time values | Contract dates, operation times |
-| `boolean` | True/false flags | Enabled/disabled, completed/pending |
+- Query single or multiple pieces of structured information
+- Filter data according to conditions and output details
+- Aggregate, group, sort, and perform statistical analysis on data
+- Support intelligent agents to conduct natural language question and answer
+- Do complex calculations with business rules, clause data, and project rule tables
+- Carry out log traces and troubleshooting of database operation processes
 
-## AI Schema Generation
+## Overview of core competencies
 
-Upload reference files with a requirements description. The system identifies key fields and infers a reasonable schema based on file content and business intent.
+| Ability Category | Contains capabilities | illustrate |
+| --- | --- | --- |
+| **Table structure design** | Field definition, type setting, required mark, manual adjustment | Supports two methods of manual table creation and intelligent generation |
+| **Intelligent generation of table structure** | Upload business documents to automatically generate table structures | Automatically identify fields from documents, forms, contracts and other materials |
+| **Data Import** | Structured data batch writing | Supports the import of 15 pieces of data at a time, and is continuing to be optimized. |
+| **Data Query** | Precise query, conditional filtering, fuzzy matching | Supports multiple query types to meet different business needs |
+| **Statistical Analysis** | Aggregation, grouping, sorting, multi-table joint query | Complex analysis and multidimensional statistics |
+| **Natural Language Query** | NL2SQL automatic conversion and execution | Business staff can ask questions in Chinese and get direct results. |
+| **Operation Log** | SQL execution records and operation tracking | Full-link audit, supporting investigation and review |
+| **Intelligent linkage** | As a workflow data source node | Database + agent realize end-to-end business closed loop |
 
-**Supported inputs:** DOC, DOCX, PDF, XLSX, XLS, PPTX, JPG, or custom text descriptions.
+## Supported data types
 
-**Generated output:** Field names, descriptions, recommended data types, required field suggestions, and potential business primary keys.
+| data type | Instructions for use | Typical scenario |
+| --- | --- | --- |
+| `text` | Text type, storing string content | Name, address, description, remarks |
+| `numeric` | Exact numeric type | Amount, rate, price |
+| `integer` | integer type | Quantity, days, serial number |
+| `timestamp` | timestamp type | Contract date, operation time |
+| `boolean` | Boolean type | Whether to enable and complete |
 
-## Natural Language Queries (NL2SQL)
+## Table structure design
 
-Business users ask questions in plain language. The system automatically converts to SQL and executes:
+### Field definition
 
+Each field contains the following information: **storage field name**, **field description**, **data type**, **whether required**. This design takes into account both technical executability and business understandability.
+
+### Single table and multiple table design
+
+In a simple scenario, one table can carry complete data (employee ledger, equipment list, etc.). For complex scenarios, one database and multiple tables design is recommended:
+
+- **Main table** — carries core structured fields (such as contract number, amount, date)
+
+- **Term Sheet** — Contains original terms or explanatory content
+
+- **Rule table** — carries project-level or business-level rules and calculation standards
+
+- **Details table** — carries multiple records or change details
+
+> For scenarios such as contracts, rules, and business analysis, a multi-table design is usually more stable and more conducive to subsequent queries and complex calculations.
+
+## Intelligent generation of table structure
+
+The user uploads a reference file and fills in the requirement description, and the system automatically identifies key fields based on the file content and business intent, and infers a reasonable table structure.
+
+### Supported input sources
+
+- Local file upload (DOC, DOCX, PDF, XLSX, XLS, PPTX, JPG)
+
+- Custom text description
+
+- Select reference files from the file management module
+
+### Generate content
+
+The system automatically generates field names, field descriptions, data type recommendations, required field recommendations, and possible business primary key/identification fields.
+
+### Applicable scenarios
+
+- Not familiar with modeling and don’t know how to create a table
+- Already have business materials but no structured data design yet
+- Hope to quickly build a demo or verification solution
+- Want to convert document content into a queryable structured table
+
+> **Usage Suggestions**
+>
+> Intelligent generation is suitable for "starting", but it is still recommended that the core field naming, field semantics, and field splitting methods be finalized by the business or implementation personnel.
+
+## Data import and maintenance
+
+After the table structure is built, the business data is written into the table through the import capability of the database module itself. Currently, it supports importing **15** pieces of data at a time, and this capability is being continuously optimized.
+
+### Applicable scenarios
+
+Initial ledger establishment, contract sample import, project rule data entry, tabular data rapid storage, and demo data preparation.
+
+> **Recommendation process**
+>
+> Design the table first → import in batches → verify the query to avoid finding unreasonable field design after one-time import.
+
+## Data query capabilities
+
+| Query type | illustrate | Example |
+| --- | --- | --- |
+| Precise query | Locate a single record by primary key or unique field | "Contract information of Sunshine Company" |
+| Conditional filtering | Filter multiple records by conditions | "All contracts expiring this month" |
+| fuzzy matching | Keyword fuzzy search | "Items containing 'property'" |
+| aggregate statistics | Summarize, count, group, sort | "Total annual rent for each building" |
+| Multiple table joint query | Cross-table related query | "Contract Master Table + Term Sheet Joint Query" |
+| Complex calculations | Multi-field operations and rule judgment | "Liquidated damages = daily rent × number of overdue days × rate" |
+
+## Natural language query (NL2SQL)
+
+Business personnel can directly ask questions in Chinese, and the system automatically converts natural language into SQL and executes it.
+
+### Query example
+
+```text
+User question: What is the property fee payment method for Sunshine Company?
+
+→ System-generated SQL:
+  SELECT payment_method FROM contracts WHERE company_name = 'Sunshine Company';
+→ Natural language response:
+  The property fee payment method for Sunshine Company is "quarterly prepayment."
 ```
-User: "What is Sunshine Corp's property fee payment method?"
 
-→ System generates SQL:
-  SELECT payment_method FROM contracts WHERE company_name = 'Sunshine Corp';
+### conversion process
 
-→ Returns natural language:
-  "Sunshine Corp's property fee payment method is 'quarterly prepayment'."
-```
+### Understanding the problem
 
-### Conversion Flow
+The system identifies query objects, query indicators and query types
 
-1. **Understand Query** — System identifies query target, metrics, and type
-2. **Generate SQL** — Auto-generate SQL based on table schema
-3. **Execute Query** — Run SQL and retrieve raw results
-4. **Natural Language Response** — Convert results into a business-friendly answer
+### Generate SQL
 
-## Query Types
+Automatically generate corresponding SQL statements based on the table structure
 
-| Type | Description | Example |
-|---|---|---|
-| Exact Query | Locate by primary key | "Contract info for Company A" |
-| Conditional Filter | Filter by conditions | "All contracts expiring this month" |
-| Fuzzy Match | Keyword fuzzy search | "Projects containing 'property'" |
-| Aggregate Stats | Sum, count, group, sort | "Total annual rent per building" |
-| Multi-Table Join | Cross-table association | "Main table + clauses table joint query" |
-| Complex Calculation | Multi-field computation | "Penalty = daily rent × overdue days × rate" |
+### Execute query
 
-## Agent Workflow Integration
+Execute SQL in database and get raw results
 
-The database serves directly as a core node in agent workflows:
+### Natural language reply
 
-- **As Data Source** — Provide query objects and statistics for agents to consume
-- **Analytics Pipeline** — Handle computation and result delivery for business analysis
-- **Complex Computation** — Provide numeric and rule fields for rule-driven calculations
-- **Natural Language Replies** — Generate NL answers from query results, not just tables
+Convert query results into natural language answers that business people can understand
+
+## Complex business calculations
+
+The database is not only suitable for "looking up data", but can also provide structured support for complex business calculations. Together with the rules table and terms table, you can achieve:
+
+- **Liquidated Penalty Calculation** — Automatically calculated based on overdue days, daily rent and rate
+
+- **Property fee calculation** — Calculated based on multiple dimensions such as area, unit price, cycle, etc.
+
+- **Deposit Return Judgment** — Comprehensive judgment based on contract terms and actual performance.
+
+- **Payment Cycle Alert** — Automatically identify payment nodes that are about to expire
+
+## Operation logs and tracking
+
+| Dimensions | illustrate |
+| --- | --- |
+| Operating time | Operation timestamp accurate to seconds |
+| Operation type | Create tables, queries, update, delete, etc. |
+| Execution status | Success/failure and error reasons |
+| Operation sheet | Involved data table name |
+| operating user | The account that performs the operation |
+| Execute SQL | The actual executed SQL statement for easy troubleshooting |
+
+The log supports filtering by operation type, status, and time range, and is suitable for scenarios such as query error troubleshooting, prompt word optimization review, business data modification tracking, and abnormal location of agent results.
+
+## Linked to intelligent agent workflow
+
+- **As a data source**: Provide query objects, core fields, and statistical data, allowing agents to directly consume structured data
+- **Statistical Analysis Link**: In scenarios such as business analysis and contract statistics, it directly assumes the role of statistics and return results.
+- **Complex calculation support**: Provides core numerical fields and rule fields to provide a data basis for rule-driven business calculations
+- **Natural language reply**: The query results directly generate natural language answers, not just returning forms, but service business questions and answers
+
+## Typical business scenarios
+
+| scene | The role of the database | core competencies |
+| --- | --- | --- |
+| **Contract Management** | Stores the main contract table + terms table, supporting natural language Q&A | Multi-table query + NL2SQL |
+| **Project Ledger** | Structured management of project schedule, budget, person in charge, etc. | Conditional filtering + aggregate statistics |
+| **Operational Analysis** | Multi-dimensional data statistics and visualization | Group statistics + complex calculations |
+| **Property Management** | Ledger management of rent, property fees, deposits, etc. | Rule calculation + early warning |
+| **HR Management** | Structured storage of employee information, attendance, and performance | Precise query + filter |
+| **Equipment Asset** | Equipment list, inspection records, maintenance information | Conditional query + log tracking |

@@ -3,115 +3,122 @@ title: "Deployment Guide"
 description: "From cloud trial to self-hosted production — choose the right deployment for you"
 ---
 
-## Deployment Options
+## Comparison of deployment methods
 
-| Method | Best For | Data Location | Time to Launch |
-|---|---|---|---|
-| **Cloud SaaS** | Quick validation, small teams | ZGI cloud (encrypted) | Instant |
-| **Docker Compose** | Dev environment, small production | Enterprise intranet | 1 hour |
+| Method | Suitable scenario | Data location | Online time |
+| --- | --- | --- | --- |
+| **Cloud SaaS** | Quick verification, small and medium-sized teams | ZGI Cloud (encrypted storage) | Ready to use |
+| **Docker Compose** | Development environment, small-scale production | Corporate intranet | 1 hour |
 | **Kubernetes** | Production high availability | Enterprise intranet | 30 minutes |
-| **Enterprise On-Premise** | Finance, government, healthcare | Fully self-controlled | 3 business days |
+| **Privatized Enterprise Edition** | Finance, government affairs, medical compliance | Complete self-control | 3 working days |
 
-## System Requirements (Self-Hosted)
+## System requirements (privatized deployment)
 
-| Component | Minimum | Recommended |
-|---|---|---|
-| OS | Linux (Ubuntu 20.04+) | Ubuntu 22.04 LTS |
-| CPU | 8 cores | 16+ cores |
+| Components | Minimum Configuration | Recommended Configuration |
+| --- | --- | --- |
+| Operating System | Linux (Ubuntu 20.04+) | Ubuntu 22.04 LTS |
+| Processor | 8 cores | 16 cores+ |
 | Memory | 16 GB | 32 GB+ |
 | Storage | 100 GB SSD | 500 GB SSD+ |
-| Runtime | Docker 20.10+ | Kubernetes 1.24+ |
-| Database | PostgreSQL 14+ | PostgreSQL 16+ |
+| Docker | 20.10+ | Kubernetes 1.24+ |
 
-## Open Source — Quick Start
+## Open Source Edition Deployment — Quick Start
 
-ZGI's core framework is fully open source. Clone and run:
+The ZGI core framework is completely open source on GitHub, and anyone can start the complete service stack directly from the source code.
 
-### macOS / Linux (Recommended)
+### Warehouse structure
 
-```bash
+Use **git submodule** to organize multiple warehouses, and the top-level warehouse is responsible for product-level aggregation:
+
+| Catalog | Description | Warehouse address |
+| --- | --- | --- |
+| `api/` | Backend service (Go) | `zgiai/zgi-api` |
+| `web/` | Front-end application (React) | `zgiai/zgi-web` |
+| `sandbox/` | Code execution sandbox | `zgiai/zgi-sandbox` |
+| `plugin-runner/` | Plug-in execution service | `zgiai/zgi-plugin-runner` |
+| `docker/` | Shared middleware and deployment assets | — |
+
+### macOS/Linux — Docker one-click startup (recommended)
+
+```shell
+# Clone repository
 git clone https://github.com/zgiai/zgi.git
 cd zgi
+
+# Start the complete Docker stack with one click
 make dev-docker
 ```
 
-`make dev-docker` auto-completes on first run: initialize submodules → copy env templates → generate compose → start stack.
+> **make dev-docker will be automatically completed when run for the first time**
+>
+> Initialize submodule → Copy missing env template → Regenerate root compose → Start full Docker stack. No manual work required.
 
-### China Mainland Mirror
+### Mainland China network acceleration
 
-```bash
+If the image build is slow or unstable, you can use the `--china` mode to inject the recommended image source configuration (the template file will not be rewritten):
+
+```shell
 ./dev/start-docker --china
 ```
 
-### Source Code Development
+### Environment variable management
 
-Run `api/` and `web/` from source, with middleware via Docker:
+```shell
+# Check differences between local env and template
+make env-check
 
-```bash
+# Append missing items (does not overwrite existing values)
+make env-sync
+```
+
+### macOS/Linux — Source code development model
+
+```shell
+# Initialize development environment
 make setup
+
+# Start middleware (database, cache, etc.)
 make dev-docker
+
+# Start the backend and frontend separately
 make dev-api
 make dev-web
 ```
 
-### Windows
+### Windows Deployment
+
+Minimum support for Windows is **Docker Desktop + PowerShell**. Source code development aids rely on Unix-like shells and are not available on Windows.
 
 ```powershell
+# PowerShell
 .\dev\start-docker.ps1
-# With China mirrors:
+
+# PowerShell (domestic mirror)
 .\dev\start-docker.ps1 -china
 ```
 
-### Environment Variable Management
+### Default service address
 
-```bash
-# Check env vs template diff
-make env-check
+| Services | Address | Description |
+| --- | --- | --- |
+| **Web front-end** | `http://localhost:13000` | Console interface |
+| **API Backend** | `http://localhost:2678` | REST API |
+| PostgreSQL | `localhost:15432` | Master database |
+| Redis | `localhost:16379` | Cache and message queue |
+| Weaviate | `http://localhost:18080` | Vector database |
+| Neo4j HTTP | `http://localhost:17474` | Knowledge Graph |
+| Sandbox | `http://localhost:18194` | Code execution sandbox |
+| Plugin Runner | `http://localhost:15000` | Plug-in execution service |
 
-# Append missing keys (does not overwrite existing values)
-make env-sync
-```
+## Kubernetes deployment
 
-## Enterprise Docker Compose
-
-```bash
-wget https://releases.zgi.cn/zgi-v2026-enterprise.tar.gz
-tar -xzf zgi-v2026-enterprise.tar.gz && cd zgi-enterprise
-cp .env.example .env
-# Edit .env with License Key, database connection, etc.
-docker-compose up -d
-docker-compose ps
-```
-
-## Kubernetes
-
-```bash
+```shell
+# Add ZGI Helm repository
 helm repo add zgi https://charts.zgi.cn
+
+# Install
 helm install zgi zgi/zgi \
   --namespace zgi --create-namespace \
   --set global.storageClass=your-storage-class \
   --values values-production.yaml
 ```
-
-## Default Service Addresses
-
-| Service | Address | Notes |
-|---|---|---|
-| Web Frontend | `http://localhost:13000` | Console UI |
-| API Backend | `http://localhost:2678` | REST API |
-| PostgreSQL | `localhost:15432` | Primary database |
-| Redis | `localhost:16379` | Cache & queue |
-| Weaviate | `http://localhost:18080` | Vector database |
-| Neo4j | `http://localhost:17474` | Knowledge graph |
-| Sandbox | `http://localhost:18194` | Code execution |
-| Plugin Runner | `http://localhost:15000` | Plugin runner |
-
-> All ports can be customized via `HOST_*_PORT` variables in `.env`.
-
-## Enterprise Edition Extras
-
-- Dedicated technical support (SLA-backed)
-- Self-hosted OCR engine (data never leaves your network)
-- Ontology enterprise knowledge graph
-- SOC 2 / GDPR / MLPS Level 3 compliance support
-- Custom model integration and tuning

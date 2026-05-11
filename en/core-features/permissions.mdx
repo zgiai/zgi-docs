@@ -3,40 +3,118 @@ title: "Permissions & Cost Control"
 description: "RBAC permissions + precise token metering — who can use what, and how much it costs"
 ---
 
-## Permission System
+## Overview
 
-Based on RBAC (Role-Based Access Control) with multi-tenant isolation:
+When enterprises use AI platforms, they need to solve two problems at the same time: "Who can access what resources" and "How to attribute, control and audit call costs". ZGI integrates organizations, departments, workspaces, members, role permissions, API Keys, workspace quotas, wallets, AI points, subscription packages and billing flows to help teams build a scalable AI governance system.
 
-| Role | Permission Scope |
-|---|---|
-| **Super Admin** | All features + billing + deployment management |
-| **Workspace Admin** | All features within workspace + member management |
-| **Developer** | Create/edit workflows + API key management + view call logs |
-| **Business User** | Use published apps + view own usage |
-| **Read-Only Member** | View workflows and knowledge bases, no modifications |
+> **Governance Objectives**
+>
+> Allow enterprises to allocate resources based on organizational structure, grant permissions based on roles, control quotas based on workspaces and calling credentials, and accurately accumulate AI consumption into trackable bills.
 
-### Key Features
+## Organization and workspace
 
-- **Multi-Tenant Isolation** — Strict data separation between tenants and workspaces
-- **Feature-Level Control** — Permissions granular to individual features, not just pages
-- **How to Inherit AI Assets from Offboarded Employees** — Employee offboarding triggers automatic asset transfer; prompts, workflows, and knowledge bases stay with the organization
-- **SSO Integration** — LDAP, SAML 2.0, OAuth 2.0 (Slack, Google Workspace, Microsoft Entra ID)
-- **Audit Trail** — All admin operations fully logged, tamper-proof
+| concept | illustrate |
+| --- | --- |
+| **organize** | Enterprise-level management boundaries, including members, departments, roles, workspaces, and subscription benefits |
+| **department** | Maintain members according to the enterprise organizational structure, which can be used to join workspaces in batches and manage member ownership. |
+| **Workspace** | AI resource collaboration space, which can include members, agents, knowledge bases, databases, files and applications |
+| **member** | Supports direct addition, invitation to join, removal, disabling/enabling, nickname checking and information maintenance |
+| **Work Area Manager** | When creating or updating a workspace, you can specify the person in charge, department, and associated API Key |
 
-## Cost Control
+## Roles and permissions
 
-- **Precise Token Attribution** — Token consumption tracked down to each person, department, and application
-- **Budget Limits** — Set monthly budget caps for each workspace and API key
-- **Auto Alerts** — Notifications at 80% budget utilization; auto-throttle at 100%
-- **Visual Billing** — Multi-dimensional cost breakdown by time, department, model, and application
+ZGI supports two levels of permissions: organization role and workspace role. The organization layer includes owner, admin, normal and other roles; the workspace layer can be configured with owner, admin, normal and custom roles. Each role consists of a set of permission codes, which the system will verify before the user accesses pages, creates resources, uploads files, performs tests and other actions.
 
-### How It Works
+| Permission module | Configurable permissions |
+| --- | --- |
+| **Workspace** | View, manage, and bill audit; reserve transfer and archiving related capabilities |
+| **Agent** | View, manage, lock |
+| **knowledge base** | View, manage, recall testing, folder management, lock |
+| **database** | View, manage, data edit, AI query, lock |
+| **document** | View, manage, upload creation, download, mobile creation |
 
-Every API call and agent execution logs:
-- Which user triggered the call
-- Which workspace and application it belongs to
-- Which model was used
-- How many input/output tokens were consumed
-- The total cost based on the model's pricing
+## Member management process
 
-This data feeds into real-time dashboards and alerting rules, so finance and IT teams always know where AI budget is going.
+1. The organization administrator enters the organization management page, creates departments and maintains department hierarchies.
+2. Add members by direct addition or invitation. You can specify email address, name, department and whether to send emails.
+3. Create or select a role, configure role name, description and permission set
+4. Join members to one or more workspaces and assign them workspace roles
+5. Update roles or move workspaces when a member's responsibilities change; remove from the organization or workspace when a member leaves the organization
+
+## Cost center composition
+
+| module | illustrate |
+| --- | --- |
+| **Subscription Package** | Supports free trial version, team version, professional version, enterprise version and other package coding, including seats, storage, knowledge base, agents, monthly AI points, workflow execution times and functional rights |
+| **Wallet Balance** | Record the available balance of the account, which can be used for top-up, subscription purchase or combination payment |
+| **AI Points** | Distinguishes official AI points from private channel funds, so teams can manage platform models and enterprise-owned channels together |
+| **Work area quota** | Configure unlimited or custom quota according to workspace, record used quota, remaining quota and quota limit |
+| **API Key Quota** | Each API Key can set unlimited or customized quota, and record the used and remaining quota. |
+| **Bill flow** | Query transaction records by time, type, and keywords, and support exporting to Excel |
+| **Monthly Statistics** | Show cash consumption, total points consumption, subscription points consumption and purchase points consumption |
+
+## Billing and quota control
+
+The back-end billing service supports **pre-call limit check, withholding, post-call settlement and dual-track cost calculation**. A model call can record the organization, model, supplier, channel, request ID, account, application, IP, User-Agent, whether it is streaming, Token usage, response time, status and error information.
+
+- **Before calling** — Check whether the account or organization balance is sufficient, and withhold the estimated points.
+
+- **Calling** — The model gateway completes routing and request forwarding, and records the request ID and channel information.
+
+- **After call** — Settlement based on prompt_tokens, completion_tokens, total_tokens, model unit price and actual status
+
+- **Exception handling** - If the actual consumption is lower than the withholding, the difference can be refunded; if it fails, error information will be recorded for tracking
+
+- **Dual-track billing** — Simultaneously calculates point costs and USD costs, compatible with platform points and enterprise self-pay models
+
+## API Key security configuration
+
+- Create API Keys separately by system, application or integration party. It is not recommended that multiple systems share the same Key.
+- Set model scope for production keys to avoid low-risk systems calling high-cost or sensitive models
+- Configure expiration time and status, and support life cycle management such as active, inactive, revoked, etc.
+- Configure an IP whitelist to restrict calls to trusted network sources only
+- Configure the upper limit and remaining limit to prevent abnormal calls from causing costs to get out of control
+
+## Budget strategy suggestions
+
+- Set the monthly quota according to the work area. Start with a smaller quota in the initial stage of the launch and adjust after observing the actual consumption.
+
+- Use different API Keys for production systems and test systems, and set quotas and model ranges respectively.
+
+- Whitelist high-cost models to only allow calls to specific workspaces, roles, or API Keys
+
+- Export bill flow regularly and review cost structure by workspace, application, model and call voucher
+
+- Separately monitor private channel funds to avoid enterprise account arrears affecting business continuity
+
+## Security
+
+| in principle | illustrate |
+| --- | --- |
+| **Principle of Least Privilege** | New members are granted viewing permissions by default, and management, testing, uploading and editing permissions are gradually increased according to their responsibilities. |
+| **Regular Visit Review** | Periodically check the ownership of members, roles, departments and workspaces, and remove access rights that are no longer needed. |
+| **Sensitive configuration isolation** | Model vendor keys, channel balances, subscription bills and credit adjustments should be restricted to administrators |
+| **Permissions take effect immediately** | After the member role is changed, the page and operation permissions should be implemented immediately according to the new permissions. |
+| **Audit Traces** | It is recommended to save login, member changes, role permission changes, API Key creation, model calls, knowledge base access and bill adjustment records for a long time. |
+
+## Typical usage scenarios
+
+| scene | Configuration recommendations |
+| --- | --- |
+| Small team collaboration | Using one organization and multiple workspaces, administrators manage models and billing, and developers manage agents and knowledge bases |
+| Multi-department cost attribution | Create workspaces by department, set quotas for each workspace and export bill review |
+| External system integration | Create an independent API Key for each system, set the model range, IP whitelist and quota limit |
+| Private deployment | Enterprise Edition combines private channels, organizational roles, and audit logs to meet security compliance requirements |
+| High cost model governance | Only the flagship model is open to core applications or specific roles, and the default cost-effective model is used for ordinary tasks. |
+
+## ZGI Governance Advantages
+
+- **Unified management of organizations, departments, workspaces and role permissions**, adapting to the real collaboration structure of the enterprise
+
+- **Permission granularity** covers core resources such as workspaces, agents, knowledge bases, databases and files
+
+- **Quota control** covers workspace and API Key, and can restrict people, applications and system integration at the same time
+
+- **Fees Center** covers subscriptions, wallets, AI points, private channel funds, transaction flow and monthly statistics
+
+- The model gateway is linked with the billing service to form a complete link from calling, deduction to tracking**

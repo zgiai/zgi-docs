@@ -3,60 +3,85 @@ title: "Architecture"
 description: "ZGI's five-layer architecture and technology stack"
 ---
 
-## Five-Layer Architecture
+## Design concept
 
-```
-┌──────────────────────────────────────────────────┐
-│           Application Layer / Use Cases           │
-│  Contract Review · Report Generation · Data Analysis│
-├──────────────────────────────────────────────────┤
-│        Agent Orchestration Layer                  │
-│  Visual Workflow · Multi-Agent · Branching · Loops │
-├──────────────────────────────────────────────────┤
-│          Knowledge & Data Layer                   │
-│  Document ETL · Vector Index · Knowledge Graph    │
-│  Hybrid Recall · NL2SQL · Structured Database     │
-├──────────────────────────────────────────────────┤
-│            Model Layer / Gateway                  │
-│  OpenAI · Claude · DeepSeek · Qwen · Local Models │
-├──────────────────────────────────────────────────┤
-│        Infrastructure & Security Layer            │
-│  Self-Hosted · RBAC · AES-256 · SOC 2 · Docker/K8s│
-└──────────────────────────────────────────────────┘
-```
+ZGI is not a simple stack of functions, but revolves around a core goal: **to make AI "usable, manageable, and retainable"** in the enterprise.
 
-## Layer Responsibilities
+For this reason, we divided the entire product into four layers. Each layer corresponds to a type of real demands for enterprises to implement AI: from autonomous control of the underlying code, to unified access to models, to data governance, to upper-layer application and permission control. Each layer can be used independently or together to form a complete system.
 
-| Layer | Name | Responsibility | Core Components |
-|---|---|---|---|
-| L5 | Application | End-user-facing AI applications | Contract Review · Report Generation · Data Analysis |
-| L4 | Orchestration | Agent creation and workflow engine | Visual Canvas · Conditional Branching · Loops · Parallel Execution |
-| L3 | Knowledge | Unstructured + structured data processing | Document ETL · Vector Search · Knowledge Graph · NL2SQL |
-| L2 | Model | Unified multi-model access and routing | Load Balancing · Auto Fallback · Cost Routing · Key Rotation |
-| L1 | Infrastructure | Security, permissions, deployment | RBAC · Encryption · Auditing · Compliance · Containerization |
+ZGI product architecture · four-layer design
 
-## Technology Stack
+Multi-level permissions and auditing
 
-| Layer | Technology | Notes |
-|---|---|---|
-| Backend | Go 1.24 + Gin 1.9 | High performance, low resource footprint |
-| Frontend | Next.js 16 + React 19 + TypeScript | Server-side rendering + responsive UI |
-| Primary DB | PostgreSQL 16.0 + GORM | Core business data storage |
-| Vector DB | Weaviate | Knowledge base vector index |
-| Graph DB | Neo4j | Knowledge graph storage |
-| Cache | Redis 7.2 | Hot data & session management |
-| Queue | Asynq | Async tasks (doc parsing, vectorization) |
-| Container | Docker 24 + Kubernetes | One-click deployment, high availability |
-| UI Components | shadcn/ui + Tailwind CSS | Responsive design, theme customization |
+Refined department structure management supports independent budget accounting by department to avoid Token abuse
 
-## Module Overview
+Database Enhanced Knowledge Base RAG
 
-The backend is organized into the following core modules:
+Introducing a database to optimize the knowledge base and achieve a recall accuracy rate of more than 99%
 
-- **Agent Management** — Full lifecycle management for conversational and workflow agents
-- **Workflow Engine** — Visual orchestration with SSE streaming execution
-- **Knowledge Base** — Document ETL, vector indexing, knowledge graph construction
-- **Model Gateway** — Multi-provider routing, load balancing, automatic fallback
-- **Database & NL2SQL** — Structured data management with natural language queries
-- **Permission System** — Multi-tenant RBAC with feature-level access control
-- **API Layer** — OpenAI-compatible RESTful API endpoints
+One-click access to global models
+
+Pre-register the mainstream large models in the market (dialogue, rearrangement, vector, image, etc.), users do not need to configure cumbersome API Keys one by one
+
+Own intellectual property rights
+
+The ZGI core code has completely independent copyright and is not re-encapsulated, avoiding the harsh restrictions of open source protocols and the risk of underlying dependencies.
+
+APPLICATION
+
+DATA
+
+MODEL GATEWAY
+
+CODE
+
+Preventing accidental deletion and inheritance of assets
+
+There is a check mechanism to prevent accidental deletion of running processes or intelligent assets; when employees leave, AI assets can be transferred with one click to ensure the continuity of corporate digital assets.
+
+Knowledge graph enhanced RAG
+
+Organize fragmented knowledge into a graph structure so that AI can understand the correlation between knowledge. During retrieval, nearby nodes can be recalled in association to solve the information fragmentation caused by traditional block retrieval.
+
+Local/self-built model support
+
+Supports enterprises to configure their own API Key for locally deployed large models, is compatible with existing IT architecture, and does not lock in model suppliers.
+
+Golang high performance backend
+
+In view of Python's natural shortcomings in multi-concurrency support, ZGI uses Golang to write the underlying code, which can stably support the real business needs of multiple customers and large-scale users online at the same time.
+
+## Responsibilities of each layer
+
+### 1. Application layer—delivering AI capabilities to front-line businesses
+
+This level provides directly available AI applications to enterprise end users and business teams: agent orchestration, Web console, mobile APP, enterprise permission management, agent operation monitoring, Agent templates, etc.
+
+Design focus: **Assets belong to the enterprise, authority is controllable and auditable, and department budgets are independently accounted**. These are not capabilities that are patched later, but are designed in from day one at the application layer.
+
+### 2. Data layer - allowing enterprise knowledge to be truly "used by AI"
+
+The data layer contains two core modules: **Knowledge Base** (processing unstructured data, such as documents, contracts, FAQs) and **Database** (processing structured data, supporting NL2SQL natural language queries).
+
+Differentiation: Association modeling of fragmented knowledge through **Knowledge Graph** enables retrieval to no longer just focus on "text similarity", but to understand the "relationship between entities", solving the shortcomings of traditional RAG in cross-document association issues.
+
+### 3. Model layer — a gateway that unifies all models
+
+The model gateway unifies different model suppliers (OpenAI, Anthropic, Google, domestic model service providers, and enterprise-owned models) into the same governance system: supplier management, channel routing, connectivity testing, call billing, and API Key control.
+
+Differentiation: **Official channels and private channels coexist**, which can not only use the platform's preset capabilities out of the box, but also access the company's own API Key, flexibly adapting to different cost and compliance requirements.
+
+### 4. Code layer - autonomous and controllable high-performance base
+
+The bottom layer uses **Go 1.24** + Gin framework + PostgreSQL 16, which is deeply optimized for enterprise-level high-concurrency scenarios. The front-end is based on Next.js 16 + React 19 and provides a responsive console.
+
+Differentiation: **The core code is completely independent and copyrighted**, and is not based on secondary encapsulation of other open source projects, avoiding upstream protocol risks and underlying dependency lock-in.
+
+## Typical deployment form
+
+| Form | Suitable for scene | Features |
+| --- | --- | --- |
+| **Cloud SaaS** | Quick verification, small and medium-sized teams | Sign up and use, pay according to usage, expand on demand |
+| **Docker Compose** | Development environment, small-scale production | One-click startup of the complete service stack, including database, cache, and vector library |
+| **Kubernetes** | Production high availability | Helm Chart deployment, supporting elastic scaling |
+| **Privatized Enterprise Edition** | Finance, government affairs, medical compliance | Data does not leave the intranet at all, supports local large models, and complies with SOC 2 / GDPR / Class III protection level |

@@ -5,29 +5,29 @@ description: "ZGI security architecture and compliance certifications"
 
 ## Security Architecture
 
-- **Transport Encryption** — All API requests encrypted via TLS 1.3
-- **Storage Encryption** — Knowledge base data and vectors encrypted with AES-256
-- **Data Isolation** — Strict multi-tenant isolation; workspace data invisible to others
-- **Key Management** — API keys stored with AES-GCM encryption; frontend shows masked values only
-- **Audit Trail** — All admin operations fully logged, tamper-proof
+- **Transport Encryption** — All API requests are transmitted encrypted via TLS 1.3
 
-## Compliance Certifications
+- **Storage Encryption** — Knowledge base data and vectors are encrypted using AES-256
+
+- **Data Isolation** — Multi-tenants are strictly isolated, and workspace data is invisible to each other.
+
+- **Key Management** — API Key is stored encrypted using AES-GCM, and the front end only displays the mask
+
+- **Operation Audit** — All administrator operations are fully recorded and cannot be tampered with
+
+## Compliance Certification
 
 | Certification | Status | Description |
-|---|---|---|
-| SOC 2 Type II | ✅ Certified | Security, availability, confidentiality audit |
-| GDPR | ✅ Certified | EU data protection compliance |
-| HIPAA | 🔄 In Progress | Healthcare data compliance |
-| China MLPS Level 3 | 🔄 In Progress | China network security level protection |
+| --- | --- | --- |
+| SOC 2 Type II | Certified | Security, Availability, Privacy Audit |
+| GDPR | Certified | EU Data Protection Compliance |
+| HIPAA | In preparation | Medical Data Compliance |
+| Level 3 protection | Under preparation | Domestic network security level protection |
 
-## Data Residency
+## Data residency
 
-| Deployment | Data Location | Network Boundary |
-|---|---|---|
-| Cloud SaaS | ZGI cloud infrastructure (AES-256 encrypted) | Encrypted transit via TLS 1.3 |
-| Self-Hosted | Your enterprise intranet | Data never leaves your network |
-| Hybrid | Core data on-premise, compute in cloud | Configurable per-workload |
-
-## Self-Hosted OCR (Coming Soon)
-
-ZGI is developing a proprietary document intelligence OCR engine that runs entirely within your infrastructure — no third-party API calls, no data leaving your network. Designed for scanned contracts, complex-layout financial reports, and chart-heavy research documents.
+| Deployment method | Data location | Network boundaries |
+| --- | --- | --- |
+| Cloud SaaS | ZGI Cloud Infrastructure (AES-256 encryption) | TLS 1.3 encrypted transmission |
+| Privatized deployment | Corporate intranet | Data does not leave the intranet at all |
+| Hybrid architecture | Core data local, computing cloud | Flexible configuration according to workload |

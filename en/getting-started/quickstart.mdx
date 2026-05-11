@@ -3,44 +3,84 @@ title: "Quick Start"
 description: "From registration to your first knowledge base — 30 minutes"
 ---
 
-## Prerequisites
+## What this tutorial will take you through
 
-Before you begin, ensure the following:
+This tutorial will take you through the basic process of ZGI quickly: **prepare materials, create knowledge base, configure large models, orchestrate agents, and publish them into a usable AI application**.
 
-- A business email (for registration)
-- Documents to import (PDF, Word, Excel — or use sample data)
-- For self-hosted: Docker environment or Kubernetes cluster
+Once completed, you will have an agent that answers questions based on your company profile. For example, after uploading contracts, systems, manuals, and FAQs, you can directly ask questions:
 
-## Choose Your Path
+- "What is the start and end time of this contract?"
+- "What is the reimbursement process in the system?"
+- "What are the payment periods and liquidated damages rules for a certain contract?"
+- "What contracts are about to expire in the past three months?"
 
-| Path | When to use it |
-| --- | --- |
-| **Cloud SaaS (Recommended)** | Sign up and start immediately. No IT infrastructure needed. Perfect for validation and small teams. |
-| **Self-Hosted Deployment** | Physical data isolation meeting finance and government compliance. Contact us for the installation package. |
+With this tutorial, you will accomplish 4 things:
 
-## Four Steps to Your First AI App
+- **Import data and create a knowledge base**
 
-1. **Register & Create Workspace**
+- **Configuration of available large models**
 
-   Go to [cloud.zgi.cn](https://cloud.zgi.cn) to register, create your enterprise workspace, and invite team members.
+- **Build a basic knowledge base question and answer agent**
 
-2. **Import Data & Build Knowledge Base**
+- **Publish as an external application, that is, the smart agent landing page**
 
-   Upload enterprise documents (contracts, reports, manuals, FAQs) to the knowledge base module. The system automatically handles parsing, chunking, vectorization, and graph construction. Supports PDF, Word, Excel, scanned images, and more.
+> **Suggestions**
+>
+> For your first experience, start with a small number of high-quality documents, such as 3 to 5 contracts, policies, product manuals, or FAQs. First run through the basic process, and then gradually increase the amount of data.
 
-   We recommend starting with a small batch (under 10 documents) to validate retrieval accuracy before bulk importing.
+## Preparation before starting
 
-3. **Connect Models & Configure Gateway**
+- A batch of test materials: PDF, Word, Excel, image scans or Markdown documents
+- One available source of large models: existing models on the platform, cloud model API keys, or local models in private deployments
+- If you use private deployment, you need to prepare the corresponding deployment environment in advance
 
-   In the Model Management page, connect your LLM API keys (OpenAI, Claude, DeepSeek, Qwen, etc.), or use ZGI's built-in shared models. Set call priorities and budget limits.
+## Build AI application in four steps
 
-4. **Orchestrate Agents & Publish**
+### Import data and create a knowledge base
 
-   On the visual workflow canvas, drag and drop nodes to build your AI application logic. Once debugging passes, publish with one click as a Web App or API endpoint.
+Enter the knowledge base module and upload the prepared information. ZGI will automatically complete parsing, slicing, and build a searchable knowledge base.
 
-## Make Your First API Call
+Capabilities supported by the knowledge base:
 
-For developers, integrate directly via the API:
+- Documents are automatically parsed and sliced
+- Vector recall and graph recall
+- Rerank
+- TopK, confidence threshold, embedding model configuration
+
+It is recommended for the first test: upload a small amount of high-quality documents first → wait for the parsing and slicing to be completed → use the knowledge base test function to verify → check whether the recalled content is accurate → confirm the effect before importing in batches.
+
+### Configure available large models
+
+Enter the large model configuration module and select or access the available large models. When trying it for the first time, it is recommended to configure a model that can support basic question and answer to ensure that the knowledge base question and answer process can run smoothly.
+
+In actual use, the large model is mainly responsible for understanding user questions and generating final answers combined with content recalled from the knowledge base.
+
+### Orchestrate agent workflow
+
+Enter the workflow canvas and create a basic agent process. The simplest knowledge base question and answer process can be built like this:
+
+```text
+Start node → Knowledge retrieval node → LLM node → Direct reply node
+```
+
+- **Start Node**: Questions that receive user input
+- **Knowledge retrieval node**: Find relevant content from the specified knowledge base
+- **LLM node**: generate answers based on user questions and search results
+- **Direct reply node**: Return the final result to the user
+
+### Debug and publish as external application
+
+After the workflow is built, test it in the debugging area first. It is recommended to test at least 3 types of questions:
+
+- **Precision query**: For example, "What is the expiration time of the contract?"
+- **Summary type**: For example, "Help me summarize the core terms of this contract."
+- **Comparative Analysis**: For example, "What are the differences in the payment periods of these contracts?"
+
+After confirming that the answer is stable, publish the agent as an external application (agent landing page), and users can access it directly through the landing page.
+
+## Developer quick call
+
+In addition to publishing through the interface, developers can also directly call the knowledge base or workflow through the API. A typical request will include the API Key, user question, model configuration and knowledge base identification, and the response content and citation source will be returned.
 
 ```bash
 curl -X POST https://api.zgi.cn/v1/chat \
@@ -48,61 +88,35 @@ curl -X POST https://api.zgi.cn/v1/chat \
   -H "Content-Type: application/json" \
   -d '{
     "model": "zgi-default",
-    "messages": [{ "role": "user", "content": "What contracts are expiring in the next three months?" }],
+    "messages": [
+      { "role": "user", "content": "Check which contracts expire in the next three months" }
+    ],
     "knowledge_base_id": "kb_xxxxxx"
   }'
 ```
 
-Response:
+Sample response:
 
 ```json
 {
   "id": "msg_xxxxxx",
-  "content": "Based on the knowledge base, the following contracts expire within three months: ...",
+  "content": "Based on knowledge base retrieval, the following contracts will expire within three months...",
   "citations": [
-    { "source": "Procurement_Contract_2025Q4.pdf", "page": 3, "paragraph": "Article 5: Contract Term..." }
+    {
+      "source": "Procurement_Contract_2025Q4.pdf",
+      "page": 3,
+      "paragraph": "Article 5 Contract Term..."
+    }
   ]
 }
 ```
 
-> **Every answer includes source citations.** The `citations` field returns the specific document, page number, and paragraph, so business teams can verify directly — no guessing about sources.
+> **Each answer comes with a quote from the original text**
+>
+> The `citations` field returns specific documents, page numbers and paragraphs, so business teams can verify them directly without guessing the source.
 
-## Local Docker Deployment
+## Next step
 
-For developers who want to run ZGI locally:
-
-```bash
-# Clone the repository
-git clone https://github.com/zgiai/zgi.git
-cd zgi
-
-# One-click startup
-make dev-docker
-```
-
-`make dev-docker` automatically initializes submodules, copies env templates, generates the root compose file, and starts the full Docker stack.
-
-### Default Service Addresses
-
-| Service | Address | Notes |
-|---|---|---|
-| **Web Frontend** | `http://localhost:13000` | Console UI |
-| **API Backend** | `http://localhost:2678` | REST API |
-| PostgreSQL | `localhost:15432` | Primary database |
-| Redis | `localhost:16379` | Cache & message queue |
-| Weaviate | `http://localhost:18080` | Vector database |
-| Neo4j HTTP | `http://localhost:17474` | Knowledge graph |
-| Sandbox | `http://localhost:18194` | Code execution sandbox |
-| Plugin Runner | `http://localhost:15000` | Plugin runner |
-
-### Windows
-
-Minimum requirement: **Docker Desktop + PowerShell**.
-
-```powershell
-# PowerShell
-.\dev\start-docker.ps1
-
-# With China mainland mirrors
-.\dev\start-docker.ps1 -china
-```
+- **Core concepts**: Understand the relationship between workspace, agent, knowledge base and model
+- **Knowledge Base & RAG**: Learning slicing, recall, TopK, Rerank and optimization of embedding models
+- **Agent Orchestration**: Build more complex business process applications

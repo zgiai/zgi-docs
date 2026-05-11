@@ -6,99 +6,56 @@ order: 1
 published: true
 ---
 
-This page gives you the mental model for working in the current ZGI open-source stack.
+## Organization and Collaboration
 
-## 1. Product shell
+ZGI's collaboration units from large to small are: organization → department → workspace → member. This structure is aligned with the actual organizational structure of the business.
 
-`zgi-pre` is the product shell repository.
+| Concept | Description |
+| --- | --- |
+| **Organization** | Enterprise-level management boundaries, including members, departments, roles, workspaces and subscription rights |
+| **Department** | Maintain members according to the enterprise organizational structure, which can be used to join workspaces in batches and manage member ownership |
+| **Workspace** | AI resource collaboration space, including members, agents, knowledge bases, databases, files and applications |
+| **Member** | People who use ZGI can belong to multiple workspaces and have different roles |
+| **Role** | Organization role (owner/admin/normal) + workspace role (custom) two-tier permission system |
 
-That means it owns integration, not all business logic. It is the place where we define how the stack boots, how the services connect, and how contributors can start the product locally.
+## Agent related
 
-## 2. Submodule-first services
+| Concept | Description |
+| --- | --- |
+| **Agent** | AI applications built based on ZGI are divided into two types: conversational and workflow types |
+| **Workflow** | The multi-step business process within the agent, consisting of node connections |
+| **Node** | The basic execution unit in the workflow, such as start node, LLM node, knowledge retrieval node, etc. |
+| **Variable** | The carrier for transferring data between nodes, divided into environment variables, session variables and node variables |
+| **API Key** | Credentials for agents or developers to call ZGI. The limit, expiration time, model range and IP whitelist can be set |
 
-Each major service keeps its own repository, history, and lifecycle.
+## Knowledge base related
 
-- `api/`
-- `web/`
-- `sandbox/`
-- `plugin-runner/`
+| Concept | Description |
+| --- | --- |
+| **Knowledge Base** | A collection of knowledge established for a certain business field, managed by workspace, and can be classified by folders |
+| **Document** | Import the original data into the knowledge base, and the system records the language, word count, number of hits, number of segments, index status, etc. |
+| **Segment** | The smallest recall unit after document cleaning and segmentation, which can be enabled, disabled, edited, deleted, and imported in batches |
+| **Child Chunk** | Used for more fine-grained content maintenance, suitable for long paragraphs, hierarchical information and fine recall scenarios |
+| **RAG** | Retrieval enhancement generation, first retrieve relevant content from the knowledge base, and then let the model generate answers based on the content |
+| **Hit Test** | Verify recall results with real problems before releasing the application, including single test, batch test and test report |
 
-This lets each service evolve independently while still being assembled into one local product experience.
+## Model related
 
-## 3. Root-level orchestration
+| Concept | Description |
+| --- | --- |
+| **Provider** | OpenAI, Anthropic, Google, domestic model service providers and enterprise custom suppliers |
+| **Model** | Records model name, capability type, context window, input/output price, capability label and enabled status |
+| **Channel** | Carrying real calling credentials, Base URL, model list, priority, weight, balance and connectivity status |
+| **Default Model** | Set default models according to dialogue, vector, rearrangement, vision, drawing and other purposes to reduce application configuration costs |
+| **Billing** | The amount is withheld before the call is made. After the call is completed, the settlement will be based on the actual Token, model price and channel information |
 
-The root repository is where we coordinate:
+## Expense management related
 
-- Docker Compose generation
-- env bootstrap and sync helpers
-- top-level scripts
-- GitHub templates and workflows
-- submodule pointer updates
-
-If a change is about product integration, it probably belongs here.
-
-## 4. Service-level ownership
-
-If a change is about application behavior, it usually belongs in the service repository itself.
-
-Examples:
-
-- API logic belongs in `api/`
-- frontend UI belongs in `web/`
-- sandbox runtime behavior belongs in `sandbox/`
-- plugin execution flow belongs in `plugin-runner/`
-
-## 5. Bootstrap, not manual setup
-
-The current root startup flow is designed to reduce fragile manual setup.
-
-Instead of asking contributors to hand-copy every env file and remember every command, the bootstrap flow can:
-
-- initialize submodules
-- copy missing env templates
-- generate the root compose file
-- start the stack
-
-This is why `make dev-docker` is the preferred starting point for most contributors.
-
-## 6. Shared infrastructure in product mode
-
-Standalone services may have their own Docker workflows, but the full product stack can reuse shared infrastructure.
-
-For example:
-
-- `sandbox` can run with its own bundled dependencies when started alone
-- in `zgi-pre`, `sandbox` reuses the shared root Postgres and Redis
-
-This keeps standalone workflows simple without duplicating infrastructure in the full local stack.
-
-## 7. China-aware builds
-
-Some services support mirror-aware Docker builds for China mainland networks.
-
-At the root level, the current entry point is:
-
-```bash
-./dev/start-docker --china
-```
-
-The goal is to improve build reliability without permanently rewriting tracked templates.
-
-## 8. Two-layer commit model
-
-When you change code in a submodule, there are usually two commits involved:
-
-1. A commit in the service repository
-2. A commit in `zgi-pre` updating the submodule pointer
-
-That is normal for this architecture.
-
-## 9. Documentation scope
-
-The docs site should start by explaining the product shell and the local stack, not by pretending `zgi-pre` is the full implementation repository.
-
-That is why the current onboarding docs focus on:
-
-- what ZGI is
-- how to start the stack
-- how to think about the repository structure
+| Concept | Description |
+| --- | --- |
+| **Subscription Package** | Free trial version, team version, professional version, enterprise version, including seats, storage, AI points, functional benefits |
+| **Wallet Balance** | The available balance in the account, which can be used for top-up, subscription purchase or combined payment |
+| **AI Points** | Distinguish official AI points and private channel funds to facilitate simultaneous management of platform models and enterprise-owned channels |
+| **Workspace quota** | Configure unlimited or custom quota according to workspace, record used, remaining, upper limit |
+| **API Key Quota** | Each API Key can set unlimited or customized quota, and track consumption by Key dimension |
+| **Bill flow** | Query transaction records by time, type, and keywords, and support exporting to Excel |

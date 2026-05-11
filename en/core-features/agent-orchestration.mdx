@@ -3,49 +3,87 @@ title: "Agent Orchestration"
 description: "Visually build AI apps — drag nodes, wire execution"
 ---
 
-## Two Agent Types
+## What is an agent?
 
-| Type | Description | Best For |
-|---|---|---|
-| **Conversational Agent** | Direct user interaction, answering questions from knowledge base and models | Q&A, consulting, internal assistant |
-| **Workflow Agent** | Executes multi-step tasks following a preset workflow | Contract review, report generation, data analysis |
+The agent is the smallest delivery unit of ZGI and is the AI application that users ultimately publish, call and integrate. An agent is composed of **workflow + model + knowledge base + prompt words**, and provides conversational or workflow-style AI capabilities to the outside world.
 
-## Workflow Node Types
+## Two types of agents
 
-| Node | Function | Typical Usage |
-|---|---|---|
+| Type | Description | Typical Scenario |
+| --- | --- | --- |
+| **Conversational Agent** | Talk directly to users and answer questions based on knowledge base and models | Customer service, Q&A, consultation |
+| **Workflow Agent** | Perform multi-step tasks according to preset workflows | Contract review, report generation, data analysis |
+
+## Agent life cycle
+
+### Create
+
+Select the agent type and configure basic information: name, icon, description, permission scope (visible only to yourself/visible to the team/visible to the organization). The system automatically generates a unique identifier and initializes the workflow draft.
+
+### Arrangement
+
+Drag and drop nodes on the visual canvas to build a business process. Supports multiple node types such as model nodes, knowledge base nodes, database nodes, HTTP nodes, code nodes, conditional branches, loops, iterations, etc.
+
+### Debugging
+
+Enter test data in the debugging area, and the system displays the execution status and results of each node in real time through SSE. Drafts are automatically saved every 30 seconds to avoid losing edits.
+
+### Publish
+
+Publish it as an accessible web application (agent landing page) with one click, or generate an API Key for external system calls. A version number is automatically generated for each release, which can be traced and rolled back.
+
+### Operation and maintenance
+
+View running logs, token consumption, number of calls, exception rate and other running data. Supports configuring API Key’s quota limit, expiration time, and IP whitelist.
+
+## Workflow node type
+
+ZGI provides a wealth of built-in nodes to cover most business process orchestration needs:
+
+| Node | Function | Typical usage |
+| --- | --- | --- |
 | **Start Node** | Define workflow input parameters | Receive user input or API request parameters |
-| **LLM Node** | Call LLMs for inference | Text generation, analysis, translation, classification |
-| **Knowledge Node** | Retrieve from knowledge base | Q&A, clause lookup, cited answers |
-| **NL2SQL Node** | Natural language to SQL query | Query enterprise databases without writing SQL |
-| **Conditional Branch** | Choose execution path based on variable value | Risk level routing, type classification |
-| **Code Node** | Run custom Python/JS logic | Data processing, format conversion |
-| **HTTP Node** | Call external APIs | Integrate with ticketing, ERP, OA systems |
-| **Iterator Node** | Batch process array data | Per-contract review, per-record processing |
-| **Loop Node** | Repeat execution until condition met | Retry logic, iterative refinement |
-| **End Node** | Output final results | Return JSON, text, or trigger downstream actions |
+| **LLM Node** | Call large models for inference | Text generation, analysis, translation, classification |
+| **Knowledge Base Node** | Retrieve information from the knowledge base | Q&A, term query, answer with citation |
+| **Database Node** | Query structured data | Contract ledger, project records, data statistics |
+| **NL2SQL node** | Natural language to SQL | Business personnel do not need to write SQL to query the database |
+| **Conditional branch** | Select execution path based on variable value | Risk level classification, type judgment |
+| **Code Node** | Run Python/JS custom logic | Data processing, format conversion |
+| **HTTP node** | Call external API | Connect with CRM, ERP, OA and other systems |
+| **Iteration node** | Batch processing of array data | Contract review one by one, data processing one by one |
+| **Loop Node** | Repeat execution according to conditions | Retry logic, iterative optimization |
+| **End Node** | Output the final result | Return JSON, text or trigger subsequent actions |
 
-## Workflow Features
+## Trigger method
 
-- **SSE Streaming Execution** — Real-time push of each node's execution status and results. Frontend can display step-by-step progress.
-- **Auto-Save Drafts** — Auto-saves workflow drafts every 30 seconds to prevent edit loss.
-- **Version Management** — Auto-generates version numbers on each publish. Traceable and rollbackable.
-- **Variable System** — Supports environment, session, and node variables. Data passes safely between nodes.
+| Trigger method | Description | Typical scenarios |
+| --- | --- | --- |
+| User conversation | Workflow triggered when user sends message | Customer service Q&A, intelligent assistant |
+| API calls | Triggered via REST API | System integration, automated processes |
+| Scheduled tasks | Regular execution according to Cron expression | Periodic reports, data synchronization |
+| File upload | Automatically triggered when user uploads a file | Automatic review of contract upload, automatic document storage |
+| Webhook | Receive external system callback triggers | OA approval, CRM events, ERP changes |
 
-## Trigger Types
+## Variables and context
 
-| Trigger | Description | Typical Scenarios |
-|---|---|---|
-| User Conversation | Trigger when user sends a message | Knowledge Q&A, smart assistant |
-| API Call | Trigger via REST API | System integration, automation pipelines |
-| Scheduled Task | Execute periodically via Cron expression | Periodic reports, data synchronization |
-| File Upload | Auto-trigger when user uploads a file | Auto-review on contract upload |
-| Webhook | Trigger from external system callbacks | OA approval, ticket events, ERP changes |
+Variables are the core mechanism for transferring data between nodes. ZGI supports a three-layer variable system:
 
-## Variables & Context
+| Variable types | Scope | Typical uses |
+| --- | --- | --- |
+| **Environment variables** | Global | API Key, model configuration and other sensitive information |
+| **Session variables** | Single conversation | Contextual memory, user preferences |
+| **Node variables** | Transfer between nodes | The output of the previous step is used as the input of the next step |
 
-| Variable Type | Scope | Typical Usage |
-|---|---|---|
-| Environment Variable | Global | API keys, model configs, sensitive info |
-| Session Variable | Single conversation | Context memory, user preferences |
-| Node Variable | Between nodes | Previous node output as next node input |
+## Core Features
+
+- **SSE streaming execution** — push the execution status and results of each node in real time, and the front end can display the progress
+
+- **Draft AutoSave** — Automatically saves workflow drafts every 30 seconds to prevent lost edits
+
+- **Version Management** — Automatically generate a version number for each release, traceable and rollable
+
+- **YAML template** — Agent configuration can be exported to YAML for reuse across teams and environments
+
+- **API Key Quota** — Generate a dedicated API Key for each agent, supporting daily/monthly quota, expiration time, and IP whitelist
+
+- **Asset prevention from accidental deletion** — Checking mechanism prevents accidental deletion of running agents; employees can be handed over with one click when they leave.

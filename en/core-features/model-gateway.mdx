@@ -3,32 +3,93 @@ title: "Model Gateway"
 description: "One API for all LLMs — hot-swap, load balancing, cost routing"
 ---
 
-## Key Components of the Model Gateway
+## Overview
 
-The model list is continuously expanding. Connect via API Key in the admin console:
+Agents, workflows, knowledge bases, and developer APIs in ZGI all rely on model capabilities. Model gateway unifies different model suppliers, official channels, enterprise private channels, custom models, API keys, default models, call billing and connectivity testing into the same governance system, allowing teams to access, select and manage models in a consistent way.
 
-| Provider | Model | Features |
-|---|---|---|
-| OpenAI | GPT-4o | Strongest overall capability |
-| Anthropic | Claude 3.5 Sonnet | Long context + code |
-| DeepSeek | V3 / R1 | Exceptional cost-performance ratio |
-| Alibaba | Qwen (Tongyi) | Top domestic choice |
-| Baidu | Wenxin (ERNIE) | Baidu ecosystem integration |
-| Google | Gemini | Multimodal capabilities |
-| Private Models | Enterprise self-trained | Data stays within network |
+> **Understand in one sentence**
+>
+> The model gateway is an integrated call portal suitable for multiple models: it provides an OpenAI compatible experience to the outside world and completes supplier adaptation, channel routing, model availability management, quota deduction and call tracking internally.
 
-## Routing Strategies
+## What is model gateway
 
-| Strategy | Description | Use Cases |
-|---|---|---|
-| **Performance Routing** | Prefer the fastest responding model | Real-time chat, low-latency scenarios |
-| **Cost Routing** | Low-cost models for simple tasks, premium for complex | High-volume daily tasks |
-| **Auto Fallback** | Auto-switch to backup when primary fails | Production high availability |
-| **Load Balancing** | Multi-key rotation, no single-key rate limit | High concurrency calls |
+| core object | illustrate |
+| --- | --- |
+| **Provider** | Manage OpenAI, Anthropic, Google, domestic model service providers and enterprise custom suppliers |
+| **Model** | Unified recording of model name, capability type, context window, input/output price, capability label, availability and enabled status |
+| **Channel** | Hosts real call credentials, Base URL, model list, priority, weight, balance and connectivity status |
+| **API Key** | Call credentials for developers or business systems, configurable quota, expiration time, model range and IP whitelist |
+| **Default Model** | Set default models according to dialogue, vector, rearrangement, visual, drawing and other purposes to reduce application configuration costs |
+| **Billing** | The amount is withheld before the call is made. After the call is completed, the settlement is based on the actual Token, model price and channel information. |
 
-## OpenAI-Compatible API
+## Key components of model gateway
 
-ZGI exposes a standard OpenAI-compatible interface. Existing OpenAI SDK projects can switch by changing `base_url`:
+| module | Ability description |
+| --- | --- |
+| Supplier management | View supplier lists and details, enable/disable suppliers, create, update, and delete enterprise custom suppliers |
+| Model management | Search models by vendor, purpose, capability, input/output modality, status, enable/disable single or batch models |
+| custom model | Enter the name, purpose, context window, price, endpoints, and parameter capabilities of a private or compatible model |
+| Default model | Configure default models for scenarios such as dialogue, vectors, rearrangement, vision, and drawings. The system also supports automatic parsing of available models. |
+| Channel management | Create an organization private channel and configure API Key, Base URL, model mapping, priority, weight and label |
+| Official channel | View the platform’s official channels and available models, and adjust the priority, weight and activation status of the official channel group |
+| Connectivity test | Supports channel testing, specified model testing, draft testing and multi-model batch testing, returning success status and response time |
+| call credentials | Create and manage LLM API Key, supporting quotas, model restrictions, IP whitelist, expiration time and status control |
+
+## Supported model types and uses
+
+| Type/purpose | illustrate |
+| --- | --- |
+| **Large Language Model/Text Dialogue** | For agent dialogue, workflow LLM nodes, text generation and structured understanding |
+| **Embedding/Vector Model** | Used for knowledge base vectorization, semantic search and similarity recall |
+| **Rerank / Rerank model** | Used to rearrange knowledge base search results to improve the hit quality of complex problems |
+| **Visual Model** | Used for picture understanding, picture and text question answering and document image analysis |
+| **Image generation model** | Used to prompt word generation graphs and workflow image generation nodes |
+| **Speech to Text/Text to Speech** | Used for voice input, voice broadcast and multi-modal interaction |
+| **Real-time voice, video generation, review** | For extended scenarios such as real-time audio, video generation and content security |
+
+## Routing and degradation
+
+ZGI implements model call routing through the **priority** and **weight** of the channel. Priority is used to determine the channel selection sequence, and weight is used to distribute traffic among channels with the same priority. Enterprises can configure official channels and private channels at the same time to strike a balance between cost, stability, regional compliance and supplier redundancy.
+
+- **Channel Enable/Deactivate** — Quickly remove abnormal channels from routing
+
+- **Model Mapping** — Maps the platform model name to the supplier’s real model name, compatible with naming differences between different service providers
+
+- **Parameter and Header Override** — Attach request parameters or headers to a specific channel
+
+- **Connectivity Test** — Verify the callability of single or multiple models before going online to reduce runtime failures
+
+- **Official Channel Monitoring** — The backend supports channel event streaming, and the gateway instance can receive changes such as channel creation, update, enablement, and disabling.
+
+## How to access the model
+
+### View existing models
+
+Enter "Model Management" to view existing suppliers and models, and confirm whether the required model is already in the platform metadata.
+
+### Use official channels
+
+Enter "Channel" to confirm whether the official channel group is enabled and view the models available on the platform.
+
+### Access the company’s own account
+
+Create an organization private channel and fill in the provider, API Key, Base URL, and model list.
+
+### Perform connectivity tests
+
+Perform channel testing or specified model testing to confirm that methods such as chat, embedding, image-gen, and rerank are available.
+
+### Enable and configure default models
+
+Enable the model in "Model Management" and create a custom model if necessary; set the default model in "Default Model" for dialogue, vector, rearrangement, visual, drawing and other purposes.
+
+### Create calling credentials
+
+Create an API Key for developers or system integration, and limit model scope, quota, validity period, and source IP.
+
+## OpenAI compatible calls
+
+The goal of Model Gateway is to reduce developer integration costs. Developers can use unified model names, unified authentication methods, and unified call semantics to access different supplier models; the platform side is responsible for supplier adaptation, model mapping, routing, billing, and tracking. For systems that already have OpenAI SDK, compatible access methods can be used first and gradually migrate to the underlying multi-vendor capabilities.
 
 ```python
 from openai import OpenAI
@@ -40,11 +101,40 @@ client = OpenAI(
 
 response = client.chat.completions.create(
     model="zgi-default",
-    messages=[{"role": "user", "content": "Summarize the key contract terms"}],
-    extra_body={"knowledge_base_id": "kb_xxxxxx"}
+    messages=[{"role": "user", "content": "Summarize the key terms of this contract"}],
 )
 
 print(response.choices[0].message.content)
 ```
 
-Switching models requires only a gateway config change — **zero business code changes**.
+## Costs and Tracking
+
+- Model metadata records input_price, output_price, cached_input_price, context window and maximum output Token
+
+- Call settlement record model, supplier, channel, request ID, response time, token usage, cost and status
+
+- The API Key dimension can record the used quota and remaining quota, making it easy to track by system, application or integration party.
+
+- Private channels support balance adjustment, which is suitable for scenarios where enterprises bring their own model accounts or settle by channel.
+
+## Typical scenario
+
+| scene | Configuration recommendations |
+| --- | --- |
+| **Multi-vendor disaster recovery** | Configure multiple channels for the same model purpose and quickly switch when a single supplier is unavailable |
+| **Cost Stratification** | Use cost-effective models for daily tasks, and use flagship models for complex reasoning or high-value scenarios. |
+| **Private model access** | Incorporate on-premises or enterprise-specific models into the unified model selector |
+| **R&D Integration** | Provide a unified model calling entrance for internal systems through API Key, and control risks by model and quota |
+| **Knowledge Base Enhancements** | Uniformly configure the Embedding and Rerank models to ensure the indexing and recall quality of RAG |
+
+## Advantages of ZGI Model Gateway
+
+- **Unify suppliers, models, channels and API Key** to reduce the engineering complexity of multi-model access
+
+- **Model metadata is rich** and can be filtered by purpose, modality, capability, price, context window and availability
+
+- **Official channels and private channels coexist**, which can not only quickly use platform capabilities, but also access the company's own resources
+
+- **Connectivity testing and batch testing in advance** reduce the risk of call failure after release
+
+- Linked with the **Expense Center** to form a complete closed loop of pre-call inspection, post-call settlement, and bill tracking

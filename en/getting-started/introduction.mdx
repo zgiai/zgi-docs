@@ -3,53 +3,51 @@ title: "What Is ZGI"
 description: "Enterprise AI Infrastructure — Connecting Knowledge, Models, and Agent Execution"
 ---
 
-ZGI is an enterprise-grade **AI operations and management platform** that connects data, knowledge, models, and workflows through a unified agent orchestration framework — turning scattered AI capabilities into usable, controllable, and accumulable assets.
+## One sentence definition
 
-> **ZGI is not an AI tool — it's the infrastructure layer that makes AI tools actually work.**
+**ZGI is an AI agent platform for enterprise organizations**, helping enterprises to unify access models, accumulate knowledge assets, orchestrate business processes, and implement AI capabilities into manageable, reusable, and integrable intelligent applications through permissions, cost, and security governance.
+
+> **ZGI solves a core problem**
 >
-> Most enterprises don't lack better models. They lack the layer that unifies, governs, and retains all their AI capabilities.
+> Transform AI from a "single point tool" into a "manageable, reusable, and online enterprise capability". If your team is also facing the problem of "AI can be used but cannot be controlled", ZGI is born for this.
 
-## What Problems Does It Solve
+## What problem does it solve?
 
-Enterprise AI adoption typically gets stuck on three problems:
+Most companies will encounter these three typical problems when implementing AI:
 
-### 1. AI Asset Loss
+### 1. AI assets are dispersed and difficult to precipitate
 
-Carefully tuned prompts live on employees' personal devices — when they leave, the knowledge disappears. ZGI ensures all AI assets belong to the organization, with version tracking and automatic handoff on offboarding.
+Prompt words, workflows, and knowledge bases are scattered on every employee's computer. When employees leave, the experience is lost. When a new employee joins the company, everything starts from scratch. ZGI centrally stores all AI assets at the organizational level. The assets do not belong to individuals, but to the enterprise. They can be handed over with one click when resigning to avoid the loss of digital assets.
 
-### 2. Untrustworthy Answers
+### 2. AI output is difficult to trust
 
-LLMs can confidently make things up. In legal, finance, and compliance scenarios where source traceability is critical, this is almost unacceptable. ZGI's RAG engine strictly retrieves answers from original source documents, and every response includes paragraph-level citations (file name, page, and paragraph) so teams can quickly verify facts and build trust at the source.
+Big models will "make things up with confidence." This is almost unacceptable in scenarios such as legal, financial, and compliance where the source of the answer is highly sensitive. ZGI's RAG engine strictly retrieves answers from the original text. Each answer will be accompanied by the source of the original paragraph (file name, page number, paragraph), allowing business personnel to quickly verify the source of the information and build trust from the source.
 
-### 3. Fragmented Tools & Uncontrolled Costs
+### 3. Multiple models, multiple tools, and out-of-control costs
 
-Every department uses a different tool; IT maintains dozens of integrations. ZGI's unified model gateway attributes token consumption precisely to each person, department, and application.
+Each department has its own set of tools, IT maintains a bunch of interfaces, and the bills cannot be understood or calculated clearly. ZGI provides a unified multi-model gateway, **Token consumption is accurately attributed to each person, each department, and each application**, and a complete cost management closed loop is formed through workspace quota, API Key quota, and monthly statistics.
 
-## Core Capabilities
+## Core Competencies at a Glance
 
-| Capability | Description |
-|---|---|
-| **Enterprise RAG Knowledge Base** | Upload docs to build a knowledge base. Every answer cites the source. Knowledge graph enhanced retrieval. |
-| **Visual Agent Orchestration** | Drag-and-drop nodes to build multi-step workflows. No coding required for business users. |
-| **Unified Model Gateway** | GPT, Claude, DeepSeek, Qwen — one API to call them all. Hot-swap with zero code changes. |
-| **Database & NL2SQL** | Structured data modeling, natural language queries, agents consume business data directly. |
-| **Permissions & Cost Control** | Token consumption attributed to person, department, and app. RBAC down to feature level. |
-| **Flexible Deployment** | Cloud SaaS ready to go, or self-hosted with data never leaving your network. |
+- **Agent Orchestration**: Visual workflow canvas, drag and drop nodes to build multi-step AI applications
+- **Enterprise-level knowledge base**: RAG + enhanced knowledge graph, each answer comes with the source of the original paragraph
+- **Database & NL2SQL**: Intelligent generation of table structures from business documents, natural language query data
+- **Unified Model Gateway**: official channel + private channel, one interface calls all models
+- **Permission and Fee Center**: RBAC + workspace quota + API Key + billing flow
+- **Flexible deployment**: Cloud SaaS is ready to use, and private deployment data does not leave the domain.
 
-## Open Source
+## 4 ways for developers to integrate
 
-ZGI's core framework is open source under the [Apache 2.0 License](https://github.com/zgiai/zgi). The repository uses a git submodule architecture:
+- **REST API** — OpenAI compatible interface, knowledge base query, Agent call, workflow triggering
 
-| Directory | Description | Repository |
-|---|---|---|
-| `api/` | Backend service (Go) | `zgiai/zgi-api` |
-| `web/` | Frontend app (React) | `zgiai/zgi-web` |
-| `sandbox/` | Code execution sandbox | `zgiai/zgi-sandbox` |
-| `plugin-runner/` | Plugin runner service | `zgiai/zgi-plugin-runner` |
-| `docker/` | Shared middleware & deployment assets | — |
+- **Webhook** — real-time push of workflow execution results, access to OA / ERP / CRM in 5 minutes
 
-## Where to Start Next
+- **Python/JS SDK** — Official SDK, ready to use out of the box
 
-- Read [Quick Start](/en/getting-started/quickstart) to launch your first knowledge base in 30 minutes
-- Read [Architecture](/en/getting-started/architecture) to understand ZGI's five-layer design
-- Read [Key Concepts](/en/guides/concepts) to understand the repository structure
+- **SSO single sign-on** — LDAP, SAML 2.0, OAuth 2.0 (Feishu / DingTalk / Enterprise WeChat)
+
+## Next step
+
+- **30 Minutes Quick Start** — Run through your first ZGI AI application from scratch
+- **Core Concept** — Relationship between workspace, agent, knowledge base, model, and permissions
+- **Product Architecture** — ZGI’s six major product features and base design
