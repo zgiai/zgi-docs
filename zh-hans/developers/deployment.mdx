@@ -1,21 +1,19 @@
 ---
 title: '部署指南'
-description: '了解 ZGI 的云端 SaaS、Docker Compose、Kubernetes 和私有化企业版部署方式。'
+description: '从云端体验到私有化上线 — 选择适合你的部署方式'
 category: '开发者'
-order: 3
+order: 2
 published: true
 ---
-
-ZGI 可以从云端体验到私有化上线，根据团队阶段、数据边界和运维能力选择部署方式。
 
 ## 部署方式对比
 
 | 方式 | 适合场景 | 数据位置 | 上线时间 |
 | --- | --- | --- | --- |
-| 云端 SaaS | 快速验证、中小团队 | ZGI 云端（加密存储） | 即开即用 |
-| Docker Compose | 开发环境、小规模生产 | 企业内网 | 1 小时 |
-| Kubernetes | 生产高可用 | 企业内网 | 30 分钟 |
-| 私有化企业版 | 金融、政务、医疗合规 | 完全自控 | 3 个工作日 |
+| **云端 SaaS** | 快速验证、中小团队 | ZGI 云端（加密存储） | 即开即用 |
+| **Docker Compose** | 开发环境、小规模生产 | 企业内网 | 1 小时 |
+| **Kubernetes** | 生产高可用 | 企业内网 | 30 分钟 |
+| **私有化企业版** | 金融、政务、医疗合规 | 完全自控 | 3 个工作日 |
 
 ## 系统要求（私有化部署）
 
@@ -27,9 +25,13 @@ ZGI 可以从云端体验到私有化上线，根据团队阶段、数据边界�
 | 存储 | 100 GB SSD | 500 GB SSD+ |
 | Docker | 20.10+ | Kubernetes 1.24+ |
 
-## 开源版部署
+## 开源版部署 — 快速开始
 
-ZGI 核心框架在 GitHub 开源，可以直接从源码启动完整服务栈。仓库采用 git submodule 方式组织多仓库，顶层仓库负责产品级聚合。
+ZGI 核心框架在 GitHub 完全开源，任何人都可以直接从源码启动完整服务栈。
+
+### 仓库结构
+
+采用 **git submodule** 方式组织多仓库，顶层仓库负责产品级聚合：
 
 | 目录 | 说明 | 仓库地址 |
 | --- | --- | --- |
@@ -39,44 +41,71 @@ ZGI 核心框架在 GitHub 开源，可以直接从源码启动完整服务栈�
 | `plugin-runner/` | 插件执行服务 | `zgiai/zgi-plugin-runner` |
 | `docker/` | 共享中间件与部署资产 | — |
 
-## macOS / Linux：Docker 一键启动
+### macOS / Linux — Docker 一键启动（推荐）
 
-```bash
+```shell
+# 克隆仓库
 git clone https://github.com/zgiai/zgi.git
 cd zgi
+
+# 一键启动完整 Docker 栈
 make dev-docker
 ```
 
-`make dev-docker` 首次运行会自动完成初始化 submodule、复制缺失的 env 模板、重新生成 root compose、启动完整 Docker 栈。
+> **make dev-docker 首次运行会自动完成**
+>
+> 初始化 submodule → 复制缺失的 env 模板 → 重新生成 root compose → 启动完整 Docker 栈。无需手动操作。
 
-## 中国大陆网络加速
+### 中国大陆网络加速
 
-```bash
+如果镜像构建较慢或不稳定，可使用 `--china` 模式注入推荐镜像源配置（不会改写模板文件）：
+
+```shell
 ./dev/start-docker --china
 ```
 
-## 环境变量管理
+### 环境变量管理
 
-```bash
+```shell
+# 检查本地 env 与模板的差异
 make env-check
+
+# 追加缺失项（不覆盖现有值）
 make env-sync
 ```
 
-## Windows 部署
+### macOS / Linux — 源码开发模式
 
-Windows 最低支持 Docker Desktop + PowerShell。
+```shell
+# 初始化开发环境
+make setup
+
+# 启动中间件（数据库、缓存等）
+make dev-docker
+
+# 分别启动后端和前端
+make dev-api
+make dev-web
+```
+
+### Windows 部署
+
+Windows 最低支持 **Docker Desktop + PowerShell**。源码开发辅助工具依赖 Unix-like shell，在 Windows 上不可用。
 
 ```powershell
+# PowerShell
 .\dev\start-docker.ps1
+
+# PowerShell（国内镜像）
 .\dev\start-docker.ps1 -china
 ```
 
-## 默认服务地址
+### 默认服务地址
 
 | 服务 | 地址 | 说明 |
 | --- | --- | --- |
-| Web 前端 | `http://localhost:13000` | 控制台界面 |
-| API 后端 | `http://localhost:2678` | REST API |
+| **Web 前端** | `http://localhost:13000` | 控制台界面 |
+| **API 后端** | `http://localhost:2678` | REST API |
 | PostgreSQL | `localhost:15432` | 主数据库 |
 | Redis | `localhost:16379` | 缓存与消息队列 |
 | Weaviate | `http://localhost:18080` | 向量数据库 |
@@ -86,8 +115,11 @@ Windows 最低支持 Docker Desktop + PowerShell。
 
 ## Kubernetes 部署
 
-```bash
+```shell
+# 添加 ZGI Helm 仓库
 helm repo add zgi https://charts.zgi.cn
+
+# 安装
 helm install zgi zgi/zgi \
   --namespace zgi --create-namespace \
   --set global.storageClass=your-storage-class \

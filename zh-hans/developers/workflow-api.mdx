@@ -1,348 +1,94 @@
 ---
 title: 'API 参考'
-description: '了解工作流对话 API 的鉴权、请求参数、流式响应事件、错误码和会话上下文设置。'
+description: '基于 OpenAI 兼容格式的 RESTful API'
 category: '开发者'
 order: 1
 published: true
 ---
 
-工作流 API 用于让外部系统触发已发布的 ZGI 工作流。常见用法包括把智能体接入自研 Web 应用、企业微信/飞书机器人、OA 审批、工单系统和内部数据平台。
+## 鉴权
 
-API Key 会绑定到一个已发布应用或智能体。调用方不需要在请求中传工作流 ID；系统会根据 API Key 找到对应的最新发布版本。
+所有 API 请求需要在 Header 中携带 API Key：
+
+```text
+Authorization: Bearer YOUR_API_KEY
+```
+
+可以在工作区设置 → API 密钥管理中创建和管理 API Key。
 
 ## Base URL
 
-```text
-https://cloud.zgi.cn/v1/api
-```
-
-## 鉴权
-
-Service API 使用 API Key 鉴权。所有请求都应在 `Authorization` 请求头中携带密钥：
-
-```http
-Authorization: Bearer {API_KEY}
-```
-
-生产环境中不要把 API Key 暴露在前端、移动端或浏览器插件中。建议由业务后端保存 API Key，再由前端调用自己的后端接口。
-
-## 集成流程
-
-1. 在控制台创建并调试工作流。
-2. 发布工作流，确认外部调用要使用的输入变量。
-3. 为应用创建 Service API Key。
-4. 业务后端携带 `Authorization: Bearer {API_KEY}` 调用接口。
-5. 如果需要多轮会话，保存响应中的 `conversation_id`，下一轮请求继续传入。
-
-## 发送对话消息
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `POST` | `/chat-workflows/run` | 创建会话消息，支持基于历史对话继续回答 |
-
-## 请求体
-
-| 参数名 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `query` | `string` | 是 | 用户输入或提问内容 |
-| `inputs` | `object` | 否 | 工作流输入变量。字段名需要和工作流开始节点中的变量一致 |
-| `response_mode` | `string` | 是 | 响应模式，支持 `streaming` 和 `blocking` |
-| `user` | `string` | 否 | 业务侧用户标识。建议传稳定 ID，例如会员 ID、员工 ID 或外部系统用户 ID |
-| `conversation_id` | `string` | 否 | 会话 ID。不传或传空字符串时创建新会话 |
-| `history_window_size` | `int` | 否 | 保留多少轮历史作为上下文。`0` 表示不使用历史 |
-| `files` | `array` | 否 | 文件列表。适用于带文件理解、文档抽取或多模态节点的工作流 |
-
-`inputs` 适合传结构化上下文，例如订单号、外部系统 ID、部门、渠道、语言、业务场景等。`query` 通常保留用户本轮自然语言输入。
-
-```json
-{
-  "query": "帮我检查这份合同的付款条款风险",
-  "inputs": {
-    "business_type": "采购合同",
-    "risk_level": "standard"
-  },
-  "response_mode": "streaming",
-  "user": "user_123",
-  "history_window_size": 3
-}
-```
-
-## 响应模式
-
-### streaming
-
-`streaming` 使用 Server-Sent Events，适合聊天窗口、长流程执行、需要展示中间进度的场景。响应 `Content-Type` 为 `text/event-stream`。
-
-```bash
-curl --location 'https://cloud.zgi.cn/v1/api/chat-workflows/run' \
-  --header 'Content-Type: application/json' \
-  --header 'Authorization: Bearer {api_key}' \
-  --data '{
-    "query": "总结这份制度的请假规则",
-    "inputs": {},
-    "response_mode": "streaming",
-    "user": "employee_001",
-    "history_window_size": 1
-  }'
-```
-
-流式返回示例：
-
-```text
-data: {"event":"message","data":{"id":"msg_xxxxxx","conversation_id":"conv_xxxxxx","answer":"","created_at":1763980800}}
-
-data: {"event":"message","data":{"id":"msg_xxxxxx","conversation_id":"conv_xxxxxx","answer":"请假规则主要包括...","created_at":1763980801}}
-
-data: {"event":"message_end","data":{"id":"msg_xxxxxx","conversation_id":"conv_xxxxxx","metadata":{"usage":{"prompt_tokens":0,"completion_tokens":0,"total_tokens":0}}}}
-```
-
-### blocking
-
-`blocking` 会在工作流执行完成后一次性返回 JSON，适合后台任务、脚本调用、同步集成和不需要打字机效果的业务系统。
-
-```bash
-curl --location 'https://cloud.zgi.cn/v1/api/chat-workflows/run' \
-  --header 'Content-Type: application/json' \
-  --header 'Authorization: Bearer {api_key}' \
-  --data '{
-    "query": "查询最近三个月的合同到期情况",
-    "inputs": {},
-    "response_mode": "blocking",
-    "user": "ops_job_001",
-    "history_window_size": 0
-  }'
-```
-
-阻塞返回示例：
-
-```json
-{
-  "message_id": "msg_xxxxxx",
-  "conversation_id": "conv_xxxxxx",
-  "mode": "chat",
-  "answer": "最近三个月内共有 12 份合同到期，其中 3 份需要优先续签。",
-  "metadata": {
-    "usage": {
-      "prompt_tokens": 0,
-      "completion_tokens": 0,
-      "total_tokens": 0
-    },
-    "retriever_resources": []
-  },
-  "created_at": 1763980800
-}
-```
-
-## 请求示例
-
-### 新会话
-
-```bash
-curl --location --max-time 20 'https://cloud.zgi.cn/v1/api/chat-workflows/run' \
-  --header 'Content-Type: application/json' \
-  --header 'Authorization: Bearer {api_key}' \
-  --data '{
-    "query": "你好，我是程序员",
-    "inputs": {},
-    "response_mode": "streaming",
-    "user": "user_123",
-    "history_window_size": 1
-  }'
-```
-
-### 继续会话
-
-```bash
-curl --location --max-time 20 'https://cloud.zgi.cn/v1/api/chat-workflows/run' \
-  --header 'Content-Type: application/json' \
-  --header 'Authorization: Bearer {api_key}' \
-  --data '{
-    "query": "我刚才说我是什么职业？",
-    "inputs": {},
-    "response_mode": "streaming",
-    "user": "user_123",
-    "conversation_id": "1749ede3-ee92-471c-be92-9d17d58e193b",
-    "history_window_size": 1
-  }'
-```
-
-继续会话时，`conversation_id` 应使用上一轮响应中返回的值。建议调用方同时保存 `user` 和 `conversation_id`，避免把不同终端用户的上下文混在一起。
-
-## 流式响应
-
-响应 `Content-Type` 为 `text/event-stream`。每个流式块以 `data:` 开头，块之间用两个换行分隔。
-
-常见事件：
-
-| 事件 | 说明 |
+| 环境 | Base URL |
 | --- | --- |
-| `workflow_started` | 工作流开始执行 |
-| `node_started` | 节点开始执行 |
-| `node_finished` | 节点执行结束 |
-| `workflow_finished` | 工作流执行结束 |
-| `message` | 模型返回文本片段 |
-| `message_end` | 消息结束，通常包含用量和元数据 |
-| `error` | 流式过程中出现异常 |
-| `ping` | 保持连接存活的心跳事件 |
+| 云端 SaaS | `https://api.zgi.cn/v1` |
+| 私有化部署 | `http://YOUR_HOST:2678/v1` |
 
-调用方解析时，应按 SSE 块读取 `data:`，再解析其中的 JSON。不要假设一次网络包就是一个完整事件。
+## 核心端点
 
-## history_window_size
+- `POST /v1/chat/completions`：发送对话请求，支持知识库检索和流式输出
 
-- `0`：不使用历史消息，只处理当前问题。
-- `1`：保留最近一轮对话和当前问题。
-- `N`：保留最近 N 轮对话作为上下文。
+- `GET /v1/models`：获取可用模型列表
 
-复杂问答场景通常需要 3 到 5 轮上下文；简单问答可设置为 1 到 2 轮。历史窗口越大，上下文越完整，但 Token 成本也越高。
+- `POST /v1/workflows/{workflow_id}/run`：触发指定工作流执行
 
-## 文件上传与引用
+- `POST /v1/knowledge-bases/{kb_id}/documents`：上传文档到知识库
 
-如果工作流需要处理文件，先上传文件，再在调用工作流时引用返回的文件 ID。
+- `POST /v1/knowledge-bases/{kb_id}/search`：查询知识库检索结果
 
-### 上传文件
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `POST` | `/files/upload` | 上传临时文件，用于后续工作流调用 |
+## 对话请求示例
 
 ```bash
-curl --location 'https://cloud.zgi.cn/v1/api/files/upload' \
-  --header 'Authorization: Bearer {api_key}' \
-  --form 'user="user_123"' \
-  --form 'file=@"/path/to/contract.pdf"'
+curl -X POST https://api.zgi.cn/v1/chat/completions \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "zgi-default",
+    "messages": [
+      { "role": "system", "content": "你是一名合同审核助手" },
+      { "role": "user", "content": "这份合同的付款条款是什么？" }
+    ],
+    "knowledge_base_id": "kb_xxxxxx",
+    "stream": true,
+    "temperature": 0.7
+  }'
 ```
 
-响应示例：
+## 请求参数
 
-```json
-{
-  "id": "file_xxxxxx",
-  "name": "contract.pdf",
-  "size": 204800,
-  "extension": "pdf",
-  "mime_type": "application/pdf",
-  "created_by": "user_123",
-  "created_at": 1763980800
-}
+| 参数 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `model` | string | 必填 | 使用的模型 ID |
+| `messages` | array | 必填 | 对话消息数组 |
+| `knowledge_base_id` | string | 可选 | 关联的知识库 ID |
+| `stream` | boolean | 可选 | 是否启用流式输出 |
+| `temperature` | float | 可选 | 采样温度（0-2） |
+
+## SDK
+
+```bash
+# Python
+pip install zgi-sdk
+
+# JavaScript / TypeScript
+npm install @zgi/sdk
 ```
-
-### 在工作流中使用文件
-
-```json
-{
-  "query": "提取合同中的付款条件和违约责任",
-  "inputs": {
-    "contract_file": {
-      "type": "document",
-      "transfer_method": "local_file",
-      "upload_file_id": "file_xxxxxx"
-    }
-  },
-  "files": [
-    {
-      "type": "document",
-      "transfer_method": "local_file",
-      "upload_file_id": "file_xxxxxx"
-    }
-  ],
-  "response_mode": "streaming",
-  "user": "user_123"
-}
-```
-
-如果开始节点定义了文件变量，推荐把文件对象放到对应的 `inputs` 字段中；如果工作流使用系统文件列表或多模态节点，也可以同时传 `files`。
-
-## Python 示例
 
 ```python
-import json
-import requests
+from zgi import ZGIClient
 
-url = "https://cloud.zgi.cn/v1/api/chat-workflows/run"
-headers = {
-    "Authorization": "Bearer YOUR_API_KEY",
-    "Content-Type": "application/json",
-}
-payload = {
-    "query": "帮我总结这份制度的报销规则",
-    "inputs": {},
-    "response_mode": "streaming",
-    "user": "user_123",
-    "history_window_size": 1,
-}
+client = ZGIClient(api_key="YOUR_API_KEY")
 
-with requests.post(url, headers=headers, data=json.dumps(payload), stream=True, timeout=120) as response:
-    response.raise_for_status()
-    for line in response.iter_lines(decode_unicode=True):
-        if not line or not line.startswith("data: "):
-            continue
-        event = json.loads(line.removeprefix("data: "))
-        if event.get("event") == "message":
-            print(event["data"].get("answer", ""), end="", flush=True)
-        elif event.get("event") == "message_end":
-            print()
+# 查询知识库
+result = client.knowledge.query(
+    knowledge_base_id="kb_xxxxxx",
+    question="这份合同的付款周期是多少天？"
+)
+print(result.answer)
+print(result.citations)  # [{"source": "合同.pdf", "page": 4, "text": "..."}]
+
+# 触发工作流
+run = client.workflows.run(
+    workflow_id="wf_xxxxxx",
+    inputs={"document_url": "https://..."}
+)
 ```
-
-## Node.js 示例
-
-```typescript
-const response = await fetch('https://cloud.zgi.cn/v1/api/chat-workflows/run', {
-  method: 'POST',
-  headers: {
-    Authorization: `Bearer ${process.env.ZGI_API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    query: '查询最近三个月的合同到期情况',
-    inputs: {},
-    response_mode: 'blocking',
-    user: 'backend_job_001',
-    history_window_size: 0,
-  }),
-});
-
-if (!response.ok) {
-  throw new Error(`ZGI API error: ${response.status}`);
-}
-
-const result = await response.json();
-console.log(result.answer);
-console.log(result.conversation_id);
-```
-
-## 其他端点
-
-| 方法 | 路径 | 说明 |
-| --- | --- | --- |
-| `GET` | `/info` | 获取当前 API Key 绑定应用的基础信息 |
-| `GET` | `/parameters` | 获取应用输入参数、文件上传配置和系统限制 |
-| `POST` | `/workflows/run` | 运行 API Key 绑定应用的普通工作流 |
-| `POST` | `/workflows/{workflow_id}/run` | 运行指定工作流 |
-| `GET` | `/workflows/runs/{run_id}` | 查询工作流运行详情 |
-| `POST` | `/workflows/tasks/{task_id}/stop` | 停止运行中的任务，当前能力以实际部署版本为准 |
-| `POST` | `/files/upload` | 上传文件 |
-
-调用前可以先请求 `/parameters`，用返回的 `user_input_form` 判断需要传哪些 `inputs` 字段。
-
-## 错误码
-
-| HTTP 状态码 | 错误码 | 说明 |
-| --- | --- | --- |
-| `400` | `invalid_param` | 参数异常 |
-| `400` | `app_unavailable` | 应用配置不可用 |
-| `400` | `provider_not_initialize` | 没有可用模型凭据 |
-| `400` | `provider_quota_exceeded` | 模型调用额度不足 |
-| `400` | `model_currently_not_support` | 当前模型不可用 |
-| `400` | `completion_request_error` | 文本生成失败 |
-| `401` | `unauthorized` | API Key 无效 |
-| `404` | - | 会话不存在 |
-| `500` | - | 服务内部异常 |
-
-## 生产使用建议
-
-- 为不同环境创建不同 API Key，例如开发、测试、生产分别管理。
-- 后端保存 API Key，前端只调用业务后端。
-- 为每个终端用户传稳定的 `user`，便于会话隔离、审计和问题排查。
-- 长流程优先使用 `streaming`，后台同步任务可以使用 `blocking`。
-- 保存 `conversation_id`，但不要把它当作鉴权凭据。
-- 对外部系统调用设置超时、重试和错误告警。
