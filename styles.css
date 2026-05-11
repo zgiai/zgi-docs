@@ -1,0 +1,57 @@
+:root {
+  --zgi-blue: #0053ff;
+}
+
+a {
+  color: var(--zgi-blue);
+}
+
+mark {
+  background: rgba(0, 83, 255, 0.16);
+  color: inherit;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+code {
+  border-color: rgba(0, 83, 255, 0.22);
+}
+
+/* Reusable status/highlight tags */
+.zgi-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.zgi-status--verified {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.zgi-status--pending {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.zgi-status--highlight {
+  color: #eaf1ff;
+  background: rgba(0, 83, 255, 0.2);
+  border-color: rgba(0, 83, 255, 0.45);
+}
+
+/* Optional wrapper for dark card blocks in MDX pages */
+.zgi-block {
+  border: 1px solid #1d2945;
+  border-radius: 14px;
+  padding: 14px;
+  background: rgba(6, 12, 30, 0.9);
+}

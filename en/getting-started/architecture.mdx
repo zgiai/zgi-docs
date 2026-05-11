@@ -3,53 +3,35 @@ title: "Architecture"
 description: "ZGI's five-layer architecture and technology stack"
 ---
 
+import ArchitectureLayers from "/snippets/ArchitectureLayers.jsx";
+
 ## Design concept
 
 ZGI is not a simple stack of functions, but revolves around a core goal: **to make AI "usable, manageable, and retainable"** in the enterprise.
 
 For this reason, we divided the entire product into four layers. Each layer corresponds to a type of real demands for enterprises to implement AI: from autonomous control of the underlying code, to unified access to models, to data governance, to upper-layer application and permission control. Each layer can be used independently or together to form a complete system.
 
-ZGI product architecture · four-layer design
-
-Multi-level permissions and auditing
-
-Refined department structure management supports independent budget accounting by department to avoid Token abuse
-
-Database Enhanced Knowledge Base RAG
-
-Introducing a database to optimize the knowledge base and achieve a recall accuracy rate of more than 99%
-
-One-click access to global models
-
-Pre-register the mainstream large models in the market (dialogue, rearrangement, vector, image, etc.), users do not need to configure cumbersome API Keys one by one
-
-Own intellectual property rights
-
-The ZGI core code has completely independent copyright and is not re-encapsulated, avoiding the harsh restrictions of open source protocols and the risk of underlying dependencies.
-
-APPLICATION
-
-DATA
-
-MODEL GATEWAY
-
-CODE
-
-Preventing accidental deletion and inheritance of assets
-
-There is a check mechanism to prevent accidental deletion of running processes or intelligent assets; when employees leave, AI assets can be transferred with one click to ensure the continuity of corporate digital assets.
-
-Knowledge graph enhanced RAG
-
-Organize fragmented knowledge into a graph structure so that AI can understand the correlation between knowledge. During retrieval, nearby nodes can be recalled in association to solve the information fragmentation caused by traditional block retrieval.
-
-Local/self-built model support
-
-Supports enterprises to configure their own API Key for locally deployed large models, is compatible with existing IT architecture, and does not lock in model suppliers.
-
-Golang high performance backend
-
-In view of Python's natural shortcomings in multi-concurrency support, ZGI uses Golang to write the underlying code, which can stably support the real business needs of multiple customers and large-scale users online at the same time.
+<ArchitectureLayers
+  title="ZGI Product Architecture · Four-Layer Design"
+  centerLayers={[
+    { cn: "Application Layer", en: "APPLICATION" },
+    { cn: "Data Layer", en: "DATA" },
+    { cn: "Model Layer", en: "MODEL GATEWAY" },
+    { cn: "Code Layer", en: "CODE" },
+  ]}
+  leftCards={[
+    { title: "Multi-level Permissions and Auditing", desc: "Refined department structure management supports independent budget accounting by department to avoid token abuse." },
+    { title: "Database-Enhanced Knowledge Base RAG", desc: "Introduce database optimization into knowledge retrieval and push recall accuracy above 99%." },
+    { title: "One-click Access to Global Models", desc: "Pre-registered mainstream models (chat, rerank, embedding, vision, and more), so users do not have to configure API keys one by one." },
+    { title: "Independent Intellectual Property", desc: "ZGI core code is fully self-owned, not secondary wrapping, reducing upstream license and dependency risks." },
+  ]}
+  rightCards={[
+    { title: "Asset Protection and Handover", desc: "Built-in checks prevent accidental deletion of running workflows or assets; when employees leave, AI assets can be handed over in one click." },
+    { title: "Knowledge Graph Enhanced RAG", desc: "Organize fragmented knowledge into graph structures so AI can understand relationships and avoid context fragmentation from basic chunk-only retrieval." },
+    { title: "Local / Self-hosted Model Support", desc: "Supports enterprise-owned API keys for local model deployments, compatible with existing IT architecture and not locked to one model vendor." },
+    { title: "High-performance Golang Backend", desc: "ZGI uses Golang for core services to support high-concurrency production workloads with stability at scale." },
+  ]}
+/>
 
 ## Responsibilities of each layer
 

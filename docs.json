@@ -3,8 +3,9 @@
   "theme": "mint",
   "name": "ZGI 文档",
   "description": "ZGI 开源 AI 产品栈官方文档。",
+  "styling": "styles.css",
   "colors": {
-    "primary": "#16A34A"
+    "primary": "#0053FF"
   },
   "navigation": {
     "languages": [
