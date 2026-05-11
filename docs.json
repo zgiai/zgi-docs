@@ -56,31 +56,30 @@
             "pages": [
               "zh-hans/getting-started/introduction",
               "zh-hans/getting-started/quickstart",
+              "zh-hans/guides/concepts",
               "zh-hans/getting-started/architecture"
             ]
           },
           {
             "group": "核心功能",
             "pages": [
-              "zh-hans/features/knowledge-base-rag",
               "zh-hans/features/agent-orchestration",
+              "zh-hans/features/knowledge-base-rag",
+              "zh-hans/features/database",
               "zh-hans/features/model-gateway",
-              "zh-hans/features/workflows",
-              "zh-hans/features/permissions-costs",
-              "zh-hans/features/database"
+              "zh-hans/features/permissions-costs"
             ]
           },
           {
             "group": "开发者",
             "pages": [
               "zh-hans/developers/workflow-api",
-              "zh-hans/developers/sdk-integrations",
               "zh-hans/developers/deployment",
               "zh-hans/developers/security-compliance"
             ]
           },
           {
-            "group": "案例与场景",
+            "group": "应用场景",
             "pages": [
               "zh-hans/use-cases/industry-scenarios",
               "zh-hans/use-cases/agent-library"
