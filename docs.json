@@ -6,6 +6,8 @@
   "colors": {
     "primary": "#0053FF"
   },
+  "logo": "/favicon.svg",
+  "favicon": "/favicon.svg",
   "navigation": {
     "languages": [
       {
