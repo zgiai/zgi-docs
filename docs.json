@@ -10,7 +10,6 @@
     "languages": [
       {
         "language": "en",
-        "default": true,
         "groups": [
           {
             "group": "Getting Started",
@@ -50,6 +49,7 @@
       },
       {
         "language": "zh-Hans",
+        "default": true,
         "groups": [
           {
             "group": "入门",
